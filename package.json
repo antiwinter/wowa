@@ -1,0 +1,17 @@
+{
+  "dependencies": {
+    "got": "^9.6.0",
+    "moment": "^2.24.0",
+    "x-ray": "^2.3.3"
+  },
+  "name": "wow-assistant",
+  "version": "1.0.0",
+  "description": "Manage addons, upload WCL, etc.",
+  "main": "index.js",
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "antiwinter",
+  "license": "ISC"
+}
