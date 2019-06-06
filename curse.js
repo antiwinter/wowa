@@ -17,15 +17,15 @@ let api = {
   info(name, done) {
     x(api.$url + name, {
       text: x('.pd-1', ['.member__name a']),
-      time: x('.pd-1', ['span abbr@data-epoch']),
+      time: x('.pd-1', ['span abbr@data-epoch | num']),
       dl: 'section .count--download | num'
     })((err, d) => {
       // log(err, d)
       let i = {
         owner: d.text[0],
         author: d.text[1],
-        create: d.time[1] * 1000,
-        update: d.time[0] * 1000,
+        create: d.time[1],
+        update: d.time[0],
         download: d.dl
       }
 
@@ -46,13 +46,23 @@ let api = {
     x(api.$srl + name, 'body', {
       name: ['.project-list-item h2 | trim'],
       download: ['li .count--download | num'],
-      update: ['li .date--updated abbr@data-epoch'],
-      create: ['li .date--created abbr@data-epoch'],
+      update: ['li .date--updated abbr@data-epoch | num'],
+      create: ['li .date--created abbr@data-epoch | num'],
       desc: ['li .list-item__description p@title']
     })((err, d) => {
-      done(err ? null : d)
+      done(
+        err
+          ? null
+          : d.name.map((v, i) => {
+              let z = {}
+              for (let k in d) z[k] = d[k][i]
+              return z
+            })
+      )
     })
   }
 }
 
 module.exports = api
+
+api.search('deadly', rs => log(rs))
