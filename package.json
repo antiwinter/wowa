@@ -1,7 +1,9 @@
 {
   "dependencies": {
+    "commander": "^2.20.0",
     "got": "^9.6.0",
     "moment": "^2.24.0",
+    "unzip": "^0.1.11",
     "x-ray": "^2.3.3"
   },
   "name": "wow-assistant",

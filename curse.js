@@ -6,9 +6,14 @@ const x = require('x-ray')({
     },
     num(v) {
       return parseInt(v.split(',').join(''))
+    },
+    tail(v) {
+      let d = v.split('/')
+      return d[d.length - 1]
     }
   }
 })
+const unzip = require('unzip')
 const log = console.log
 
 let api = {
@@ -34,10 +39,14 @@ let api = {
     })
   },
 
-  get(name, done) {
+  get(name, path, done) {
     x(api.$url + name + '/download', '.download_box p a@href')((err, url) => {
       if (err) return done()
-      done(g.stream(url))
+
+      let s = g.stream(url)
+      // s.pipe(unzip.Extract({ path }))
+      s.pipe(path)
+      done(s)
     })
   },
 
@@ -45,6 +54,7 @@ let api = {
     // log('getting', api.$srl + name)
     x(api.$srl + name, 'body', {
       name: ['.project-list-item h2 | trim'],
+      key: ['.project-list-item a@href | tail'],
       download: ['li .count--download | num'],
       update: ['li .date--updated abbr@data-epoch | num'],
       create: ['li .date--created abbr@data-epoch | num'],
@@ -54,15 +64,13 @@ let api = {
         err
           ? null
           : d.name.map((v, i) => {
-              let z = {}
-              for (let k in d) z[k] = d[k][i]
-              return z
-            })
+            let z = {}
+            for (let k in d) z[k] = d[k][i]
+            return z
+          })
       )
     })
   }
 }
 
 module.exports = api
-
-api.search('deadly', rs => log(rs))
