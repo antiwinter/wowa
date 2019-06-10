@@ -93,12 +93,18 @@ function remove(addon, done) {
   done()
 }
 
-function install(addon, cb) {
+function install(addon, update, cb) {
   let tmp = path.join(fd.getDataHome(), 'wowa', addon)
 
+  if (update) cb('checking for updates...')
   api.info(addon, info => {
     if (!info) {
       return cb()
+    }
+
+    if (update && wowaads[addon] && wowaads[addon].update >= info.update) {
+      cb('up to date')
+      return
     }
 
     rm(tmp, err => {
@@ -142,53 +148,55 @@ function install(addon, cb) {
   })
 }
 
+function batchInstall(ads, update) {
+  let t0 = moment().unix()
+
+  if (!checkPath()) return
+
+  let list = new Listr([], { concurrent: 5 })
+
+  ads.forEach(a => {
+    list.add({
+      title: `${ck.red(a)} waiting...`,
+      task(ctx, task) {
+        let promise = new Promise((res, rej) => {
+          install(a, update, evt => {
+            if (!evt) {
+              task.title = `${ck.red(a)} not avaiable`
+              task.skip()
+              res('na')
+              return
+            }
+
+            if (typeof evt === 'string') {
+              task.title = `${ck.red(a)} ${evt}`
+              if (evt === 'done' || evt === 'up to date') res('ok')
+            } else {
+              task.title = `${ck.red(a)} downloading... ${(
+                evt.percent * 100
+              ).toFixed(0)}%`
+            }
+          })
+        })
+
+        return promise
+      }
+    })
+  })
+
+  list.run().then(res => {
+    save()
+    log(`✨  Done in ${moment().unix() - t0}s.`)
+  })
+}
+
 cli.version(pkg.version).usage('<command> [option] <addon ...>')
 
 cli
   .command('add <addon...>')
   .description('install an addon locally')
   .alias('install')
-  .action(addon => {
-    let t0 = moment().unix()
-
-    if (!checkPath()) return
-
-    let list = new Listr([], { concurrent: 5 })
-
-    addon.forEach(a => {
-      list.add({
-        title: `${ck.red(a)} waiting...`,
-        task(ctx, task) {
-          let promise = new Promise((res, rej) => {
-            install(a, evt => {
-              if (!evt) {
-                task.title = `${ck.red(a)} not avaiable`
-                task.skip()
-                res('na')
-                return
-              }
-
-              if (typeof evt === 'string') {
-                task.title = `${ck.red(a)} ${evt}`
-                if (evt === 'done') res('ok')
-              } else {
-                task.title = `${ck.red(a)} downloading... ${(
-                  evt.percent * 100
-                ).toFixed(0)}%`
-              }
-            })
-          })
-
-          return promise
-        }
-      })
-    })
-
-    list.run().then(res => {
-      save()
-      log(`✨  Done in ${moment().unix() - t0}s.`)
-    })
-  })
+  .action(batchInstall)
 
 cli
   .command('rm <addon>')
@@ -289,7 +297,9 @@ cli
 cli
   .command('update')
   .description('update all installed addons')
-  .action(() => {})
+  .action(() => {
+    batchInstall(Object.keys(wowaads), 1)
+  })
 
 cli
   .command('restore <repo>')
