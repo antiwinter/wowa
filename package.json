@@ -13,10 +13,7 @@
     "ncp": "^2.0.0",
     "numeral": "^2.0.6",
     "ora": "^3.4.0",
-    "platform-folders": "^0.4.0",
     "rimraf": "^2.6.3",
-    "text-table": "^0.2.0",
-    "unzip": "^0.1.11",
     "x-ray": "^2.3.3"
   },
   "name": "wowa",

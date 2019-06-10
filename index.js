@@ -10,7 +10,6 @@ const numeral = require('numeral')
 const moment = require('moment')
 const async = require('async')
 const ncp = require('ncp').ncp
-const fd = require('platform-folders')
 const tb = require('easy-table')
 const Listr = require('listr')
 const api = require('./curse')
@@ -19,7 +18,7 @@ const log = console.log
 const win = process.platform === 'win32'
 
 function getPath(cat) {
-  let pathFile = path.join(fd.getDataHome(), 'wowa', 'wow_path.txt')
+  let pathFile = path.join(process.env.APPDATA, 'wowa', 'wow_path.txt')
   let base
 
   if (fs.existsSync(pathFile)) base = fs.readFileSync(pathFile, 'utf-8')
@@ -30,7 +29,9 @@ function getPath(cat) {
       '_retail_'
     )
 
-    fs.writeFileSync(pathFile, base, 'utf-8')
+    mk(path.join(process.env.APPDATA, 'wowa'), err => {
+      fs.writeFileSync(pathFile, base, 'utf-8')
+    })
   }
 
   if (cat === 'addon') {
@@ -96,7 +97,7 @@ function remove(addon, done) {
 }
 
 function install(addon, update, cb) {
-  let tmp = path.join(fd.getDataHome(), 'wowa', addon)
+  let tmp = path.join(process.env.APPDATA, 'wowa', addon)
 
   if (update) cb('checking for updates...')
   api.info(addon, info => {
@@ -198,7 +199,9 @@ cli
   .command('add <addon...>')
   .description('install an addon locally')
   .alias('install')
-  .action(batchInstall)
+  .action(addon => {
+    batchInstall(addon, 0)
+  })
 
 cli
   .command('rm <addon>')
@@ -300,7 +303,11 @@ cli
   .command('update')
   .description('update all installed addons')
   .action(() => {
-    batchInstall(Object.keys(wowaads), 1)
+    let ads = []
+    for (let k in wowaads) {
+      if (!wowaads[k].removed) ads.push(k)
+    }
+    batchInstall(ads, 1)
   })
 
 cli
