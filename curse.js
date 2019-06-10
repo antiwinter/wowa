@@ -8,7 +8,6 @@ const x = require('x-ray')({
       return parseInt(v.split(',').join(''))
     },
     tail(v) {
-      // log('v????', v)
       let d = v.split('/')
       return d[d.length - 1]
     }
@@ -29,7 +28,6 @@ let api = {
       time: x('.pd-1', ['span abbr@data-epoch | num']),
       dl: 'section .count--download | num'
     })((err, d) => {
-      // log(err, d)
       let i = {
         owner: d.text[0],
         author: d.text[1],
@@ -38,7 +36,6 @@ let api = {
         download: d.dl
       }
 
-      // log(i)
       done(err ? null : i)
     })
   },
@@ -50,6 +47,8 @@ let api = {
         return cb()
       }
 
+      if (!url) return cb()
+
       if (path[path.length - 1] !== '/') throw 'path must end with a /'
 
       let src = path + '1.zip'
@@ -57,7 +56,6 @@ let api = {
 
       g.stream(url)
         .on('downloadProgress', evt => {
-          // log('download', evt)
           cb(evt)
         })
         .on('end', () => {
@@ -72,7 +70,6 @@ let api = {
   },
 
   search(name, done) {
-    // log('getting', api.$srl + name)
     x(api.$srl + name, 'body', {
       name: ['.project-list-item h2 | trim'],
       key: ['.list-item__details a@href | tail'],
