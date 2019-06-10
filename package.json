@@ -5,6 +5,7 @@
     "commander": "^2.20.0",
     "decompress": "^4.2.0",
     "decompress-unzip": "^4.0.1",
+    "easy-table": "^1.1.1",
     "got": "^9.6.0",
     "listr": "^0.14.3",
     "mkdirp": "^0.5.1",
@@ -14,6 +15,7 @@
     "ora": "^3.4.0",
     "platform-folders": "^0.4.0",
     "rimraf": "^2.6.3",
+    "text-table": "^0.2.0",
     "unzip": "^0.1.11",
     "x-ray": "^2.3.3"
   },

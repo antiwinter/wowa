@@ -21,7 +21,7 @@ const unzip = require('decompress-unzip')
 const log = console.log
 
 let api = {
-  $url: 'http://curseforge.com/wow/addons/',
+  $url: 'https://www.curseforge.com/wow/addons/',
   $srl: 'https://www.curseforge.com/wow/addons/search?search=',
 
   info(name, done) {
@@ -38,7 +38,7 @@ let api = {
         download: d.download
       }
 
-      done(err ? null : i)
+      done(err || !i.update ? null : i)
     })
   },
 
@@ -84,6 +84,7 @@ let api = {
           : d.name.map((v, i) => {
               let z = {}
               for (let k in d) z[k] = d[k][i]
+              z.url = api.$url + d.key[i]
               return z
             })
       )

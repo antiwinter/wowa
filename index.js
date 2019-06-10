@@ -9,6 +9,7 @@ const moment = require('moment')
 const async = require('async')
 const ncp = require('ncp').ncp
 const fd = require('platform-folders')
+const tb = require('easy-table')
 const Listr = require('listr')
 const api = require('./curse')
 const pkg = require('./package.json')
@@ -50,6 +51,14 @@ if (fs.existsSync(jsp)) {
   wowaads = JSON.parse(fs.readFileSync(jsp, 'utf-8'))
 }
 
+function save() {
+  fs.writeFileSync(
+    getPath('wowaads'),
+    JSON.stringify(wowaads, null, 2),
+    'utf-8'
+  )
+}
+
 function checkPath() {
   let wow = getPath()
   let e = fs.existsSync(wow)
@@ -61,6 +70,27 @@ function checkPath() {
   }
 
   return e
+}
+
+function remove(addon, done) {
+  if (addon in wowaads) {
+    async.forEach(
+      wowaads[addon].sub,
+      (sub, cb) => {
+        rm(path.join(getPath('addon'), sub), err => {
+          cb()
+        })
+      },
+      () => {
+        wowaads[addon].removed = 1
+        done()
+      }
+    )
+
+    return
+  }
+
+  done()
 }
 
 function install(addon, cb) {
@@ -101,23 +131,10 @@ function install(addon, cb) {
               })
             }
 
-            if (addon in wowaads) {
-              async.forEach(
-                wowaads[addon].sub,
-                (sub, cb) => {
-                  rm(path.join(getPath('addon'), sub), err => {
-                    cb()
-                  })
-                },
-                _install
-              )
-
-              return
-            }
-
-            _install()
+            remove(addon, _install)
             return
           }
+
           cb(evt)
         })
       })
@@ -168,11 +185,7 @@ cli
     })
 
     list.run().then(res => {
-      fs.writeFileSync(
-        getPath('wowaads'),
-        JSON.stringify(wowaads, null, 2),
-        'utf-8'
-      )
+      save()
       log(`✨  Done in ${moment().unix() - t0}s.`)
     })
   })
@@ -180,7 +193,13 @@ cli
 cli
   .command('rm <addon>')
   .description('remove an addon from local installation')
-  .action(() => {})
+  .alias('delete')
+  .action(addon => {
+    remove(addon, () => {
+      save()
+      log(`✨  ${ck.red(addon)} removed.`)
+    })
+  })
 
 cli
   .command('search <text>')
@@ -201,7 +220,7 @@ cli
 
       info.forEach((v, i) => {
         log()
-        log(ck.magenta(v.name))
+        log(ck.magenta(v.name) + ' ' + ck.dim('(' + v.url + ')'))
         log(
           `  ${kv('key', v.key)} ${kv(
             'download',
@@ -216,14 +235,56 @@ cli
 cli
   .command('ls')
   .description('list all installed addons')
-  .action(() => {})
+  .action(() => {
+    let t = new tb()
+    for (let k in wowaads) {
+      let v = wowaads[k]
+      //   t.cell('Size', numeral(v.size).format('0.0 b'))
+      t.cell(
+        ck.dim('Updated'),
+        ck.yellow(moment(v.update * 1000).format('MM/DD/YYYY'))
+      )
+      t.cell(ck.dim('Key'), ck.red(k))
+      t.newRow()
+    }
+
+    log('\n' + t.toString())
+  })
 
 cli
   .command('info <addon>')
   .description(
     'show info of an addon, the addon does not have to be an installed locally'
   )
-  .action(() => {})
+  .action(addon => {
+    let kv = (k, v) => {
+      log(`${ck.dim(k) + ck.yellow(v)}`)
+    }
+
+    let t = new tb()
+
+    api.info(addon, info => {
+      log('\n' + ck.red(addon) + '\n')
+
+      for (let k in info) {
+        t.cell(ck.dim('Item'), ck.dim(k))
+        t.cell(
+          ck.dim('Info'),
+          ck.yellow(
+            k === 'create' || k === 'update'
+              ? moment(info[k] * 1000).format('MM/DD/YYYY')
+              : k === 'download'
+              ? numeral(info[k]).format('0.0a')
+              : info[k]
+          )
+        )
+
+        t.newRow()
+      }
+
+      log(t.toString())
+    })
+  })
 
 cli
   .command('update')
@@ -239,6 +300,8 @@ cli
     '-f, --full',
     'not only restore addons, but also restore addons settings'
   )
-  .action(() => {})
+  .action(() => {
+    log('\nnot implemented\n')
+  })
 
 cli.parse(process.argv)
