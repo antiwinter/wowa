@@ -15,6 +15,7 @@ const x = require('x-ray')({
 })
 
 const fs = require('fs')
+const path = require('path')
 const dec = require('decompress')
 const unzip = require('decompress-unzip')
 const log = console.log
@@ -22,25 +23,26 @@ const log = console.log
 let api = {
   $url: 'http://curseforge.com/wow/addons/',
   $srl: 'https://www.curseforge.com/wow/addons/search?search=',
+
   info(name, done) {
     x(api.$url + name, {
       text: x('.pd-1', ['.member__name a']),
       time: x('.pd-1', ['span abbr@data-epoch | num']),
-      dl: 'section .count--download | num'
+      download: 'section .count--download | num'
     })((err, d) => {
       let i = {
         owner: d.text[0],
         author: d.text[1],
         create: d.time[1],
         update: d.time[0],
-        download: d.dl
+        download: d.download
       }
 
       done(err ? null : i)
     })
   },
 
-  get(name, path, cb) {
+  get(name, tmp, cb) {
     x(api.$url + name + '/download', '.download_box p a@href')((err, url) => {
       if (err) {
         log(err)
@@ -49,10 +51,8 @@ let api = {
 
       if (!url) return cb()
 
-      if (path[path.length - 1] !== '/') throw 'path must end with a /'
-
-      let src = path + '1.zip'
-      let dst = path + 'dec'
+      let src = path.join(tmp, '1.zip')
+      let dst = path.join(tmp, 'dec')
 
       g.stream(url)
         .on('downloadProgress', evt => {

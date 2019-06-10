@@ -1,4 +1,5 @@
 const fs = require('fs')
+const path = require('path')
 const rm = require('rimraf')
 const mk = require('mkdirp')
 const ck = require('chalk')
@@ -6,12 +7,123 @@ const cli = require('commander')
 const numeral = require('numeral')
 const moment = require('moment')
 const async = require('async')
+const ncp = require('ncp').ncp
 const fd = require('platform-folders')
 const Listr = require('listr')
 const api = require('./curse')
 const pkg = require('./package.json')
 const log = console.log
 const win = process.platform === 'win32'
+
+function getPath(cat) {
+  let pathFile = path.join(fd.getDataHome(), 'wowa', 'wow_path.txt')
+  let base
+
+  if (fs.existsSync(pathFile)) base = fs.readFileSync(pathFile, 'utf-8')
+  else {
+    base = path.join(
+      win ? 'C:\\Program Files' : '/Applications',
+      'World of Warcraft',
+      '_retail_'
+    )
+
+    fs.writeFileSync(pathFile, base, 'utf-8')
+  }
+
+  if (cat === 'addon') {
+    return path.join(base, 'Interface', 'AddOns')
+  } else if (cat === 'wtf') {
+    return path.join(base, 'WTF')
+  } else if (cat === 'wowaads') {
+    return path.join(base, 'WTF', 'wowaads.json')
+  } else if (cat === 'pathfile') {
+    return pathFile
+  }
+
+  return base
+}
+
+let jsp = getPath('wowaads')
+let wowaads = {}
+
+if (fs.existsSync(jsp)) {
+  wowaads = JSON.parse(fs.readFileSync(jsp, 'utf-8'))
+}
+
+function checkPath() {
+  let wow = getPath()
+  let e = fs.existsSync(wow)
+
+  //   log('checking', wow)
+  if (!e) {
+    log('\nWoW folder not found, you can specify it by editing the file below:')
+    log('\n  ' + getPath('pathfile') + '\n')
+  }
+
+  return e
+}
+
+function install(addon, cb) {
+  let tmp = path.join(fd.getDataHome(), 'wowa', addon)
+
+  api.info(addon, info => {
+    if (!info) {
+      return cb()
+    }
+
+    rm(tmp, err => {
+      if (err) {
+        log('rmdir failed', err)
+        return cb()
+      }
+
+      let dec = path.join(tmp, 'dec')
+      mk(dec, err => {
+        if (err) {
+          log('mkdir failed', err)
+          return cb()
+        }
+
+        api.get(addon, tmp, evt => {
+          if (evt === 'done') {
+            cb('installing...')
+
+            let _install = () => {
+              wowaads[addon] = {
+                update: info.update,
+                sub: fs.readdirSync(dec)
+              }
+
+              ncp(dec, getPath('addon'), err => {
+                if (err) return cb()
+
+                cb('done')
+              })
+            }
+
+            if (addon in wowaads) {
+              async.forEach(
+                wowaads[addon].sub,
+                (sub, cb) => {
+                  rm(path.join(getPath('addon'), sub), err => {
+                    cb()
+                  })
+                },
+                _install
+              )
+
+              return
+            }
+
+            _install()
+            return
+          }
+          cb(evt)
+        })
+      })
+    })
+  })
+}
 
 cli.version(pkg.version).usage('<command> [option] <addon ...>')
 
@@ -22,46 +134,31 @@ cli
   .action(addon => {
     let t0 = moment().unix()
 
-    let list = new Listr([], { concurrent: true })
+    if (!checkPath()) return
+
+    let list = new Listr([], { concurrent: 5 })
 
     addon.forEach(a => {
-      let path = `${fd.getDataHome()}/wowa/${a}/`
-      if (win) path = `${fd.getDataHome()}\\wowa\\${a}\\`
-
       list.add({
         title: `${ck.red(a)} waiting...`,
         task(ctx, task) {
           let promise = new Promise((res, rej) => {
-            rm(path, err => {
-              if (err) {
-                log('rmdir failed', err)
+            install(a, evt => {
+              if (!evt) {
+                task.title = `${ck.red(a)} not avaiable`
+                task.skip()
+                res('na')
                 return
               }
 
-              mk(path + 'dec', err => {
-                if (err) {
-                  log('mkdir failed', err)
-                  return
-                }
-
-                api.get(a, path, evt => {
-                  if (!evt) {
-                    task.title = `${ck.red(a)} not avaiable`
-                    task.skip()
-                    res('ok')
-                    return
-                  }
-
-                  if (evt === 'done') {
-                    task.title = `${ck.red(a)} installed`
-                    res('ok')
-                  } else {
-                    task.title = `${ck.red(a)} downloading... ${(
-                      evt.percent * 100
-                    ).toFixed(0)}%`
-                  }
-                })
-              })
+              if (typeof evt === 'string') {
+                task.title = `${ck.red(a)} ${evt}`
+                if (evt === 'done') res('ok')
+              } else {
+                task.title = `${ck.red(a)} downloading... ${(
+                  evt.percent * 100
+                ).toFixed(0)}%`
+              }
             })
           })
 
@@ -71,6 +168,11 @@ cli
     })
 
     list.run().then(res => {
+      fs.writeFileSync(
+        getPath('wowaads'),
+        JSON.stringify(wowaads, null, 2),
+        'utf-8'
+      )
       log(`✨  Done in ${moment().unix() - t0}s.`)
     })
   })

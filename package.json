@@ -9,6 +9,7 @@
     "listr": "^0.14.3",
     "mkdirp": "^0.5.1",
     "moment": "^2.24.0",
+    "ncp": "^2.0.0",
     "numeral": "^2.0.6",
     "ora": "^3.4.0",
     "platform-folders": "^0.4.0",
