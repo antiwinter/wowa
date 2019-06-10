@@ -13,7 +13,10 @@ const x = require('x-ray')({
     }
   }
 })
-const unzip = require('unzip')
+
+const fs = require('fs')
+const dec = require('decompress')
+const unzip = require('decompress-unzip')
 const log = console.log
 
 let api = {
@@ -39,14 +42,31 @@ let api = {
     })
   },
 
-  get(name, path, done) {
+  get(name, path, cb) {
     x(api.$url + name + '/download', '.download_box p a@href')((err, url) => {
-      if (err) return done()
+      if (err) {
+        log(err)
+        return cb()
+      }
 
-      let s = g.stream(url)
-      // s.pipe(unzip.Extract({ path }))
-      s.pipe(path)
-      done(s)
+      if (path[path.length - 1] !== '/') throw 'path must end with a /'
+
+      let src = path + '1.zip'
+      let dst = path + 'dec'
+      
+      g.stream(url)
+        .on('downloadProgress', evt => {
+          // log('download', evt)
+          cb(evt)
+        })
+        .on('end', () => {
+          dec(src, dst, {
+            plugins: [unzip()]
+          }).then(() => {
+            cb('done')
+          })
+        })
+        .pipe(fs.createWriteStream(src))
     })
   },
 
@@ -64,10 +84,10 @@ let api = {
         err
           ? null
           : d.name.map((v, i) => {
-            let z = {}
-            for (let k in d) z[k] = d[k][i]
-            return z
-          })
+              let z = {}
+              for (let k in d) z[k] = d[k][i]
+              return z
+            })
       )
     })
   }
