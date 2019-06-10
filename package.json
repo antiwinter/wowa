@@ -28,5 +28,14 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "antiwinter",
-  "license": "ISC"
+  "license": "ISC",
+  "keywords": [
+    "world of warcraft",
+    "wow",
+    "addon",
+    "lua"
+  ],
+  "bin": {
+    "wowa": "./index.js"
+  }
 }
