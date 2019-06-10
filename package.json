@@ -1,11 +1,13 @@
 {
   "dependencies": {
+    "chalk": "^2.4.2",
     "commander": "^2.20.0",
     "decompress": "^4.2.0",
     "decompress-unzip": "^4.0.1",
     "got": "^9.6.0",
     "mkdirp": "^0.5.1",
     "moment": "^2.24.0",
+    "numeral": "^2.0.6",
     "rimraf": "^2.6.3",
     "unzip": "^0.1.11",
     "x-ray": "^2.3.3"

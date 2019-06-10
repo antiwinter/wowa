@@ -8,6 +8,7 @@ const x = require('x-ray')({
       return parseInt(v.split(',').join(''))
     },
     tail(v) {
+      // log('v????', v)
       let d = v.split('/')
       return d[d.length - 1]
     }
@@ -53,7 +54,7 @@ let api = {
 
       let src = path + '1.zip'
       let dst = path + 'dec'
-      
+
       g.stream(url)
         .on('downloadProgress', evt => {
           // log('download', evt)
@@ -74,7 +75,7 @@ let api = {
     // log('getting', api.$srl + name)
     x(api.$srl + name, 'body', {
       name: ['.project-list-item h2 | trim'],
-      key: ['.project-list-item a@href | tail'],
+      key: ['.list-item__details a@href | tail'],
       download: ['li .count--download | num'],
       update: ['li .date--updated abbr@data-epoch | num'],
       create: ['li .date--created abbr@data-epoch | num'],
