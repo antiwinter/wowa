@@ -19,8 +19,8 @@
     "unzip": "^0.1.11",
     "x-ray": "^2.3.3"
   },
-  "name": "wow-assistant",
-  "version": "1.0.0",
+  "name": "wowa",
+  "version": "1.0.1",
   "description": "Manage addons, upload WCL, etc.",
   "main": "index.js",
   "devDependencies": {},
