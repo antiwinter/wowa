@@ -62,6 +62,7 @@ npm install -g wowa
 
 - [ ] Support projects on wowinterface.com
 - [ ] Support projects on github.com
+- [ ] **Support WoW Classic !**
 - [ ] Support backing up to github.com
 - [ ] Support restoring from github.com
 - [ ] Support uploading to warcraftlogs.com
