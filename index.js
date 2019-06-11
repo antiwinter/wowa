@@ -114,7 +114,7 @@ function install(addon, update, cb) {
     }
 
     if (update && wowaads[addon] && wowaads[addon].update >= info.update) {
-      cb('up to date')
+      cb('is up to date')
       return
     }
 
@@ -144,7 +144,7 @@ function install(addon, update, cb) {
               ncp(dec, getPath('addon'), err => {
                 if (err) return cb()
 
-                cb('done')
+                cb(update ? 'updated' : 'installed')
               })
             }
 
@@ -164,7 +164,8 @@ function batchInstall(ads, update) {
 
   if (!checkPath()) return
 
-  let list = new Listr([], { concurrent: 5 })
+  let list = new Listr([], { concurrent: 10 })
+  let ud = 0
 
   ads.forEach(a => {
     list.add({
@@ -181,7 +182,13 @@ function batchInstall(ads, update) {
 
             if (typeof evt === 'string') {
               task.title = `${ck.red(a)} ${evt}`
-              if (evt === 'done' || evt === 'up to date') res('ok')
+              if (evt === 'is up to date') {
+                task.skip()
+                res('ok')
+              } else if (evt === 'installed' || evt === 'updated') {
+                ud++
+                res('ok')
+              }
             } else {
               task.title = `${ck.red(a)} downloading... ${(
                 evt.percent * 100
@@ -197,7 +204,8 @@ function batchInstall(ads, update) {
 
   list.run().then(res => {
     save()
-    log(`✨  Done in ${moment().unix() - t0}s.`)
+    if (update) log(`${ads.length} addons, ${ud} updated`)
+    log(`✨  done in ${moment().unix() - t0}s.`)
   })
 }
 
@@ -319,11 +327,17 @@ cli
     for (let k in wowaads) {
       if (!wowaads[k].removed) ads.push(k)
     }
+    if (!ads.length) {
+      log('\nnothing to update\n')
+      return
+    }
+
+    log('\nupdating addons:')
     batchInstall(ads, 1)
   })
 
 cli
-  .command('restore <repo>')
+  .command('restore [repo]')
   .description(
     'restore addons from github repo, only <org/repo> is required, not the full URL. (e.g. antiwinter/wowui)'
   )
@@ -331,8 +345,24 @@ cli
     '-f, --full',
     'not only restore addons, but also restore addons settings'
   )
-  .action(() => {
-    log('\nnot implemented\n')
+  .action(repo => {
+    if (repo) {
+      log('\nrestore from remote is not implemented yet\n')
+      return
+    }
+
+    let ads = []
+    for (let k in wowaads) {
+      if (!wowaads[k].removed) ads.push(k)
+    }
+
+    if (!ads.length) {
+      log('\nnothing to restore\n')
+      return
+    }
+
+    log('\nrestoring addons:')
+    batchInstall(ads, 0)
   })
 
 cli.on('command:*', () => {
