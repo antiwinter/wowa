@@ -11,7 +11,7 @@ As comparing to these projects, **WoWA** offers serveral advantages:
 
 - Better CLI interface: colorful and meaningful
 - Concurrency: when installing or updating, WoWA can take advantage of multi-processing
-- **wowaads.json** file: this is file where WoWA stores addon information. Unlike other projects, WoWA stores this file in the **WTF** folder. This design benifits people when they want to backup their WoW setting. Backing up one **WTF** folder is enough
+- **wowaads.json** file: this is the file where WoWA stores addon information. Unlike other projects, WoWA stores this file in the **WTF** folder. This design benifits people when they want to backup their WoW setting. Backing up one **WTF** folder is enough
 
 **Note 1:** For now, all addons are fetched from [curse](https://www.curseforge.com), other addon sites may be supported in the future.
 
@@ -65,4 +65,5 @@ npm install -g wowa
 - [ ] Support backing up to github.com
 - [ ] Support restoring from github.com
 - [ ] Support uploading to warcraftlogs.com
+- [ ] Import existing addons
 - [ ] Support releasing UI (addons list, together with settings) to github.com

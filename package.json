@@ -17,7 +17,7 @@
     "x-ray": "^2.3.3"
   },
   "name": "wowa",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Manage addons, upload WCL, etc.",
   "main": "index.js",
   "devDependencies": {},
@@ -34,5 +34,9 @@
   ],
   "bin": {
     "wowa": "./index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/antiwinter/wowa.git"
   }
 }
