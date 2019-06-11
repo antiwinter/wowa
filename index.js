@@ -16,9 +16,14 @@ const api = require('./curse')
 const pkg = require('./package.json')
 const log = console.log
 const win = process.platform === 'win32'
+const env = process.env
 
 function getPath(cat) {
-  let pathFile = path.join(process.env.APPDATA, 'wowa', 'wow_path.txt')
+  let pathFile = path.join(
+    win ? env.APPDATA : env.HOME,
+    win ? 'wowa' : '.wowa',
+    'wow_path.txt'
+  )
   let base
 
   if (fs.existsSync(pathFile)) base = fs.readFileSync(pathFile, 'utf-8')
@@ -29,7 +34,7 @@ function getPath(cat) {
       '_retail_'
     )
 
-    mk(path.join(process.env.APPDATA, 'wowa'), err => {
+    mk(path.dirname(pathFile), err => {
       fs.writeFileSync(pathFile, base, 'utf-8')
     })
   }
@@ -324,3 +329,5 @@ cli
   })
 
 cli.parse(process.argv)
+
+if (process.argv.length < 3) cli.help()
