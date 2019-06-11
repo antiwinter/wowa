@@ -39,14 +39,17 @@ function getPath(cat) {
     })
   }
 
-  if (cat === 'addon') {
-    return path.join(base, 'Interface', 'AddOns')
-  } else if (cat === 'wtf') {
-    return path.join(base, 'WTF')
-  } else if (cat === 'wowaads') {
-    return path.join(base, 'WTF', 'wowaads.json')
-  } else if (cat === 'pathfile') {
-    return pathFile
+  switch (cat) {
+    case 'addon':
+      return path.join(base, 'Interface', 'AddOns')
+    case 'wtf':
+      return path.join(base, 'WTF')
+    case 'wowaads':
+      return path.join(base, 'WTF', 'wowaads.json')
+    case 'pathfile':
+      return pathFile
+    case 'tmp':
+      return path.dirname(pathFile)
   }
 
   return base
@@ -102,7 +105,7 @@ function remove(addon, done) {
 }
 
 function install(addon, update, cb) {
-  let tmp = path.join(process.env.APPDATA, 'wowa', addon)
+  let tmp = path.join(getPath('tmp'), addon)
 
   if (update) cb('checking for updates...')
   api.info(addon, info => {
@@ -230,39 +233,42 @@ cli
       }
 
       let kv = (k, v) => {
-        let c = ck.bgYellow
-        let h = ck.bgMagenta
+        let c = ck.yellow
+        let h = ck.dim
 
-        return `${h(' ' + k + ' ') + c(' ' + v + ' ')}`
+        return `${h(k + ':') + c(' ' + v + '')}`
       }
 
-      info.forEach((v, i) => {
+      info.slice(0, 10).forEach((v, i) => {
         log()
-        log(ck.magenta(v.name) + ' ' + ck.dim('(' + v.url + ')'))
+        log(ck.red(v.name) + ' ' + ck.dim('(' + v.url + ')'))
         log(
           `  ${kv('key', v.key)} ${kv(
             'download',
             numeral(v.download).format('0.0a')
-          )} ${kv('update', moment(v.update * 1000).format('MM/DD/YYYY'))}`
+          )} ${kv('version', moment(v.update * 1000).format('MM/DD/YYYY'))}`
         )
-        log(ck.dim('  ' + v.desc))
+        log('\n  ' + v.desc)
       })
+
+      log()
     })
   })
 
 cli
   .command('ls')
   .description('list all installed addons')
+  .alias('list')
   .action(() => {
     let t = new tb()
     for (let k in wowaads) {
       let v = wowaads[k]
       //   t.cell('Size', numeral(v.size).format('0.0 b'))
       t.cell(
-        ck.dim('Updated'),
+        ck.dim('Version'),
         ck.yellow(moment(v.update * 1000).format('MM/DD/YYYY'))
       )
-      t.cell(ck.dim('Key'), ck.red(k))
+      t.cell(ck.dim('Addon keys'), ck.red(k))
       t.newRow()
     }
 
@@ -283,6 +289,7 @@ cli
 
     api.info(addon, info => {
       log('\n' + ck.red(addon) + '\n')
+      if (!info) return log('not available\n')
 
       for (let k in info) {
         t.cell(ck.dim('Item'), ck.dim(k))
@@ -327,6 +334,10 @@ cli
   .action(() => {
     log('\nnot implemented\n')
   })
+
+cli.on('command:*', () => {
+  cli.help()
+})
 
 cli.parse(process.argv)
 
