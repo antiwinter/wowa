@@ -1,14 +1,7 @@
-<p align="center">
-  <a href="https://terminalizer.com">
-    <img src="/img/logo.png?raw=true" width="200"/>
-  </a>
-</p>
-
 # WoWA
 
 [![npm](https://img.shields.io/npm/v/wowa.svg)](https://www.npmjs.com/package/wowa)
 [![npm](https://img.shields.io/npm/l/wowa.svg)](https://github.com/antiwinter/wowa/blob/master/LICENSE)
-
 
 **WoWA** stands for World of Warcraft Assistant, it is designed to help managing WoW addons, uploading WCL logs, etc.
 
@@ -34,11 +27,13 @@ npm install -g wowa
 
 ### Installing an addon
 
-![](https://raw.githubusercontent.com/antiwinter/wowa/master/docs/ins1-min.gif)
+<p align="center"><img src="/img/frames/solid.gif?raw=true"/></p>
 
 ### Search for an addon
 
 ![](https://raw.githubusercontent.com/antiwinter/wowa/master/docs/search-min.gif)
+
+**Note:** that WoWA manages addons by keys (keys are provided by [curse](https://www.curseforge.com)) not by addon names, sometimes they are different. If you are not sure a key for an addon, you can search that addon by some fuzzy name, and the search result provides the correct key to use.
 
 ### Installing two or more addons
 
@@ -58,10 +53,10 @@ npm install -g wowa
 
 ## Related projects
 
-* [wow-cli](https://github.com/zekesonxx/wow-cli)
-* [wowam](https://github.com/acdtrx/wowam)
-* [wam](https://github.com/Sumolari/WAM)
-* [wow-better-cli](https://github.com/DayBr3ak/wow-better-cli)
+- [wow-cli](https://github.com/zekesonxx/wow-cli)
+- [wowam](https://github.com/acdtrx/wowam)
+- [wam](https://github.com/Sumolari/WAM)
+- [wow-better-cli](https://github.com/DayBr3ak/wow-better-cli)
 
 ## Roadmap
 
