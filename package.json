@@ -17,7 +17,7 @@
     "x-ray": "^2.3.3"
   },
   "name": "wowa",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Manage addons, upload WCL, etc.",
   "main": "index.js",
   "devDependencies": {},

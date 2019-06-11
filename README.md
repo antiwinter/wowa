@@ -5,7 +5,7 @@
 
 **WoWA** stands for World of Warcraft Assistant, it is designed to help managing WoW addons, uploading WCL logs, etc.
 
-There used to be some command line manager for WoW addons in the past, but are mostly out of maintaince at this time. A list of these projects can be found in the [related prjects](#related_projects) section.
+There used to be some command line manager for WoW addons in the past, but are mostly out of maintaince at this time. A list of these projects can be found in the [related prjects](#related-projects) section.
 
 As comparing to these projects, **WoWA** offers serveral advantages:
 
@@ -27,7 +27,7 @@ npm install -g wowa
 
 ### Installing an addon
 
-<p align="center"><img src="/img/frames/solid.gif?raw=true"/></p>
+![](https://raw.githubusercontent.com/antiwinter/wowa/master/docs/ins1-min.gif)
 
 ### Search for an addon
 
