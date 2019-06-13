@@ -26,7 +26,7 @@ function getPath(cat) {
   )
   let base
 
-  if (fs.existsSync(pathFile)) base = fs.readFileSync(pathFile, 'utf-8')
+  if (fs.existsSync(pathFile)) base = fs.readFileSync(pathFile, 'utf-8').trim()
   else {
     base = path.join(
       win ? 'C:\\Program Files' : '/Applications',
@@ -280,7 +280,8 @@ cli
       t.newRow()
     }
 
-    log('\n' + t.toString())
+    if (!Object.keys(wowaads).length) log('no addons')
+    else log('\n' + t.toString())
   })
 
 cli
