@@ -12,11 +12,28 @@ const async = require('async')
 const ncp = require('ncp').ncp
 const tb = require('easy-table')
 const Listr = require('listr')
-const api = require('./curse')
+const api = require('./source')
 const pkg = require('./package.json')
 const log = console.log
 const win = process.platform === 'win32'
 const env = process.env
+const g = require('got')
+const dec = require('decompress')
+const unzip = require('decompress-unzip')
+
+function parseName(name) {
+  let t
+  let d = {
+    source: name.match(/:/)
+      ? ((t = name.split(':')), (name = t[1]), t[0])
+      : undefined,
+    version: name.split('@')[1],
+    key: name.split('@')[0]
+  }
+
+  // log(name, '>>', d)
+  return d
+}
 
 function getPath(cat) {
   let pathFile = path.join(
@@ -104,16 +121,42 @@ function remove(addon, done) {
   done()
 }
 
-function install(addon, update, cb) {
-  let tmp = path.join(getPath('tmp'), addon)
+function getAd(ad, info, tmp, hook) {
+  let v = info.version[0]
+  if (v && ad.version) v = _.find(info.version, d => d.name === ad.version)
+  if (!v) {
+    log('fatal: version not found')
+    return hook()
+  }
+
+  let src = path.join(tmp, '1.zip')
+  let dst = path.join(tmp, 'dec')
+
+  // log('streaming', v.link)
+  g.stream(v.link)
+    .on('downloadProgress', evt => {
+      hook(evt)
+    })
+    .on('end', () => {
+      dec(src, dst, {
+        plugins: [unzip()]
+      }).then(() => {
+        hook('done')
+      })
+    })
+    .pipe(fs.createWriteStream(src))
+}
+
+function install(ad, update, cb) {
+  let tmp = path.join(getPath('tmp'), ad.key)
 
   if (update) cb('checking for updates...')
-  api.info(addon, info => {
+  api.info(ad, info => {
     if (!info) {
       return cb()
     }
 
-    if (update && wowaads[addon] && wowaads[addon].update >= info.update) {
+    if (update && wowaads[ad.key] && wowaads[ad.key].update >= info.update) {
       cb('is up to date')
       return
     }
@@ -131,24 +174,27 @@ function install(addon, update, cb) {
           return cb()
         }
 
-        api.get(addon, tmp, evt => {
+        getAd(ad, info, tmp, evt => {
           if (evt === 'done') {
             cb('installing...')
 
             let _install = () => {
-              wowaads[addon] = {
+              wowaads[ad.key] = {
                 update: info.update,
                 sub: fs.readdirSync(dec)
               }
 
               ncp(dec, getPath('addon'), err => {
-                if (err) return cb()
+                if (err) {
+                  log('errrrrrrrrrr', err)
+                  return cb()
+                }
 
                 cb(update ? 'updated' : 'installed')
               })
             }
 
-            remove(addon, _install)
+            remove(ad.key, _install)
             return
           }
 
@@ -167,21 +213,21 @@ function batchInstall(ads, update) {
   let list = new Listr([], { concurrent: 10 })
   let ud = 0
 
-  ads.forEach(a => {
+  ads.forEach(ad => {
     list.add({
-      title: `${ck.red(a)} waiting...`,
+      title: `${ck.red(ad.key)} waiting...`,
       task(ctx, task) {
         let promise = new Promise((res, rej) => {
-          install(a, update, evt => {
+          install(ad, update, evt => {
             if (!evt) {
-              task.title = `${ck.red(a)} not avaiable`
+              task.title = `${ck.red(ad.key)} not avaiable`
               task.skip()
               res('na')
               return
             }
 
             if (typeof evt === 'string') {
-              task.title = `${ck.red(a)} ${evt}`
+              task.title = `${ck.red(ad.key)} ${evt}`
               if (evt === 'is up to date') {
                 task.skip()
                 res('ok')
@@ -190,7 +236,7 @@ function batchInstall(ads, update) {
                 res('ok')
               }
             } else {
-              task.title = `${ck.red(a)} downloading... ${(
+              task.title = `${ck.red(ad.key)} downloading... ${(
                 evt.percent * 100
               ).toFixed(0)}%`
             }
@@ -204,7 +250,7 @@ function batchInstall(ads, update) {
 
   list.run().then(res => {
     save()
-    if (update) log(`${ads.length} addons, ${ud} updated`)
+    log(`${ads.length} addons` + update ? `, ${ud} updated` : '')
     log(`✨  done in ${moment().unix() - t0}s.`)
   })
 }
@@ -212,11 +258,11 @@ function batchInstall(ads, update) {
 cli.version(pkg.version).usage('<command> [option] <addon ...>')
 
 cli
-  .command('add <addon...>')
-  .description('install an addon locally')
+  .command('add <addons...>')
+  .description('install one or more addons locally')
   .alias('install')
-  .action(addon => {
-    batchInstall(addon, 0)
+  .action(addons => {
+    batchInstall(addons.map(x => parseName(x)), 0)
   })
 
 cli
@@ -247,7 +293,11 @@ cli
         return `${h(k + ':') + c(' ' + v + '')}`
       }
 
-      info.slice(0, 10).forEach((v, i) => {
+      let data = info.data.slice(0, 10)
+
+      log(`\n${ck.yellow(data.length)} results from ${ck.yellow(info.source)}`)
+
+      data.forEach((v, i) => {
         log()
         log(ck.red(v.name) + ' ' + ck.dim('(' + v.url + ')'))
         log(
@@ -296,24 +346,37 @@ cli
 
     let t = new tb()
 
-    api.info(addon, info => {
-      log('\n' + ck.red(addon) + '\n')
+    let ad = parseName(addon)
+    api.info(ad, info => {
+      log('\n' + ck.red(ad.key) + '\n')
       if (!info) return log('not available\n')
 
-      for (let k in info) {
+      let kv = (k, v) => {
+        // log('adding', k, v)
         t.cell(ck.dim('Item'), ck.dim(k))
-        t.cell(
-          ck.dim('Info'),
-          ck.yellow(
-            k === 'create' || k === 'update'
-              ? moment(info[k] * 1000).format('MM/DD/YYYY')
-              : k === 'download'
-              ? numeral(info[k]).format('0.0a')
-              : info[k]
-          )
-        )
-
+        t.cell(ck.dim('Info'), ck.yellow(v))
         t.newRow()
+      }
+
+      for (let k in info) {
+        if (k === 'version') continue
+
+        kv(
+          k,
+          k === 'create' || k === 'update'
+            ? moment(info[k] * 1000).format('MM/DD/YYYY')
+            : k === 'download'
+            ? numeral(info[k]).format('0.0a')
+            : info[k]
+        )
+      }
+
+      let v = info.version[0]
+      if (v) {
+        kv('version', v.name)
+        kv('size', v.size)
+        kv('game version', v.game)
+        kv('link', v.link)
       }
 
       log(t.toString())

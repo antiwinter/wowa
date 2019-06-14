@@ -1,4 +1,3 @@
-const g = require('got')
 const x = require('x-ray')({
   filters: {
     trim(v) {
@@ -13,64 +12,51 @@ const x = require('x-ray')({
     }
   }
 })
-
-const fs = require('fs')
-const path = require('path')
-const dec = require('decompress')
-const unzip = require('decompress-unzip')
 const log = console.log
 
 let api = {
   $url: 'https://www.curseforge.com/wow/addons/',
-  $srl: 'https://www.curseforge.com/wow/addons/search?search=',
 
-  info(name, done) {
-    x(api.$url + name, {
+  info(key, done) {
+    x(api.$url + key + '/files', {
       text: x('.pd-1', ['.member__name a']),
       time: x('.pd-1', ['span abbr@data-epoch | num']),
-      download: 'section .count--download | num'
+      name: '.project-header__details h2',
+      download: 'section .count--download | num',
+      version: ['td .full'],
+      size: ['td .file__size'],
+      game: ['td .version__label'],
+      link: ['.project-file__actions .button--download@href']
     })((err, d) => {
+      // log('/???', key, err, d)
       let i = {
+        name: d.name,
         owner: d.text[0],
         author: d.text[1],
         create: d.time[1],
         update: d.time[0],
-        download: d.download
+        download: d.download,
+        version: []
       }
+
+      d.version.forEach((v, j) => {
+        i.version.push({
+          name: v,
+          size: d.size[j],
+          game: d.game[j],
+          link: d.link[j] + '/file'
+        })
+      })
+
+      // log(i)
 
       done(err || !i.update ? null : i)
     })
   },
 
-  get(name, tmp, cb) {
-    x(api.$url + name + '/download', '.download_box p a@href')((err, url) => {
-      if (err) {
-        log(err)
-        return cb()
-      }
-
-      if (!url) return cb()
-
-      let src = path.join(tmp, '1.zip')
-      let dst = path.join(tmp, 'dec')
-
-      g.stream(url)
-        .on('downloadProgress', evt => {
-          cb(evt)
-        })
-        .on('end', () => {
-          dec(src, dst, {
-            plugins: [unzip()]
-          }).then(() => {
-            cb('done')
-          })
-        })
-        .pipe(fs.createWriteStream(src))
-    })
-  },
-
-  search(name, done) {
-    x(api.$srl + name, 'body', {
+  search(text, done) {
+    // log('in')
+    x(api.$srl + 'search?search=' + text, 'body', {
       name: ['.project-list-item h2 | trim'],
       key: ['.list-item__details a@href | tail'],
       download: ['li .count--download | num'],
@@ -78,6 +64,7 @@ let api = {
       create: ['li .date--created abbr@data-epoch | num'],
       desc: ['li .list-item__description p@title']
     })((err, d) => {
+      // log('serach', text, err, d)
       done(
         err
           ? null
