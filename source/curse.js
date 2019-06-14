@@ -29,12 +29,18 @@ let api = {
       link: ['.project-file__actions .button--download@href']
     })((err, d) => {
       // log('/???', key, err, d)
+      if (!d) {
+        done()
+        return
+      }
+
       let i = {
         name: d.name,
         owner: d.text[0],
         author: d.text[1],
         create: d.time[1],
         update: d.time[0],
+        page: api.$url + key,
         download: d.download,
         version: []
       }
@@ -56,7 +62,7 @@ let api = {
 
   search(text, done) {
     // log('in')
-    x(api.$srl + 'search?search=' + text, 'body', {
+    x(api.$url + 'search?search=' + text, 'body', {
       name: ['.project-list-item h2 | trim'],
       key: ['.list-item__details a@href | tail'],
       download: ['li .count--download | num'],
