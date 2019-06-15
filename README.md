@@ -61,7 +61,8 @@ npm install -g wowa
 ## Roadmap
 
 - [ ] Support projects on wowinterface.com
-- [ ] Support projects on github.com
+- [x] Support projects on github.com
+- [ ] Add test cases
 - [ ] Support projects on tukui.org
 - [ ] **Support WoW Classic !**
 - [ ] Support backing up to github.com
