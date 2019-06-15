@@ -106,6 +106,29 @@ function checkPath() {
   return e
 }
 
+function checkDuplicate() {
+  let keys = _.keys(wowaads)
+  let k
+
+  while ((k = keys.pop())) {
+    for (let i = 0; i < keys.length; i++) {
+      let k2 = keys[i]
+      let inc = _.intersection(wowaads[k].sub, wowaads[k2].sub)
+      if (inc.length) {
+        log(
+          `\n${cl.i('Note:')} ${cl.h(k)} and ${cl.h(
+            k2
+          )} use the same subset of directory, make sure you have only one of them installed\n`
+        )
+        // log(inc)
+        return true
+      }
+    }
+  }
+
+  return false
+}
+
 function clearUp(addon, done) {
   if (addon in wowaads) {
     async.forEach(
@@ -369,6 +392,8 @@ module.exports = {
 
     if (!Object.keys(wowaads).length) log('no addons')
     else log('\n' + t.toString())
+
+    checkDuplicate()
   },
 
   info(ad) {
@@ -424,6 +449,8 @@ module.exports = {
       log('\nnothing to update\n')
       return
     }
+
+    if (checkDuplicate()) return
 
     log('\nupdating addons:')
     batchInstall(ads, 1)
