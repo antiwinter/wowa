@@ -28,6 +28,8 @@ function parseName(name) {
   let d = {
     source: name.match(/:/)
       ? ((t = name.split(':')), (name = t[1]), t[0])
+      : name.match(/\//)
+      ? 'github'
       : undefined,
     version: name.split('@')[1],
     key: name.split('@')[0]
@@ -356,7 +358,7 @@ module.exports = {
       }
 
       for (let k in info) {
-        if (k === 'version') continue
+        if (k === 'version' || info[k] === undefined) continue
 
         kv(
           k,
@@ -371,8 +373,8 @@ module.exports = {
       let v = info.version[0]
       if (v) {
         kv('version', v.name)
-        kv('size', v.size)
-        kv('game version', v.game)
+        if (v.size) kv('size', v.size)
+        if (v.game) kv('game version', v.game)
         kv('link', v.link)
       }
 

@@ -3,7 +3,8 @@ const async = require('async')
 
 let src = {
   $api: {
-    curse: require('./curse')
+    curse: require('./curse'),
+    github: require('./github')
   },
 
   info(ad, done) {
@@ -24,6 +25,7 @@ let src = {
         if (ad.source && source !== ad.source) return cb()
 
         let res = null
+        log('iter', source)
         api.info(ad.key, info => {
           if (info) {
             res = info
@@ -31,7 +33,7 @@ let src = {
             // log('g info', info)
             done(res)
             cb(false)
-          }
+          } else cb()
         })
       },
       () => {
