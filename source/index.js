@@ -25,7 +25,7 @@ let src = {
         if (ad.source && source !== ad.source) return cb()
 
         let res = null
-        log('iter', source)
+        // log('iter', source)
         api.info(ad.key, info => {
           if (info) {
             res = info

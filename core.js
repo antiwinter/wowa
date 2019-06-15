@@ -9,13 +9,15 @@ const async = require('async')
 const ncp = require('ncp').ncp
 const tb = require('easy-table')
 const Listr = require('listr')
+const _ = require('underscore')
+const g = require('got')
+const dec = require('decompress')
+const unzip = require('decompress-unzip')
+
 const api = require('./source')
 const log = console.log
 const win = process.platform === 'win32'
 const env = process.env
-const g = require('got')
-const dec = require('decompress')
-const unzip = require('decompress-unzip')
 
 const cl = {
   i: ck.yellow,
@@ -159,8 +161,43 @@ function getAd(ad, info, tmp, hook) {
     .pipe(fs.createWriteStream(src))
 }
 
+function _install(from, to, sub, done) {
+  let ls = fs.readdirSync(from)
+
+  let toc = _.find(ls, x => x.match(/\.toc$/))
+
+  // log('parsing', from, '>>', to)
+  if (toc) {
+    toc = toc.replace(/\.toc$/, '')
+    let target = path.join(to, toc)
+
+    // log('toc found, copy', from, '>>', target)
+    mk(target, err => {
+      ncp(from, target, done)
+      sub.push(toc)
+    })
+  } else {
+    async.eachLimit(
+      _.filter(ls.map(x => path.join(from, x)), x =>
+        fs.statSync(x).isDirectory()
+      ),
+      1,
+      (d, cb) => {
+        _install(d, to, sub, err => {
+          if (err) {
+            done(err)
+            cb(false)
+          }
+          cb()
+        })
+      },
+      done
+    )
+  }
+}
+
 function install(ad, update, hook) {
-  let tmp = path.join(getPath('tmp'), ad.key)
+  let tmp = path.join(getPath('tmp'), ad.key.replace(/\//g, '-'))
   let notify = (status, msg) => {
     hook({
       status,
@@ -203,15 +240,11 @@ function install(ad, update, hook) {
                 size,
                 source: info.source,
                 update: info.update,
-                sub: fs.readdirSync(dec)
+                sub: []
               }
 
-              ncp(dec, getPath('addon'), err => {
-                if (err)
-                  return notify(
-                    'failed',
-                    'failed to copy file' + JSON.stringify(err)
-                  )
+              _install(dec, getPath('addon'), wowaads[ad.key].sub, err => {
+                if (err) return notify('failed', 'failed to copy file')
 
                 notify('done', update ? 'updated' : 'installed')
               })
