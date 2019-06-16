@@ -195,9 +195,11 @@ function _install(from, to, sub, done) {
     let target = path.join(to, toc)
 
     // log('toc found, copy', from, '>>', target)
-    mk(target, err => {
-      ncp(from, target, done)
-      sub.push(toc)
+    rm(target, err => {
+      mk(target, err => {
+        ncp(from, target, done)
+        sub.push(toc)
+      })
     })
   } else {
     async.eachLimit(
