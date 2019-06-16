@@ -48,8 +48,6 @@ let api = {
 
       x(`${api.$url}/downloads/download${key}`, '.manuallink a@href')(
         (_err, _link) => {
-          log('got _link', _link)
-
           d.version.unshift({
             link: _link,
             name: d.v0.split(':')[1].trim(),
