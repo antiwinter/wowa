@@ -77,7 +77,7 @@ let api = {
           : d.name.map((v, i) => {
               let z = {}
               for (let k in d) z[k] = d[k][i]
-              z.url = api.$url + d.key[i]
+              z.page = api.$url + d.key[i]
               return z
             })
       )

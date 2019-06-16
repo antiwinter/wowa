@@ -6,6 +6,7 @@
     "decompress": "^4.2.0",
     "decompress-unzip": "^4.0.1",
     "easy-table": "^1.1.1",
+    "form-data": "^2.3.3",
     "got": "^9.6.0",
     "listr": "^0.14.3",
     "mkdirp": "^0.5.1",

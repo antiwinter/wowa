@@ -208,13 +208,17 @@ function _install(from, to, sub, done) {
       (d, cb) => {
         _install(d, to, sub, err => {
           if (err) {
+            log('err??', err)
             done(err)
             cb(false)
+            return
           }
           cb()
         })
       },
-      done
+      () => {
+        done()
+      }
     )
   }
 }
@@ -344,7 +348,8 @@ module.exports = {
 
   search(text) {
     // log(text)
-    api.search(text, info => {
+
+    api.search(parseName(text), info => {
       if (!info) {
         log('not found')
         return
@@ -363,7 +368,7 @@ module.exports = {
 
       data.forEach((v, i) => {
         log()
-        log(cl.h(v.name) + ' ' + cl.x('(' + v.url + ')'))
+        log(cl.h(v.name) + ' ' + cl.x('(' + v.page + ')'))
         log(
           `  ${kv('key', v.key)} ${kv(
             'download',

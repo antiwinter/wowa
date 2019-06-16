@@ -8,7 +8,7 @@ let src = {
     github: require('./github')
   },
 
-  info(ad, done) {
+  $valid(ad) {
     if (ad.source && !src.$api[ad.source]) {
       log(ad.source, 'is not a valid source, use one of below instead:')
       log(
@@ -16,8 +16,14 @@ let src = {
           .map(x => `  ${x}`)
           .join('\n')
       )
-      return done()
+      return false
     }
+
+    return true
+  },
+
+  info(ad, done) {
+    if (!src.$valid(ad)) return done()
 
     async.eachOfLimit(
       src.$api,
@@ -43,16 +49,20 @@ let src = {
     )
   },
 
-  search(text, done) {
+  search(ad, done) {
+    if (!src.$valid(ad)) return done()
+
     async.eachOfLimit(src.$api, 1, (api, source, cb) => {
       if (!api.search) return cb()
+      if (ad.source && source !== ad.source) return cb()
 
+      // log('searching', source)
       let res = null
       // log('searching', source)
       api.search(
-        text,
+        ad.key,
         data => {
-          if (data) {
+          if (data && data.length) {
             res = { source, data }
             done(res)
             cb(false)
