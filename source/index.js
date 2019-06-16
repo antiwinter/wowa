@@ -4,6 +4,7 @@ const async = require('async')
 let src = {
   $api: {
     curse: require('./curse'),
+    wowinterface: require('./wowinterface'),
     github: require('./github')
   },
 

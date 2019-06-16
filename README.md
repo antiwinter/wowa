@@ -2,6 +2,7 @@
 
 [![npm](https://img.shields.io/npm/v/wowa.svg)](https://www.npmjs.com/package/wowa)
 [![npm](https://img.shields.io/npm/l/wowa.svg)](https://github.com/antiwinter/wowa/blob/master/LICENSE)
+[![install size](https://packagephobia.now.sh/badge?p=wowa)](https://packagephobia.now.sh/result?p=wowa)
 
 **WoWA** stands for World of Warcraft Assistant, it is designed to help managing WoW addons, uploading WCL logs, etc.
 
@@ -70,3 +71,4 @@ npm install -g wowa
 - [ ] Support uploading to warcraftlogs.com
 - [ ] Import existing addons
 - [ ] Support releasing UI (addons list, together with settings) to github.com
+- [ ] Shrink size of package
