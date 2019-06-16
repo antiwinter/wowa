@@ -25,7 +25,7 @@ let api = {
       s0: '#size',
       version: x('table tr', [{ link: 'div a@href', info: ['td div'] }])
     })((err, d) => {
-      if (err) return done()
+      if (err || !d.info.length) return done()
 
       d.info.forEach(x => {
         if (x.key.match(/update/i))

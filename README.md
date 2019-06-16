@@ -61,7 +61,7 @@ npm install -g wowa
 
 ## Roadmap
 
-- [ ] Support projects on wowinterface.com
+- [x] Support projects on wowinterface.com
 - [x] Support projects on github.com
 - [ ] Add test cases
 - [ ] Support projects on tukui.org

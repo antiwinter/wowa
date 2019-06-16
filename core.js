@@ -22,7 +22,8 @@ const env = process.env
 const cl = {
   i: ck.yellow,
   h: ck.red,
-  x: ck.dim
+  x: ck.dim,
+  i2: ck.blue
 }
 
 function parseName(name) {
@@ -299,6 +300,7 @@ function batchInstall(ads, update) {
 
   let list = new Listr([], { concurrent: 10 })
   let ud = 0
+  let id = 0
 
   ads.forEach(ad => {
     list.add({
@@ -308,16 +310,23 @@ function batchInstall(ads, update) {
           install(ad, update, evt => {
             task.title = ''
             task.title += cl.h(ad.key)
-            if (ad.version) task.title += cl.i(' @' + cl.i(ad.version))
+            if (ad.version) task.title += cl.i2(' @' + cl.i2(ad.version))
             if (ad.source) task.title += cl.i(` [${ad.source}]`)
 
             // log('ad is', ad)
 
             task.title += ' ' + cl.x(evt.msg)
 
-            if (evt.status === 'done' || evt.status === 'skip') {
-              if (evt.status === 'skip') task.skip()
-              else if (update) ud++
+            if (
+              evt.status === 'done' ||
+              evt.status === 'skip' ||
+              evt.status === 'failed'
+            ) {
+              if (evt.status !== 'done') task.skip()
+              else {
+                if (update) ud++
+                id++
+              }
 
               res('ok')
             }
@@ -331,7 +340,7 @@ function batchInstall(ads, update) {
 
   list.run().then(res => {
     save()
-    log(`${ads.length} addons` + (update ? `, ${ud} updated` : ' installed'))
+    log(`${id} addons` + (update ? `, ${ud} updated` : ' installed'))
     log(`✨  done in ${moment().unix() - t0}s.`)
   })
 }
