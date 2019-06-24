@@ -54,10 +54,16 @@ npm install -g wowa
 
 ## Related projects
 
+**Commandline implementations**
+
 - [wow-cli](https://github.com/zekesonxx/wow-cli)
 - [wowam](https://github.com/acdtrx/wowam)
 - [wam](https://github.com/Sumolari/WAM)
 - [wow-better-cli](https://github.com/DayBr3ak/wow-better-cli)
+
+**GUI implementations**
+
+- [wowan](https://github.com/ogri-la/wowman)
 
 ## Roadmap
 
