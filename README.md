@@ -63,7 +63,7 @@ npm install -g wowa
 
 **GUI implementations**
 
-- [wowan](https://github.com/ogri-la/wowman)
+- [wowman](https://github.com/ogri-la/wowman)
 
 ## Roadmap
 
