@@ -19,7 +19,7 @@
     "x-ray": "^2.3.3"
   },
   "name": "wowa",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Manage World of Warcraft addons, upload WCL, etc.",
   "main": "index.js",
   "devDependencies": {},

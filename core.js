@@ -98,7 +98,7 @@ function checkPath() {
   let wow = getPath()
   let e = fs.existsSync(wow)
 
-  //   log('checking', wow)
+  // log('checking', wow)
   if (!e) {
     log('\nWoW folder not found, you can specify it by editing the file below:')
     log('\n  ' + getPath('pathfile') + '\n')
@@ -115,7 +115,7 @@ function checkDuplicate() {
     for (let i = 0; i < keys.length; i++) {
       let k2 = keys[i]
       let inc = _.intersection(wowaads[k].sub, wowaads[k2].sub)
-      if (inc.length) {
+      if (inc.length && !(wowaads[k].removed || wowaads[k2].removed)) {
         log(
           `\n${cl.i('Note:')} ${cl.h(k)} and ${cl.h(
             k2
