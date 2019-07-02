@@ -19,14 +19,18 @@ let api = {
 
   info(key, done) {
     x(api.$url + key + '/files', {
-      text: x('.pd-1', ['.member__name a']),
-      time: x('.pd-1', ['span abbr@data-epoch | num']),
-      name: '.project-header__details h2',
-      download: 'section .count--download | num',
-      version: ['td .full'],
-      size: ['td .file__size'],
-      game: ['td .version__label'],
-      link: ['.project-file__actions .button--download@href']
+      name: 'header h2 | trim',
+      owner: '.text-sm span | trim',
+      create: ['div span abbr@data-epoch'],
+      download: ['.w-full span | num'],
+      version: x('tbody tr', [
+        {
+          name: 'a | trim',
+          size: ['td | trim'],
+          game: 'td div div | trim',
+          link: '.button--hollow@href'
+        }
+      ])
     })((err, d) => {
       // log('/???', key, err, d)
       if (!d) {
@@ -34,29 +38,18 @@ let api = {
         return
       }
 
-      let i = {
-        name: d.name,
-        owner: d.text[0],
-        author: d.text[1],
-        create: d.time[1],
-        update: d.time[0],
-        page: api.$url + key,
-        download: d.download,
-        version: []
-      }
-
-      d.version.forEach((v, j) => {
-        i.version.push({
-          name: v,
-          size: d.size[j],
-          game: d.game[j],
-          link: d.link[j] + '/file'
-        })
+      let tmp = d.create
+      d.create = parseInt(tmp[2])
+      d.update = parseInt(tmp[3])
+      d.version.forEach(x => {
+        x.link += '/file'
+        x.size = x.size[2]
       })
+      d.download = d.download[2]
 
-      // log(i)
+      // log(d)
 
-      done(err || !i.update ? null : i)
+      done(err || !d.update ? null : d)
     })
   },
 
