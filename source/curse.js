@@ -27,6 +27,7 @@ let api = {
       name: 'header h2 | trim',
       owner: '.text-sm span | trim',
       create: ['div span abbr@data-epoch | num'],
+
       download: ['.w-full span | num'],
       version: x('tbody tr', [
         {
@@ -46,6 +47,7 @@ let api = {
       let tmp = d.create
       d.create = tmp[2]
       d.update = tmp[3]
+
       d.version.forEach(x => {
         x.link += '/file'
         x.size = x.size[2]
