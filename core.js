@@ -26,22 +26,6 @@ const cl = {
   i2: ck.blue
 }
 
-function parseName(name) {
-  let t
-  let d = {
-    source: name.match(/:/)
-      ? ((t = name.split(':')), (name = t[1]), t[0])
-      : name.match(/\//)
-      ? 'github'
-      : undefined,
-    version: name.split('@')[1],
-    key: name.split('@')[0]
-  }
-
-  // log(name, '>>', d)
-  return d
-}
-
 function getPath(cat) {
   let pathFile = path.join(
     win ? env.APPDATA : env.HOME,
@@ -345,9 +329,25 @@ function batchInstall(ads, update) {
   })
 }
 
-module.exports = {
+let core = {
+  parseName(name) {
+    let t
+    let d = {
+      source: name.match(/:/)
+        ? ((t = name.split(':')), (name = t[1]), t[0])
+        : name.match(/\//)
+        ? 'github'
+        : undefined,
+      version: name.split('@')[1],
+      key: name.split('@')[0]
+    }
+
+    // log(name, '>>', d)
+    return d
+  },
+
   add(ads) {
-    batchInstall(ads.map(x => parseName(x)), 0)
+    batchInstall(ads.map(x => core.parseName(x)), 0)
   },
 
   rm(key) {
@@ -360,7 +360,7 @@ module.exports = {
   search(text) {
     // log(text)
 
-    api.search(parseName(text), info => {
+    api.search(core.parseName(text), info => {
       if (!info) {
         log('not found')
         return
@@ -413,13 +413,9 @@ module.exports = {
   },
 
   info(ad) {
-    let kv = (k, v) => {
-      log(`${cl.x(k) + cl.i(v)}`)
-    }
-
     let t = new tb()
 
-    ad = parseName(ad)
+    ad = core.parseName(ad)
     api.info(ad, info => {
       log('\n' + cl.h(ad.key) + '\n')
       if (!info) return log('not available\n')
@@ -492,3 +488,5 @@ module.exports = {
     batchInstall(ads, 0)
   }
 }
+
+module.exports = core
