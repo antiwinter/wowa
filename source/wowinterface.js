@@ -27,6 +27,7 @@ let api = {
     })((err, d) => {
       if (err || !d.info.length) return done()
 
+      // log('wi: d', d)
       d.info.forEach(x => {
         if (x.key.match(/update/i))
           d.update = new Date(x.value).valueOf() / 1000
@@ -36,10 +37,13 @@ let api = {
 
       delete d.info
 
-      d.version = _.filter(d.version, x => x.link && x.link.match(/\/download/))
+      d.version = _.filter(
+        d.version,
+        x => x.link && x.link.match(/\/downloads\/getfile/)
+      )
         .map(x => {
           return {
-            link: api.$url + x.link,
+            link: x.link,
             name: x.info[1],
             size: x.info[2]
           }
