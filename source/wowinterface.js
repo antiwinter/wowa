@@ -112,6 +112,7 @@ let api = {
           })
 
           // log(data)
+          data.sort((a, b) => b.download - a.download)
           done(data)
         })
       })

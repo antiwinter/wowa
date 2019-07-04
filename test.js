@@ -4,6 +4,7 @@ import api from './source'
 import fs from 'fs'
 import g from 'got'
 import ext from 'file-type'
+import vau from 'valid-url'
 
 const log = console.log
 
@@ -60,6 +61,30 @@ function testInfo(key) {
   })
 }
 
+function testSearch(key) {
+  ava.cb('search::' + key, t => {
+    api.search(core.parseName(key), res => {
+      // log('gg', res)
+
+      t.assert(res.source)
+      t.assert(res.data.length > 0)
+
+      res.data.forEach(x => {
+        t.assert(typeof x.name === 'string' && x.name.length > 1)
+        t.assert(typeof x.key === 'string' && x.key.length > 1)
+        t.assert(typeof x.download === 'number' && x.download > 1)
+        t.assert(typeof x.update === 'number' && x.update > 1)
+        t.assert(typeof x.desc === 'string' && x.desc.length > 1)
+        t.assert(vau.isUri(x.page))
+      })
+
+      t.end()
+    })
+  })
+}
+
 testInfo('curse:deadly-boss-mods')
 testInfo('wowinterface:8814-DeadlyBossMods')
 testInfo('deadlybossmods/deadlybossmods')
+testSearch('curse:deadly')
+testSearch('wowinterface:deadly')

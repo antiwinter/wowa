@@ -24,7 +24,8 @@
   "main": "index.js",
   "devDependencies": {
     "ava": "^2.1.0",
-    "file-type": "^12.0.0"
+    "file-type": "^12.0.0",
+    "valid-url": "^1.0.9"
   },
   "scripts": {
     "test": "ava --verbose"
