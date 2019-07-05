@@ -1,5 +1,7 @@
 # WoWA
 
+[![cover](https://coveralls.io/repos/github/antiwinter/wowa/badge.svg?branch=master)](https://coveralls.io/github/antiwinter/wowa?branch=master)
+[![status](https://travis-ci.org/antiwinter/wowa.svg?branch=master)](https://travis-ci.org/antiwinter/wowa)
 [![npm](https://img.shields.io/npm/v/wowa.svg)](https://www.npmjs.com/package/wowa)
 [![npm](https://img.shields.io/npm/l/wowa.svg)](https://github.com/antiwinter/wowa/blob/master/LICENSE)
 [![install size](https://packagephobia.now.sh/badge?p=wowa)](https://packagephobia.now.sh/result?p=wowa)
@@ -7,8 +9,10 @@
 **Updates on Jul 4 2019**
 
 - [curse](https://www.curseforge.com/wow/addons), [wowinterface](https://www.wowinterface.com/addons.php), [github](https://github.com) are supported
+- node version supported: **node 10**, **node 12**
+- node version NOT supported: **node 8**
 
-----
+---
 
 **WoWA** stands for World of Warcraft Assistant, it is designed to help managing WoW addons, uploading WCL logs, etc.
 
