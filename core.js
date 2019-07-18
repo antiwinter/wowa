@@ -398,11 +398,14 @@ let core = {
     for (let k in wowaads) {
       let v = wowaads[k]
       //   t.cell('Size', numeral(v.size).format('0.0 b'))
+      t.cell(cl.x('Addon keys'), cl.h(k))
+
+      t.cell(cl.x('Version'), cl.i2(v.version))
+      t.cell(cl.x('Source'), cl.i(v.source))
       t.cell(
-        cl.x('Version'),
+        cl.x('Update'),
         cl.i(moment(v.update * 1000).format('MM/DD/YYYY'))
       )
-      t.cell(cl.x('Addon keys'), cl.h(k))
       t.newRow()
     }
 
