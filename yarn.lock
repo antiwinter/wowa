@@ -3476,6 +3476,10 @@ typedarray-to-buffer@^3.1.5:
   dependencies:
     is-typedarray "^1.0.0"
 
+ua-string@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/ua-string/-/ua-string-3.0.0.tgz#de601521f016b70e6e980e3317512efc34c35b43"
+
 uglify-js@^3.1.4:
   version "3.6.0"
   resolved "https://registry.yarnpkg.com/uglify-js/-/uglify-js-3.6.0.tgz#704681345c53a8b2079fb6cec294b05ead242ff5"

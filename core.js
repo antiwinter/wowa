@@ -157,7 +157,11 @@ function getAd(ad, info, tmp, hook) {
 
   // fix version
   ad.version = v.name
-  g.stream(v.link)
+  g.stream(v.link, {
+    headers: {
+      'user-agent': require('ua-string')
+    }
+  })
     .on('downloadProgress', hook)
     .on('end', () => {
       dec(src, dst, {
@@ -402,10 +406,7 @@ let core = {
 
       t.cell(cl.x('Version'), cl.i2(v.version))
       t.cell(cl.x('Source'), cl.i(v.source))
-      t.cell(
-        cl.x('Update'),
-        cl.i(moment(v.update * 1000).format('MM/DD/YYYY'))
-      )
+      t.cell(cl.x('Update'), cl.i(moment(v.update * 1000).format('MM/DD/YYYY')))
       t.newRow()
     }
 

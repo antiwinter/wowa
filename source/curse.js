@@ -62,6 +62,11 @@ let api = {
 
   search(text, done) {
     // log('in')
+
+    log('\nVisit link below to perform a manual search:')
+    log('  ' + api.$url + 'search?search=' + text + '\n')
+    return
+
     x(api.$url + 'search?search=' + text, '.project-listing-row', [
       {
         name: 'h3 | trim',
