@@ -153,6 +153,7 @@ function getAd(ad, info, tmp, hook) {
   let i = 0
   for (; i < info.version.length; i++) {
     v = info.version[i]
+    if (!v.game) break
     if (mode === '_classic_' && v.game.split('.')[0] === '1') break
     if (mode !== '_classic_' && v.game.split('.')[0] !== '1') break
   }
