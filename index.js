@@ -42,6 +42,12 @@ cli
   .action(core.update)
 
 cli
+  .command('switch')
+  .alias('sw')
+  .description('switch mode between retail and classic')
+  .action(core.switch)
+
+cli
   .command('restore [repo]')
   .description(
     'restore addons from github repo, only <org/repo> is required, not the full URL. (e.g. antiwinter/wowui)'

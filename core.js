@@ -47,6 +47,8 @@ function getPath(cat) {
     })
   }
 
+  let mode = path.basename(base)
+
   switch (cat) {
     case 'addon':
       return path.join(base, 'Interface', 'AddOns')
@@ -58,6 +60,8 @@ function getPath(cat) {
       return pathFile
     case 'tmp':
       return path.dirname(pathFile)
+    case 'mode':
+      return mode
   }
 
   return base
@@ -143,7 +147,20 @@ function clearUp(addon, done) {
 }
 
 function getAd(ad, info, tmp, hook) {
-  let v = info.version[0]
+  let v
+  let mode = getPath('mode')
+
+  let i = 0
+  for (; i < info.version.length; i++) {
+    v = info.version[i]
+    if (mode === '_classic_' && v.game.split('.')[0] === '1') break
+    if (mode !== '_classic_' && v.game.split('.')[0] !== '1') break
+  }
+
+  if (i === info.version.length) {
+    return hook(`${cl.i(mode)} version is not available`)
+  }
+
   if (v && ad.version) v = _.find(info.version, d => d.name === ad.version)
   if (!v) {
     log('fatal: version not found')
@@ -246,8 +263,8 @@ function install(ad, update, hook) {
         let size = 0
         notify('ongoing', 'downloading...')
         getAd(ad, info, tmp, evt => {
-          if (!evt) {
-            notify('failed', 'failed to download')
+          if (!evt || (typeof evt === 'string' && evt !== 'done')) {
+            notify('failed', !evt ? 'failed to download' : evt)
           } else if (evt === 'done') {
             notify('ongoing', 'clearing previous install...')
 
@@ -410,8 +427,9 @@ let core = {
       t.newRow()
     }
 
-    if (!Object.keys(wowaads).length) log('no addons')
-    else log('\n' + t.toString())
+    log(`\nmode: ${cl.i(getPath('mode'))}\n`)
+    if (!Object.keys(wowaads).length) log('no addons\n')
+    else log(t.toString())
 
     checkDuplicate()
   },
@@ -448,7 +466,8 @@ let core = {
       if (v) {
         kv('version', v.name)
         if (v.size) kv('size', v.size)
-        if (v.game) kv('game version', v.game)
+        if (v.game)
+          kv('game version', _.uniq(info.version.map(x => x.game)).join(', '))
         kv('link', v.link)
       }
 
@@ -490,6 +509,21 @@ let core = {
 
     log('\nrestoring addons:')
     batchInstall(ads, 0)
+  },
+
+  switch() {
+    let pf = getPath('pathfile')
+    let p = fs.readFileSync(pf, 'utf-8').trim()
+    let mode = path.basename(p)
+
+    // log('pf', pf, 'p', p, 'mode', mode)
+
+    if (mode === '_retail_') mode = '_classic_'
+    else mode = '_retail_'
+
+    p = path.join(path.dirname(p), mode)
+    fs.writeFileSync(pf, p, 'utf-8')
+    log('mode switched to:', cl.i(mode))
   }
 }
 

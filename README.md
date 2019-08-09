@@ -6,8 +6,9 @@
 [![npm](https://img.shields.io/npm/l/wowa.svg)](https://github.com/antiwinter/wowa/blob/master/LICENSE)
 [![install size](https://packagephobia.now.sh/badge?p=wowa)](https://packagephobia.now.sh/result?p=wowa)
 
-**Updates on Jul 4 2019**
+**Updates on Aug 9 2019**
 
+- Add roughly support for WoW Classic, use `wowa switch` to switch mode between `_classic_` and `_retail_`, use `wowa ls` to check which mode you are in. When switched to `_classic_` mode, **wowa** will download the correct addon version that matches **1.13.x**
 - [curse](https://www.curseforge.com/wow/addons), [wowinterface](https://www.wowinterface.com/addons.php), [github](https://github.com) are supported
 - node version supported: **node 10**, **node 12**
 - node version NOT supported: **node 8**
@@ -100,7 +101,7 @@ wowa search wowinterface:dbm                    # search for dbm only from wowin
 - [ ] Game version detection
 - [x] Add test cases
 - [ ] Support projects on tukui.org
-- [ ] **Support WoW Classic !**
+- [x] **Support WoW Classic !**
 - [ ] Support backing up to github.com
 - [ ] Support restoring from github.com
 - [ ] Support uploading to warcraftlogs.com
