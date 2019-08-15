@@ -184,9 +184,13 @@ function getAd(ad, info, tmp, hook) {
     .on('end', () => {
       dec(src, dst, {
         plugins: [unzip()]
-      }).then(() => {
-        hook('done')
       })
+        .then(() => {
+          hook('done')
+        })
+        .catch(err => {
+          hook('done')
+        })
     })
     .pipe(fs.createWriteStream(src))
 }
@@ -419,6 +423,9 @@ let core = {
     let t = new tb()
     for (let k in wowaads) {
       let v = wowaads[k]
+
+      if (v.removed) continue
+
       //   t.cell('Size', numeral(v.size).format('0.0 b'))
       t.cell(cl.x('Addon keys'), cl.h(k))
 
