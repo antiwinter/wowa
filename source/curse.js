@@ -17,10 +17,12 @@ const x = require('x-ray')({
     }
   }
 })
+const g = require('got')
 const log = console.log
 
 let api = {
   $url: 'https://www.curseforge.com/wow/addons/',
+  $srl: 'https://addons-ecs.forgesvc.net/api/v2/addon/search',
 
   info(key, done) {
     x(api.$url + key + '/files', {
@@ -61,30 +63,24 @@ let api = {
   },
 
   search(text, done) {
-    // log('in')
-
-    log('\nVisit link below to perform a manual search:')
-    log('  ' + api.$url + 'search?search=' + text + '\n')
-    return
-
-    x(api.$url + 'search?search=' + text, '.project-listing-row', [
-      {
-        name: 'h3 | trim',
-        key: '.my-auto@href | tail',
-        download: '.text-gray-500 | num',
-        update: ['abbr@data-epoch | num'],
-        desc: '.leading-snug | trim'
-      }
-    ])((err, d) => {
-      // log('serach', text, err, d)
-      d.forEach(x => {
-        let tmp = x.update
-        x.update = tmp[0]
-        x.create = tmp[1]
-        x.page = api.$url + x.key
+    g.get(`${api.$srl}?gameId=1&index=0&pageSize=15&searchFilter=${text}`)
+      .then(res => {
+        // log(res.body)
+        done(
+          JSON.parse(res.body).map(x => {
+            return {
+              name: x.name,
+              key: x.websiteUrl.split('/').pop(),
+              download: x.downloadCount,
+              update: new Date(x.dateModified).valueOf() / 1000,
+              page: x.websiteUrl
+            }
+          })
+        )
       })
-      done(err ? null : d)
-    })
+      .catch(err => {
+        done()
+      })
   }
 }
 

@@ -399,7 +399,7 @@ let core = {
         return `${h(k + ':') + c(' ' + v + '')}`
       }
 
-      let data = info.data.slice(0, 10)
+      let data = info.data.slice(0, 15)
 
       log(`\n${cl.i(data.length)} results from ${cl.i(info.source)}`)
 
@@ -412,7 +412,7 @@ let core = {
             numeral(v.download).format('0.0a')
           )} ${kv('version', moment(v.update * 1000).format('MM/DD/YYYY'))}`
         )
-        log('\n  ' + v.desc)
+        // log('\n  ' + v.desc)
       })
 
       log()
