@@ -1,5 +1,4 @@
 const _ = require('underscore')
-const Fuse = require('fuse.js')
 const cfg = require('../lib/config')
 const g = require('got')
 const log = console.log
