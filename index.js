@@ -42,8 +42,8 @@ cli
   .action(core.update)
 
 cli
-  .command('pickup')
-  .description('pickup local addons')
+  .command('import')
+  .description('import local addons')
   .action(core.pickup)
 
 cli
@@ -67,6 +67,11 @@ cli.on('command:*', () => {
   cli.help()
 })
 
-cli.parse(process.argv)
+if (process.argv.length < 3) return cli.help()
 
-if (process.argv.length < 3) cli.help()
+// do the job
+core.checkUpdate(() => {
+  core.updateSummary(() => {
+    cli.parse(process.argv)
+  })
+})

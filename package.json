@@ -14,6 +14,7 @@
     "ncp": "^2.0.0",
     "numeral": "^2.0.6",
     "ora": "^3.4.0",
+    "package-info": "^3.0.2",
     "rimraf": "^2.6.3",
     "ua-string": "^3.0.0",
     "underscore": "^1.9.1",

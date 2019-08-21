@@ -36,10 +36,12 @@ let api = {
           r.map(x => {
             return {
               id: x.UID,
+              name: x.UIName,
+              key: x.UID + '-' + x.UIName.replace(/[^a-zA-Z0-9]/g, ''),
+              mode: x.UICATID === '160' ? '_classic_' : '_retail_',
               cat: x.UICATID,
               version: x.UIVersion,
               update: x.UIDate / 1000,
-              name: x.UIName,
               author: x.UIAuthorName,
               download: x.UIDownloadTotal,
               game: x.UICompatibility
@@ -62,12 +64,7 @@ let api = {
 
     if (!db) return done()
 
-    db = _.filter(
-      db,
-      d =>
-        (mo === '_retail_' && d.cat !== '160') ||
-        (mo === '_classic_' && d.cat === '160')
-    )
+    db = _.filter(db, d => mo === d.mode)
 
     // log(mo)
 
@@ -84,10 +81,9 @@ let api = {
     // log(res)
     done(
       res.map(x => {
-        let key = x.id + '-' + x.name.replace(/[^a-zA-Z0-9]/g, '')
         return {
           name: x.name,
-          key,
+          key: x.key,
           download: parseInt(x.download),
           update: x.update,
           page: `${api.$web}/downloads/info${key}.html`

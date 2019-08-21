@@ -13,10 +13,12 @@ const _ = require('underscore')
 const g = require('got')
 const dec = require('decompress')
 const unzip = require('decompress-unzip')
+const pi = require('package-info')
 
 const api = require('./source')
 const cfg = require('./lib/config')
 const ads = require('./lib/wowaads').load()
+const pkg = require('./package.json')
 const log = console.log
 
 const cl = {
@@ -292,11 +294,11 @@ let core = {
 
       t.cell(cl.x('Version'), cl.i2(v.version))
       t.cell(cl.x('Source'), cl.i(v.source))
-      t.cell(cl.x('Update'), cl.i(moment(v.update * 1000).format('MM/DD/YYYY')))
+      t.cell(cl.x('Update'), cl.i(moment(v.update * 1000).format('YYYY-MM-DD')))
       t.newRow()
     }
 
-    log(`\nmode: ${cl.i(cfg.getPath('mode'))}\n`)
+    log(`\nMode: ${cl.i(cfg.getPath('mode'))}\n`)
     if (!Object.keys(ads.data).length) log('no addons\n')
     else log(t.toString())
 
@@ -380,58 +382,79 @@ let core = {
     batchInstall(ads, 0)
   },
 
-  buildSummary(done) {
+  updateSummary(done) {
     let p = cfg.getPath('db')
 
-    // if (fs.existsSync(p)) {
-    //   done(JSON.parse(fs.readFileSync(p, 'utf-8')))
-    //   return
-    // }
-
-    mk(path.dirname(p), err => {
-      api.summary(s => {
-        fs.writeFileSync(p, JSON.stringify(s, null, 2), 'utf-8')
-        done(s)
+    if (
+      !fs.existsSync(p) ||
+      new Date() - fs.statSync(p).mtime > 24 * 3600 * 1000
+    ) {
+      mk(path.dirname(p), err => {
+        process.stdout.write(cl.i('\nUpdating database...'))
+        api.summary(s => {
+          fs.writeFileSync(p, JSON.stringify(s, null, 2), 'utf-8')
+          log(cl.i('done'))
+          done()
+        })
       })
-    })
+
+      return
+    }
+
+    done()
+    return
   },
 
   pickup() {
-    core.buildSummary(sum => {
-      let p = cfg.getPath('addon')
-      fs.readdir(p, (err, dirs) => {
-        let unknown = []
-        dirs.forEach(dir => {
-          if (ads.dirStatus(dir)) return
+    let db = cfg.getDB()
+    let p = cfg.getPath('addon')
+    let imported = 0
+    let importedDirs = 0
 
-          log('picking up', dir)
-          let l = _.find(sum, a => a.dir.indexOf(dir) >= 0)
+    if (!db) return
 
-          if (!l) {
-            unknown.push(dir)
-          } else {
-            log('found', l)
-            let update = Math.floor(
-              fs.statSync(path.join(p, dir)).mtimeMs / 1000
-            )
-            let k =
-              l.id +
-              '-' +
-              _.filter(l.name.split(''), s => s.match(/^[a-z0-9]+$/i)).join('')
-            if (ads.data[k]) ads.data[k].sub.push(dir)
-            else
-              ads.data[k] = {
-                name: l.name,
-                version: 'unknown',
-                source: l.source,
-                update,
-                sub: [dir]
-              }
+    // log(db)
+    fs.readdir(p, (err, dirs) => {
+      let unknown = []
+      dirs.forEach(dir => {
+        if (ads.dirStatus(dir)) return
+
+        // log('picking up', dir)
+        let l = _.find(
+          db,
+          a => a.dir.indexOf(dir) >= 0 && a.mode === cfg.getMode()
+        )
+
+        if (!l) {
+          unknown.push(dir)
+        } else {
+          // log('found', l)
+          importedDirs++
+          let update = Math.floor(fs.statSync(path.join(p, dir)).mtimeMs / 1000)
+          let k =
+            l.id +
+            '-' +
+            _.filter(l.name.split(''), s => s.match(/^[a-z0-9]+$/i)).join('')
+          if (ads.data[k]) ads.data[k].sub.push(dir)
+          else {
+            ads.data[k] = {
+              name: l.name,
+              version: 'unknown',
+              source: l.source,
+              update,
+              sub: [dir]
+            }
+            imported++
           }
-        })
-
-        ads.save()
+        }
       })
+
+      log(`\n✨ imported ${imported} addons (${importedDirs} folders)\n`)
+
+      if (unknown.length)
+        log(cl.h(`❗ ${unknown.length} folders not recgonized\n`))
+
+      ads.save()
     })
   },
 
@@ -448,6 +471,43 @@ let core = {
     p = path.join(path.dirname(p), mode)
     fs.writeFileSync(pf, p, 'utf-8')
     log('mode switched to:', cl.i(mode))
+  },
+
+  checkUpdate(done) {
+    let v2n = v => {
+      let _v = 0
+      v.split('.').forEach((n, i) => {
+        _v *= 100
+        _v += parseInt(n)
+      })
+
+      return _v
+    }
+
+    let p = cfg.getPath('update')
+    let e = fs.existsSync(p)
+    let i
+
+    if (!e || new Date() - fs.statSync(p).mtime > 24 * 3600 * 1000) {
+      // fetch new data
+      pi('wowa').then(res => {
+        fs.writeFileSync(p, JSON.stringify(res), 'utf-8')
+      })
+    } else if (e) i = JSON.parse(fs.readFileSync(p, 'utf-8'))
+
+    if (i) {
+      // log(v2n(i.version), v2n(pkg.version))
+      if (v2n(i.version) > v2n(pkg.version)) {
+        log(
+          cl.i('\nNew wowa version'),
+          cl.i2(i.version),
+          cl.i('is available, use the command below to update\n'),
+          '  npm update -g wowa'
+        )
+      }
+    }
+
+    done()
   }
 }
 
