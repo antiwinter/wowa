@@ -4,7 +4,7 @@ const async = require('async')
 let src = {
   $api: {
     curse: require('./curse'),
-    wowinterface: require('./wowinterface'),
+    mmoui: require('./mmoui'),
     github: require('./github')
   },
 
@@ -20,6 +20,23 @@ let src = {
     }
 
     return true
+  },
+
+  parseName(name) {
+    let t
+    let d = {
+      source: name.match(/:/)
+        ? ((t = name.split(':')), (name = t[1]), t[0])
+        : name.match(/\//)
+        ? 'github'
+        : undefined,
+      version: name.split('@')[1],
+      key: name.split('@')[0]
+    }
+
+    if (d.source && d.source !== 'github' && d.source !== 'curse')
+      d.source = 'mmoui'
+    return d
   },
 
   info(ad, done) {
@@ -73,6 +90,10 @@ let src = {
         }
       )
     })
+  },
+
+  summary(done) {
+    src.$api.mmoui.summary(done)
   }
 }
 

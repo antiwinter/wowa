@@ -15,9 +15,9 @@ const dec = require('decompress')
 const unzip = require('decompress-unzip')
 
 const api = require('./source')
+const cfg = require('./lib/config')
+const ads = require('./lib/wowaads').load()
 const log = console.log
-const win = process.platform === 'win32'
-const env = process.env
 
 const cl = {
   i: ck.yellow,
@@ -26,129 +26,9 @@ const cl = {
   i2: ck.blue
 }
 
-function getPath(cat) {
-  let pathFile = path.join(
-    win ? env.APPDATA : env.HOME,
-    win ? 'wowa' : '.wowa',
-    'wow_path.txt'
-  )
-  let base
-
-  if (fs.existsSync(pathFile)) base = fs.readFileSync(pathFile, 'utf-8').trim()
-  else {
-    base = path.join(
-      win ? 'C:\\Program Files' : '/Applications',
-      'World of Warcraft',
-      '_retail_'
-    )
-
-    mk(path.dirname(pathFile), err => {
-      fs.writeFileSync(pathFile, base, 'utf-8')
-    })
-  }
-
-  let mode = path.basename(base)
-
-  switch (cat) {
-    case 'addon':
-      return path.join(base, 'Interface', 'AddOns')
-    case 'wtf':
-      return path.join(base, 'WTF')
-    case 'wowaads':
-      return path.join(base, 'WTF', 'wowaads.json')
-    case 'pathfile':
-      return pathFile
-    case 'tmp':
-      return path.dirname(pathFile)
-    case 'mode':
-      return mode
-  }
-
-  return base
-}
-
-let jsp = getPath('wowaads')
-let wowaads = {}
-
-if (fs.existsSync(jsp)) {
-  wowaads = JSON.parse(fs.readFileSync(jsp, 'utf-8'))
-}
-
-function save() {
-  fs.writeFileSync(
-    getPath('wowaads'),
-    JSON.stringify(wowaads, null, 2),
-    'utf-8'
-  )
-}
-
-function checkPath() {
-  let wow = getPath()
-  let e = fs.existsSync(wow)
-
-  // log('checking', wow)
-  if (!e) {
-    log('\nWoW folder not found, you can specify it by editing the file below:')
-    log('\n  ' + getPath('pathfile') + '\n')
-  }
-
-  return e
-}
-
-function checkDuplicate() {
-  let keys = _.keys(wowaads)
-  let k
-
-  while ((k = keys.pop())) {
-    for (let i = 0; i < keys.length; i++) {
-      let k2 = keys[i]
-      let inc = _.intersection(wowaads[k].sub, wowaads[k2].sub)
-      if (inc.length && !(wowaads[k].removed || wowaads[k2].removed)) {
-        log(
-          `\n${cl.i('Note:')} ${cl.h(k)} and ${cl.h(
-            k2
-          )} use the same subset of directory, make sure you have only one of them installed\n`
-        )
-        // log(inc)
-        return true
-      }
-    }
-  }
-
-  return false
-}
-
-function clearUp(addon, done) {
-  if (addon in wowaads) {
-    async.forEach(
-      wowaads[addon].sub,
-      (sub, cb) => {
-        rm(path.join(getPath('addon'), sub), err => {
-          if (err) {
-            log('clear up addon failed', sub)
-            done(err)
-            cb(false)
-            return
-          }
-
-          cb()
-        })
-      },
-      () => {
-        wowaads[addon].removed = 1
-        done()
-      }
-    )
-
-    return
-  }
-
-  done()
-}
-
 function getAd(ad, info, tmp, hook) {
   let v
-  let mode = getPath('mode')
+  let mode = cfg.getPath('mode')
 
   let i = 0
   for (; i < info.version.length; i++) {
@@ -237,7 +117,7 @@ function _install(from, to, sub, done) {
 }
 
 function install(ad, update, hook) {
-  let tmp = path.join(getPath('tmp'), ad.key.replace(/\//g, '-'))
+  let tmp = path.join(cfg.getPath('tmp'), ad.key.replace(/\//g, '-'))
   let notify = (status, msg) => {
     hook({
       status,
@@ -253,7 +133,7 @@ function install(ad, update, hook) {
     // fix source
     ad.source = info.source
 
-    if (update && wowaads[ad.key] && wowaads[ad.key].update >= info.update)
+    if (update && ads.data[ad.key] && ads.data[ad.key].update >= info.update)
       return notify('skip', 'is already up to date')
 
     notify('ongoing', 'preparing download...')
@@ -273,8 +153,8 @@ function install(ad, update, hook) {
           } else if (evt === 'done') {
             notify('ongoing', 'clearing previous install...')
 
-            clearUp(ad.key, () => {
-              wowaads[ad.key] = {
+            ads.clearUp(ad.key, () => {
+              ads.data[ad.key] = {
                 name: info.name,
                 version: ad.version,
                 size,
@@ -283,7 +163,7 @@ function install(ad, update, hook) {
                 sub: []
               }
 
-              _install(dec, getPath('addon'), wowaads[ad.key].sub, err => {
+              _install(dec, cfg.getPath('addon'), ads.data[ad.key].sub, err => {
                 if (err) return notify('failed', 'failed to copy file')
 
                 notify('done', update ? 'updated' : 'installed')
@@ -306,7 +186,7 @@ function install(ad, update, hook) {
 function batchInstall(ads, update) {
   let t0 = moment().unix()
 
-  if (!checkPath()) return
+  if (!cfg.checkPath()) return
 
   let list = new Listr([], { concurrent: 10 })
   let ud = 0
@@ -349,36 +229,20 @@ function batchInstall(ads, update) {
   })
 
   list.run().then(res => {
-    save()
+    ads.save()
     log(`${id} addons` + (update ? `, ${ud} updated` : ' installed'))
     log(`✨  done in ${moment().unix() - t0}s.`)
   })
 }
 
 let core = {
-  parseName(name) {
-    let t
-    let d = {
-      source: name.match(/:/)
-        ? ((t = name.split(':')), (name = t[1]), t[0])
-        : name.match(/\//)
-        ? 'github'
-        : undefined,
-      version: name.split('@')[1],
-      key: name.split('@')[0]
-    }
-
-    // log(name, '>>', d)
-    return d
-  },
-
   add(ads) {
-    batchInstall(ads.map(x => core.parseName(x)), 0)
+    batchInstall(ads.map(x => api.parseName(x)), 0)
   },
 
   rm(key) {
-    clearUp(key, () => {
-      save()
+    ads.clearUp(key, () => {
+      ads.save()
       log(`✨  ${cl.h(key)} removed.`)
     })
   },
@@ -386,7 +250,7 @@ let core = {
   search(text) {
     // log(text)
 
-    api.search(core.parseName(text), info => {
+    api.search(api.parseName(text), info => {
       if (!info) {
         log('not found')
         return
@@ -421,12 +285,9 @@ let core = {
 
   ls() {
     let t = new tb()
-    for (let k in wowaads) {
-      let v = wowaads[k]
+    for (let k in ads.data) {
+      let v = ads.data[k]
 
-      if (v.removed) continue
-
-      //   t.cell('Size', numeral(v.size).format('0.0 b'))
       t.cell(cl.x('Addon keys'), cl.h(k))
 
       t.cell(cl.x('Version'), cl.i2(v.version))
@@ -435,17 +296,17 @@ let core = {
       t.newRow()
     }
 
-    log(`\nmode: ${cl.i(getPath('mode'))}\n`)
-    if (!Object.keys(wowaads).length) log('no addons\n')
+    log(`\nmode: ${cl.i(cfg.getPath('mode'))}\n`)
+    if (!Object.keys(ads.data).length) log('no addons\n')
     else log(t.toString())
 
-    checkDuplicate()
+    ads.checkDuplicate()
   },
 
   info(ad) {
     let t = new tb()
 
-    ad = core.parseName(ad)
+    ad = api.parseName(ad)
     api.info(ad, info => {
       log('\n' + cl.h(ad.key) + '\n')
       if (!info) return log('not available\n')
@@ -485,15 +346,15 @@ let core = {
 
   update() {
     let ads = []
-    for (let k in wowaads) {
-      if (!wowaads[k].removed) ads.push({ key: k, source: wowaads[k].source })
+    for (let k in ads.data) {
+      ads.push({ key: k, source: ads.data[k].source })
     }
     if (!ads.length) {
       log('\nnothing to update\n')
       return
     }
 
-    if (checkDuplicate()) return
+    if (ads.checkDuplicate()) return
 
     log('\nupdating addons:')
     batchInstall(ads, 1)
@@ -506,8 +367,8 @@ let core = {
     }
 
     let ads = []
-    for (let k in wowaads) {
-      if (!wowaads[k].removed) ads.push(k)
+    for (let k in ads.data) {
+      ads.push(k)
     }
 
     if (!ads.length) {
@@ -519,8 +380,63 @@ let core = {
     batchInstall(ads, 0)
   },
 
+  buildSummary(done) {
+    let p = cfg.getPath('db')
+
+    // if (fs.existsSync(p)) {
+    //   done(JSON.parse(fs.readFileSync(p, 'utf-8')))
+    //   return
+    // }
+
+    mk(path.dirname(p), err => {
+      api.summary(s => {
+        fs.writeFileSync(p, JSON.stringify(s, null, 2), 'utf-8')
+        done(s)
+      })
+    })
+  },
+
+  pickup() {
+    core.buildSummary(sum => {
+      let p = cfg.getPath('addon')
+      fs.readdir(p, (err, dirs) => {
+        let unknown = []
+        dirs.forEach(dir => {
+          if (ads.dirStatus(dir)) return
+
+          log('picking up', dir)
+          let l = _.find(sum, a => a.dir.indexOf(dir) >= 0)
+
+          if (!l) {
+            unknown.push(dir)
+          } else {
+            log('found', l)
+            let update = Math.floor(
+              fs.statSync(path.join(p, dir)).mtimeMs / 1000
+            )
+            let k =
+              l.id +
+              '-' +
+              _.filter(l.name.split(''), s => s.match(/^[a-z0-9]+$/i)).join('')
+            if (ads.data[k]) ads.data[k].sub.push(dir)
+            else
+              ads.data[k] = {
+                name: l.name,
+                version: 'unknown',
+                source: l.source,
+                update,
+                sub: [dir]
+              }
+          }
+        })
+
+        ads.save()
+      })
+    })
+  },
+
   switch() {
-    let pf = getPath('pathfile')
+    let pf = cfg.getPath('pathfile')
     let p = fs.readFileSync(pf, 'utf-8').trim()
     let mode = path.basename(p)
 

@@ -42,6 +42,11 @@ cli
   .action(core.update)
 
 cli
+  .command('pickup')
+  .description('pickup local addons')
+  .action(core.pickup)
+
+cli
   .command('switch')
   .alias('sw')
   .description('switch mode between retail and classic')
