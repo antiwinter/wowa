@@ -18,6 +18,8 @@ const x = require('x-ray')({
   }
 })
 const g = require('got')
+const _ = require('underscore')
+const cfg = require('../lib/config')
 const log = console.log
 
 let api = {
@@ -25,6 +27,8 @@ let api = {
   $srl: 'https://addons-ecs.forgesvc.net/api/v2/addon/search',
 
   info(key, done) {
+    let mo = cfg.getMode()
+
     x(api.$url + key + '/files', {
       name: 'header h2 | trim',
       owner: '.text-sm span | trim',
@@ -56,14 +60,23 @@ let api = {
       })
       d.download = d.download[2]
 
+      d.version = _.filter(d.version, v => cfg.isValidVersion(v.game))
+
       // log(d)
 
-      done(err || !d.update ? null : d)
+      done(err || !d.update || d.version.length === 0 ? null : d)
     })
   },
 
   search(text, done) {
-    g.get(`${api.$srl}?gameId=1&index=0&pageSize=15&searchFilter=${text}`)
+    let mo = cfg.getMode()
+
+    let qs = `${api.$srl}?gameId=1&index=0&pageSize=15&searchFilter=${text}`
+
+    if (mo === '_classic_') qs += `&gameVersion=${cfg.getGameVersion()}`
+
+    // log('searching', qs)
+    g.get(qs)
       .then(res => {
         // log(res.body)
         done(

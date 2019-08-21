@@ -10,7 +10,7 @@ let api = {
   info(key, done) {
     let id = key.split('-')[0]
 
-    log('getting', `${api.$url}/filedetails/${id}.json`)
+    // log('getting', `${api.$url}/filedetails/${id}.json`)
     g(`${api.$url}/filedetails/${id}.json`)
       .then(res => {
         let x = JSON.parse(res.body)[0]
@@ -69,7 +69,7 @@ let api = {
         (mo === '_classic_' && d.cat === '160')
     )
 
-    log(mo)
+    // log(mo)
 
     let res = _.filter(
       db,
