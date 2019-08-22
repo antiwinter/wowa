@@ -10,18 +10,18 @@ cli
   .command('add <addons...>')
   .description('install one or more addons locally')
   .alias('install')
-  .action(core.add)
+  .action(aa => core.add(aa))
 
 cli
   .command('rm <addon>')
   .description('remove an addon from local installation')
   .alias('delete')
-  .action(core.rm)
+  .action(key => core.rm(key))
 
 cli
   .command('search <text>')
   .description('search addons whose name contain <text>')
-  .action(core.search)
+  .action(text => core.search(text))
 
 cli
   .command('ls')
@@ -34,17 +34,17 @@ cli
   .description(
     'show info of an addon, the addon does not have to be an installed locally'
   )
-  .action(core.info)
+  .action(ad => core.info(ad))
 
 cli
   .command('update')
   .description('update all installed addons')
-  .action(core.update)
+  .action(() => core.update())
 
 cli
   .command('import')
   .description('import local addons')
-  .action(core.pickup)
+  .action(() => core.pickup())
 
 cli
   .command('switch')
@@ -61,7 +61,7 @@ cli
     '-f, --full',
     'not only restore addons, but also restore addons settings'
   )
-  .action(core.restore)
+  .action(repo => core.restore(repo))
 
 cli.on('command:*', () => {
   cli.help()

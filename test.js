@@ -1,10 +1,17 @@
 import ava from 'ava'
-// import core from './core'
-import api from './source'
 import fs from 'fs'
 import g from 'got'
 import ext from 'file-type'
 import vau from 'valid-url'
+import mk from 'mkdirp'
+import rm from 'rimraf'
+import path from 'path'
+import _ from 'underscore'
+
+import cfg from './lib/config'
+import core from './core'
+import api from './source'
+import ads from './lib/wowaads'
 
 const log = console.log
 
@@ -38,7 +45,7 @@ function checkZip(link, done) {
   }
 }
 
-function testInfo(key) {
+function testInfo(key, unzip) {
   ava.cb('info::' + key, t => {
     api.info(api.parseName(key), info => {
       // log('gg', info)
@@ -54,14 +61,12 @@ function testInfo(key) {
         t.assert(x.name.length > 1)
       })
 
-      t.end()
-      // checkZip(info.version[0].link, res => {
-      //   t.assert(res && res.mime === 'application/zip')
-      //   checkZip(info.version[1].link, res => {
-      //     t.assert(res && res.mime === 'application/zip')
-      //     t.end()
-      //   })
-      // })
+      if (unzip)
+        checkZip(info.version[0].link, res => {
+          t.assert(res && res.mime === 'application/zip')
+          t.end()
+        })
+      else t.end()
     })
   })
 }
@@ -86,8 +91,69 @@ function testSearch(key) {
   })
 }
 
-testInfo('curse:deadly-boss-mods')
-testInfo('wowinterface:8814-DeadlyBossMods')
-testInfo('deadlybossmods/deadlybossmods')
-testSearch('curse:deadly')
-testSearch('wowinterface:deadly')
+ava.serial.before.cb('path', t => {
+  let tmpdir = cfg.getPath('tmp')
+
+  // log('tmpdir is', tmpdir)
+  rm(tmpdir, err => {
+    t.assert(!err)
+    mk(path.join(tmpdir, '.test', '_retail_', 'Interface', 'Addons'), err => {
+      t.assert(!err)
+      mk(path.join(tmpdir, '.test', '_retail_', 'WTF'), err => {
+        t.assert(!err)
+        mk(path.join(tmpdir, '.test', '_classic_', 'WTF'), err => {
+          t.assert(!err)
+          mk(
+            path.join(tmpdir, '.test', '_classic_', 'Interface', 'Addons'),
+            err => {
+              t.assert(!err)
+              ads.load()
+              t.end()
+            }
+          )
+        })
+      })
+    })
+  })
+})
+
+ava.serial.before.cb('prepare', t => {
+  core.updateSummary(() => t.end())
+})
+
+ava.serial.cb('appetizer', t => {
+  t.end()
+})
+
+function commonTests(aa) {
+  ava.serial.cb('add addons', t => {
+    core.add(aa.map(a => a[0]), res => {
+      let p = cfg.getPath('addon')
+      t.assert(res.count === aa.length)
+      t.assert(res.update === 0)
+
+      aa.forEach(a => {
+        t.assert(_.find(fs.readdirSync(p), d => d.match(a[1])))
+      })
+
+      ads.load()
+
+      t.assert(_.keys(ads.data).length === aa.length)
+      t.assert(!_.find(ads.data, d => !d.sub.length))
+      t.end()
+    })
+  })
+}
+
+commonTests([
+  // ['deadlybossmods/deadlybossmods', /^DBM/],
+  ['classicon', /^Class/],
+  // ['mmoui:11190-Bartender4', /^Bart/],
+  ['sellableitemdrops', /^Sella/]
+])
+
+// testInfo('curse:deadly-boss-mods', 1)
+// testInfo('wowinterface:8814-DeadlyBossMods', fetchMMOUI)
+// testInfo('deadlybossmods/deadlybossmods', 1)
+// testSearch('curse:deadly')
+// testSearch('wowinterface:deadly')

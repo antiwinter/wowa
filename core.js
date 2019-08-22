@@ -11,8 +11,7 @@ const tb = require('easy-table')
 const Listr = require('listr')
 const _ = require('underscore')
 const g = require('got')
-const dec = require('decompress')
-const unzip = require('decompress-unzip')
+const unzip = require('unzip')
 const pi = require('package-info')
 
 const api = require('./source')
@@ -63,22 +62,14 @@ function getAd(ad, info, tmp, hook) {
     }
   })
     .on('downloadProgress', hook)
-    .on('end', () => {
-      dec(src, dst, {
-        plugins: [unzip()]
-      })
-        .then(() => {
-          hook('done')
-        })
-        .catch(err => {
-          hook('done')
-        })
-    })
     .on('error', err => {
       // log('stream error', typeof err, err)
       hook(err ? err.toString() : 'download error')
     })
-    .pipe(fs.createWriteStream(src))
+    .pipe(unzip.Extract({ path: dst }))
+    .on('close', () => {
+      hook('done')
+    })
 }
 
 function _install(from, to, sub, done) {
@@ -86,7 +77,7 @@ function _install(from, to, sub, done) {
 
   let toc = _.find(ls, x => x.match(/\.toc$/))
 
-  // log('parsing', from, '>>', to)
+  // log('\n\n searching', from, toc, to)
   if (toc) {
     toc = toc.replace(/\.toc$/, '')
     let target = path.join(to, toc)
@@ -191,7 +182,7 @@ function install(ad, update, hook) {
   })
 }
 
-function batchInstall(aa, update) {
+function batchInstall(aa, update, done) {
   let t0 = moment().unix()
 
   if (!cfg.checkPath()) return
@@ -243,23 +234,25 @@ function batchInstall(aa, update) {
     ads.save()
     log(`\n${id} addons` + (update ? `, ${ud} updated` : ' installed'))
     log(`✨  done in ${moment().unix() - t0}s.\n`)
+    if (done) done({ count: id, update, ud })
   })
 }
 
 let core = {
-  add(aa) {
+  add(aa, done) {
     log('\nInstalling addon' + (aa.length > 1 ? 's...' : '...') + '\n')
-    batchInstall(aa.map(x => api.parseName(x)), 0)
+    batchInstall(aa.map(x => api.parseName(x)), 0, done)
   },
 
-  rm(key) {
+  rm(key, done) {
     ads.clearUp(key, () => {
       ads.save()
+      if (done) done()
       log(`✨  ${cl.h(key)} removed.`)
     })
   },
 
-  search(text) {
+  search(text, done) {
     // log(text)
 
     api.search(api.parseName(text), info => {
@@ -292,6 +285,7 @@ let core = {
       })
 
       log()
+      if (done) done(info)
     })
   },
 
@@ -313,9 +307,10 @@ let core = {
     else log(t.toString())
 
     ads.checkDuplicate()
+    return t.toString()
   },
 
-  info(ad) {
+  info(ad, done) {
     let t = new tb()
 
     ad = api.parseName(ad)
@@ -353,10 +348,11 @@ let core = {
       }
 
       log(t.toString())
+      if (done) done(t.toString())
     })
   },
 
-  update() {
+  update(done) {
     let aa = []
     for (let k in ads.data) {
       aa.push({ key: k, source: ads.data[k].source })
@@ -369,10 +365,10 @@ let core = {
     if (ads.checkDuplicate()) return
 
     log('\nUpdating addons:\n')
-    batchInstall(aa, 1)
+    batchInstall(aa, 1, done)
   },
 
-  restore(repo) {
+  restore(repo, done) {
     if (repo) {
       log('\nrestore from remote is not implemented yet\n')
       return
@@ -389,7 +385,7 @@ let core = {
     }
 
     log('\nRestoring addons:')
-    batchInstall(aa, 0)
+    batchInstall(aa, 0, done)
   },
 
   updateSummary(done) {
@@ -415,7 +411,7 @@ let core = {
     return
   },
 
-  pickup() {
+  pickup(done) {
     let db = cfg.getDB()
     let p = cfg.getPath('addon')
     let imported = 0
@@ -465,6 +461,7 @@ let core = {
         log(cl.h(`❗ ${unknown.length} folders not recgonized\n`))
 
       ads.save()
+      if (done) done()
     })
   },
 
@@ -480,7 +477,7 @@ let core = {
 
     p = path.join(path.dirname(p), mode)
     fs.writeFileSync(pf, p, 'utf-8')
-    log('mode switched to:', cl.i(mode))
+    log('\nMode switched to:', cl.i(mode), '\n')
   },
 
   checkUpdate(done) {
