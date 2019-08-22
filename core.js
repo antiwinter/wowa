@@ -146,7 +146,7 @@ function clearUp(addon, done) {
   done()
 }
 
-function getAd(ad, info, tmp, hook) {
+function getAd(ad, info, tmp, hook, force) {
   let v
   let mode = getPath('mode')
 
@@ -156,6 +156,11 @@ function getAd(ad, info, tmp, hook) {
     if (!v.game) break
     if (mode === '_classic_' && v.game.split('.')[0] === '1') break
     if (mode !== '_classic_' && v.game.split('.')[0] !== '1') break
+  }
+
+  if (force &&
+    i === info.version.length) {
+    i = 0
   }
 
   if (i === info.version.length) {
@@ -236,7 +241,7 @@ function _install(from, to, sub, done) {
   }
 }
 
-function install(ad, update, hook) {
+function install(ad, update, hook, force) {
   let tmp = path.join(getPath('tmp'), ad.key.replace(/\//g, '-'))
   let notify = (status, msg) => {
     hook({
@@ -297,13 +302,13 @@ function install(ad, update, hook) {
             size = evt.transferred
             // log(evt)
           }
-        })
+        }, force)
       })
     })
   })
 }
 
-function batchInstall(ads, update) {
+function batchInstall(ads, update, force) {
   let t0 = moment().unix()
 
   if (!checkPath()) return
@@ -340,7 +345,7 @@ function batchInstall(ads, update) {
 
               res('ok')
             }
-          })
+          }, force)
         })
 
         return promise
@@ -372,8 +377,8 @@ let core = {
     return d
   },
 
-  add(ads) {
-    batchInstall(ads.map(x => core.parseName(x)), 0)
+  add(ads, cmd) {
+    batchInstall(ads.map(x => core.parseName(x)), 0, cmd.force)
   },
 
   rm(key) {
@@ -483,7 +488,7 @@ let core = {
     })
   },
 
-  update() {
+  update(cmd) {
     let ads = []
     for (let k in wowaads) {
       if (!wowaads[k].removed) ads.push({ key: k, source: wowaads[k].source })
@@ -496,10 +501,10 @@ let core = {
     if (checkDuplicate()) return
 
     log('\nupdating addons:')
-    batchInstall(ads, 1)
+    batchInstall(ads, 1, cmd.force)
   },
 
-  restore(repo) {
+  restore(repo, cmd) {
     if (repo) {
       log('\nrestore from remote is not implemented yet\n')
       return
@@ -516,7 +521,7 @@ let core = {
     }
 
     log('\nrestoring addons:')
-    batchInstall(ads, 0)
+    batchInstall(ads, 0, cmd.force)
   },
 
   switch() {

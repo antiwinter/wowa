@@ -9,6 +9,10 @@ cli.version(pkg.version).usage('<command> [option] <addon ...>')
 cli
   .command('add <addons...>')
   .description('install one or more addons locally')
+  .option(
+    '--force',
+    'install latest version if compatible version could not be found'
+  )
   .alias('install')
   .action(core.add)
 
@@ -39,6 +43,10 @@ cli
 cli
   .command('update')
   .description('update all installed addons')
+  .option(
+    '--force',
+    'install latest version if compatible version could not be found'
+  )
   .action(core.update)
 
 cli
@@ -55,6 +63,10 @@ cli
   .option(
     '-f, --full',
     'not only restore addons, but also restore addons settings'
+  )
+  .option(
+    '--force',
+    'install latest version if compatible version could not be found'
   )
   .action(core.restore)
 
