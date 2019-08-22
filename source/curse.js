@@ -29,21 +29,28 @@ let api = {
   info(key, done) {
     let mo = cfg.getMode()
 
-    x(api.$url + key + '/files', {
-      name: 'header h2 | trim',
-      owner: '.text-sm span | trim',
-      create: ['div span abbr@data-epoch | num'],
+    x(
+      api.$url +
+        key +
+        `/files/all?filter-game-version=1738749986:${
+          mo === '_retail_' ? '517' : '67408'
+        }`,
+      {
+        name: 'header h2 | trim',
+        owner: '.text-sm span | trim',
+        create: ['div span abbr@data-epoch | num'],
 
-      download: ['.w-full span | num'],
-      version: x('tbody tr', [
-        {
-          name: 'a | trim',
-          size: ['td | trim'],
-          game: 'td div div | trim',
-          link: '.button--hollow@href'
-        }
-      ])
-    })((err, d) => {
+        download: ['.w-full span | num'],
+        version: x('tbody tr', [
+          {
+            name: 'a | trim',
+            size: ['td | trim'],
+            game: 'td div div | trim',
+            link: '.button--hollow@href'
+          }
+        ])
+      }
+    )((err, d) => {
       // log('/???', key, err, d)
       if (!d) {
         done()
@@ -51,8 +58,8 @@ let api = {
       }
 
       let tmp = d.create
-      d.create = tmp[2]
-      d.update = tmp[3]
+      d.create = tmp[1]
+      d.update = tmp[2]
 
       d.version.forEach(x => {
         x.link += '/file'
@@ -63,7 +70,6 @@ let api = {
       d.version = _.filter(d.version, v => cfg.isValidVersion(v.game))
 
       // log(d)
-
       done(err || !d.update || d.version.length === 0 ? null : d)
     })
   },
