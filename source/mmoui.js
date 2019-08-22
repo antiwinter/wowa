@@ -86,7 +86,7 @@ let api = {
           key: x.key,
           download: parseInt(x.download),
           update: x.update,
-          page: `${api.$web}/downloads/info${key}.html`
+          page: `${api.$web}/downloads/info${x.key}.html`
         }
       })
     )

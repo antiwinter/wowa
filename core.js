@@ -74,6 +74,10 @@ function getAd(ad, info, tmp, hook) {
           hook('done')
         })
     })
+    .on('error', err => {
+      // log('stream error', typeof err, err)
+      hook(err ? err.toString() : 'download error')
+    })
     .pipe(fs.createWriteStream(src))
 }
 
@@ -87,8 +91,9 @@ function _install(from, to, sub, done) {
     toc = toc.replace(/\.toc$/, '')
     let target = path.join(to, toc)
 
-    // log('toc found, copy', from, '>>', target)
+    // log('\n\ntoc found, copy', from, '>>', target, '\n\n')
     rm(target, err => {
+      // log('\n\n', 'rm err', err)
       mk(target, err => {
         ncp(from, target, done)
         sub.push(toc)
@@ -103,11 +108,12 @@ function _install(from, to, sub, done) {
       (d, cb) => {
         _install(d, to, sub, err => {
           if (err) {
-            log('err??', err)
+            log('\n\nerr??', err, '\n\n')
             done(err)
             cb(false)
             return
           }
+          // log('\n\ninstalling from', d, 'to', to, sub, '\n\n')
           cb()
         })
       },
@@ -185,7 +191,7 @@ function install(ad, update, hook) {
   })
 }
 
-function batchInstall(ads, update) {
+function batchInstall(aa, update) {
   let t0 = moment().unix()
 
   if (!cfg.checkPath()) return
@@ -194,26 +200,29 @@ function batchInstall(ads, update) {
   let ud = 0
   let id = 0
 
-  ads.forEach(ad => {
+  aa.forEach(ad => {
     list.add({
       title: `${cl.h(ad.key)} waiting...`,
       task(ctx, task) {
         let promise = new Promise((res, rej) => {
           install(ad, update, evt => {
-            task.title = ''
-            task.title += cl.h(ad.key)
-            if (ad.version) task.title += cl.i2(' @' + cl.i2(ad.version))
-            if (ad.source) task.title += cl.i(` [${ad.source}]`)
+            if (!task.$st) {
+              task.title = ''
+              task.title += cl.h(ad.key)
+              if (ad.version) task.title += cl.i2(' @' + cl.i2(ad.version))
+              if (ad.source) task.title += cl.i(` [${ad.source}]`)
 
-            // log('ad is', ad)
+              // log('ad is', ad)
 
-            task.title += ' ' + cl.x(evt.msg)
+              task.title += ' ' + cl.x(evt.msg)
+            }
 
             if (
               evt.status === 'done' ||
               evt.status === 'skip' ||
               evt.status === 'failed'
             ) {
+              task.$st = evt.status
               if (evt.status !== 'done') task.skip()
               else {
                 if (update) ud++
@@ -347,19 +356,19 @@ let core = {
   },
 
   update() {
-    let ads = []
+    let aa = []
     for (let k in ads.data) {
-      ads.push({ key: k, source: ads.data[k].source })
+      aa.push({ key: k, source: ads.data[k].source })
     }
-    if (!ads.length) {
+    if (!aa.length) {
       log('\nnothing to update\n')
       return
     }
 
     if (ads.checkDuplicate()) return
 
-    log('\nupdating addons:')
-    batchInstall(ads, 1)
+    log('\nUpdating addons:\n')
+    batchInstall(aa, 1)
   },
 
   restore(repo) {
