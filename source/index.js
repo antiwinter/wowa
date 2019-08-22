@@ -47,6 +47,7 @@ let src = {
       1,
       (api, source, cb) => {
         if (ad.source && source !== ad.source) return cb()
+        if (!ad.source && source === 'github') return cb()
 
         let res = null
         // log('iter', source)
