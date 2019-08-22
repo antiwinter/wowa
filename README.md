@@ -102,9 +102,10 @@ wowa search wowinterface:dbm                    # search for dbm only from wowin
 - [x] Add test cases
 - [ ] Support projects on tukui.org
 - [x] **Support WoW Classic !**
-- [ ] Import existing addons
+- [x] Import existing addons
+- [x] Check **wowa** updates
+- [ ] Optimize color scheme
 - [ ] Shrink size of package
-- [ ] Wowa upgrade
 - [ ] Support releasing UI (addons list, together with settings) to github.com
 - [ ] Support backing up to github.com
 - [ ] Support restoring from github.com

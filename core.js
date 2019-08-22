@@ -241,14 +241,15 @@ function batchInstall(aa, update) {
 
   list.run().then(res => {
     ads.save()
-    log(`${id} addons` + (update ? `, ${ud} updated` : ' installed'))
-    log(`✨  done in ${moment().unix() - t0}s.`)
+    log(`\n${id} addons` + (update ? `, ${ud} updated` : ' installed'))
+    log(`✨  done in ${moment().unix() - t0}s.\n`)
   })
 }
 
 let core = {
-  add(ads) {
-    batchInstall(ads.map(x => api.parseName(x)), 0)
+  add(aa) {
+    log('\nInstalling addon' + (aa.length > 1 ? 's...' : '...') + '\n')
+    batchInstall(aa.map(x => api.parseName(x)), 0)
   },
 
   rm(key) {
@@ -377,18 +378,18 @@ let core = {
       return
     }
 
-    let ads = []
+    let aa = []
     for (let k in ads.data) {
-      ads.push(k)
+      aa.push({ key: k, source: ads.data[k].source })
     }
 
-    if (!ads.length) {
+    if (!aa.length) {
       log('\nnothing to restore\n')
       return
     }
 
-    log('\nrestoring addons:')
-    batchInstall(ads, 0)
+    log('\nRestoring addons:')
+    batchInstall(aa, 0)
   },
 
   updateSummary(done) {
