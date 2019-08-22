@@ -257,7 +257,8 @@ let core = {
 
     api.search(api.parseName(text), info => {
       if (!info) {
-        log('not found')
+        log('\nNothing is found\n')
+        if (done) done(info)
         return
       }
 
@@ -316,7 +317,11 @@ let core = {
     ad = api.parseName(ad)
     api.info(ad, info => {
       log('\n' + cl.h(ad.key) + '\n')
-      if (!info) return log('not available\n')
+      if (!info) {
+        log('Not available\n')
+        if (done) done()
+        return
+      }
 
       let kv = (k, v) => {
         // log('adding', k, v)

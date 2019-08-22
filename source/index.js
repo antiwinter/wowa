@@ -70,27 +70,28 @@ let src = {
   search(ad, done) {
     if (!src.$valid(ad)) return done()
 
-    async.eachOfLimit(src.$api, 1, (api, source, cb) => {
-      if (!api.search) return cb()
-      if (ad.source && source !== ad.source) return cb()
+    async.eachOfLimit(
+      src.$api,
+      1,
+      (api, source, cb) => {
+        if (!api.search) return cb()
+        if (ad.source && source !== ad.source) return cb()
 
-      // log('searching', source)
-      let res = null
-      // log('searching', source)
-      api.search(
-        ad.key,
-        data => {
+        // log('searching', source)
+        let res = null
+        // log('searching', source)
+        api.search(ad.key, data => {
           if (data && data.length) {
             res = { source, data }
             done(res)
             cb(false)
-          }
-        },
-        () => {
-          done()
-        }
-      )
-    })
+          } else cb()
+        })
+      },
+      () => {
+        done()
+      }
+    )
   },
 
   summary(done) {

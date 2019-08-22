@@ -1,7 +1,5 @@
 import ava from 'ava'
 import fs from 'fs'
-import g from 'got'
-import ext from 'file-type'
 import vau from 'valid-url'
 import mk from 'mkdirp'
 import rm from 'rimraf'
@@ -10,85 +8,13 @@ import _ from 'underscore'
 
 import cfg from './lib/config'
 import core from './core'
-import api from './source'
 import ads from './lib/wowaads'
 
 const log = console.log
 
-function checkZip(link, done) {
-  try {
-    let s = g
-      .stream(link, {
-        headers: {
-          'user-agent': require('ua-string')
-        }
-      })
-      .on('readable', () => {
-        try {
-          let chunk = s.read(ext.minimumBytes)
-          // if (typeof chunk === 'object') return
-          let ex = ext(chunk)
-          // log('got', ex, 'from', link)
-          s.destroy()
-
-          done(ex)
-        } catch (err) {
-          // log('inner', err)
-          // done()
-        }
-      })
-      .on('error', err => {
-        done(err)
-      })
-  } catch (err) {
-    done(err)
-  }
-}
-
-function testInfo(key, unzip) {
-  ava.cb('info::' + key, t => {
-    api.info(api.parseName(key), info => {
-      // log('gg', info)
-      t.assert(info.name.match(/deadly/i))
-      // t.is(info.owner, 'MysticalOS')
-      t.assert(info.update > 1561424000)
-      // t.assert(info.download > 100)
-      t.assert(info.version.length > 0)
-
-      info.version.forEach(x => {
-        // t.assert(x.game.match(/^[0-9\.]+$/))
-        t.assert(x.link.length > 10)
-        t.assert(x.name.length > 1)
-      })
-
-      if (unzip)
-        checkZip(info.version[0].link, res => {
-          t.assert(res && res.mime === 'application/zip')
-          t.end()
-        })
-      else t.end()
-    })
-  })
-}
-
-function testSearch(key) {
-  ava.cb('search::' + key, t => {
-    api.search(api.parseName(key), res => {
-      t.assert(res.source)
-      t.assert(res.data.length > 0)
-
-      res.data.forEach(x => {
-        t.assert(typeof x.name === 'string' && x.name.length > 1)
-        t.assert(typeof x.key === 'string' && x.key.length > 1)
-        t.assert(typeof x.download === 'number' && x.download > 1)
-        t.assert(typeof x.update === 'number' && x.update > 1)
-        // t.assert(typeof x.desc === 'string' && x.desc.length > 1)
-        t.assert(vau.isUri(x.page))
-      })
-
-      t.end()
-    })
-  })
+let ccc = 1
+function nme(x) {
+  return ccc++ + '-' + x
 }
 
 ava.serial.before.cb('path', t => {
@@ -121,12 +47,12 @@ ava.serial.before.cb('prepare', t => {
   core.updateSummary(() => t.end())
 })
 
-ava.serial.cb('appetizer', t => {
+ava.serial.cb(nme('appetizer'), t => {
   t.end()
 })
 
 function commonTests(aa) {
-  ava.serial.cb('add addons', t => {
+  ava.serial.cb(nme('install'), t => {
     core.add(aa.map(a => a[0]), res => {
       let p = cfg.getPath('addon')
       t.assert(res.count === aa.length)
@@ -143,6 +69,137 @@ function commonTests(aa) {
       t.end()
     })
   })
+
+  // ava.serial.cb(nme('update-none'), t => {
+  //   core.update(res => {
+  //     let p = cfg.getPath('addon')
+  //     t.assert(res.count === 0)
+  //     t.assert(res.update === 1)
+  //     t.assert(res.ud === 0)
+
+  //     aa.forEach(a => {
+  //       t.assert(_.find(fs.readdirSync(p), d => d.match(a[1])))
+  //     })
+
+  //     ads.load()
+
+  //     t.assert(_.keys(ads.data).length === aa.length)
+  //     t.assert(!_.find(ads.data, d => !d.sub.length))
+  //     t.end()
+  //   })
+  // })
+
+  // ava.serial.cb(nme('update-1'), t => {
+  //   ads.data['classicon'].update = 0
+
+  //   core.update(res => {
+  //     let p = cfg.getPath('addon')
+  //     t.assert(res.count === 1)
+  //     t.assert(res.update === 1)
+  //     t.assert(res.ud === 1)
+
+  //     aa.forEach(a => {
+  //       t.assert(_.find(fs.readdirSync(p), d => d.match(a[1])))
+  //     })
+
+  //     ads.load()
+
+  //     t.assert(ads.data['classicon'].update > 0)
+  //     t.assert(_.keys(ads.data).length === aa.length)
+  //     t.assert(!_.find(ads.data, d => !d.sub.length))
+  //     t.end()
+  //   })
+  // })
+
+  ava.serial.cb(nme('rm-1'), t => {
+    core.rm('classicon', res => {
+      let p = cfg.getPath('addon')
+
+      t.assert(!_.find(fs.readdirSync(p), d => d.match(/^Class/)))
+
+      ads.load()
+
+      t.assert(!ads.data['classicon'])
+      t.assert(_.keys(ads.data).length === aa.length - 1)
+      t.end()
+    })
+  })
+
+  ava.serial.cb(nme('search-none'), t => {
+    core.search('abcdef', info => {
+      t.assert(!info)
+      t.end()
+    })
+  })
+
+  ava.serial.cb(nme('search-curse'), t => {
+    core.search('dbm', info => {
+      t.assert(info.data.length > 0)
+      let v = info.data[0]
+
+      // log('gg', info)
+      t.assert(v.name.match(/Deadly Boss Mods/))
+      t.assert(v.key.match(/deadly-boss-mods/))
+
+      t.assert(vau.isUri(v.page))
+      t.assert(v.download > 200000000)
+      t.assert(v.update > 1561424000)
+
+      t.end()
+    })
+  })
+
+  ava.serial.cb(nme('search-mmoui'), t => {
+    core.search('mmoui:dbm', info => {
+      t.assert(info.data.length > 0)
+      let v = info.data[0]
+
+      // log('gg', info)
+      t.assert(v.name.match(/Deadly Boss Mods/))
+      t.assert(v.key.match(/8814-DeadlyBossMods/))
+
+      t.assert(vau.isUri(v.page))
+      t.assert(v.download > 2339130)
+      t.assert(v.update > 1561424000)
+
+      t.end()
+    })
+  })
+
+  ava.serial.cb(nme('ls'), t => {
+    let ls = core.ls()
+
+    // t.assert(ls.search(cfg.getMode()) > 0)
+    t.assert(ls.search('sellableitemdrops') > 0)
+    t.assert(ls.search('classicon') < 0)
+
+    t.end()
+  })
+
+  ava.serial.cb(nme('info-none'), t => {
+    core.info('abcdef', res => {
+      t.assert(!res)
+      t.end()
+    })
+  })
+
+  ava.serial.cb(nme('info-curse'), t => {
+    core.info('deadly-boss-mods', res => {
+      t.assert(res.match(/Deadly Boss Mods/))
+      t.assert(res.match(/MysticalOS/))
+      t.assert(res.match(/curse/))
+      t.assert(res.search(cfg.getGameVersion()) > 0)
+      t.end()
+    })
+  })
+
+  ava.serial.cb(nme('info-mmoui'), t => {
+    core.info('8814-xx', res => {
+      t.assert(res.match(/Deadly Boss Mods/))
+      t.assert(res.match(/mmoui/))
+      t.end()
+    })
+  })
 }
 
 commonTests([
@@ -152,8 +209,14 @@ commonTests([
   ['sellableitemdrops', /^Sella/]
 ])
 
-// testInfo('curse:deadly-boss-mods', 1)
-// testInfo('wowinterface:8814-DeadlyBossMods', fetchMMOUI)
-// testInfo('deadlybossmods/deadlybossmods', 1)
-// testSearch('curse:deadly')
-// testSearch('wowinterface:deadly')
+ava.serial.cb(nme('switch-to-classic'), t => {
+  core.switch()
+  t.end()
+})
+
+// commonTests([
+//   // ['deadlybossmods/deadlybossmods', /^DBM/],
+//   ['classicon', /^Class/],
+//   // ['mmoui:11190-Bartender4', /^Bart/],
+//   ['sellableitemdrops', /^Sella/]
+// ])
