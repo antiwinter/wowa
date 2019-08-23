@@ -424,7 +424,10 @@ let core = {
     let imported = 0
     let importedDirs = 0
 
-    if (!db) return
+    if (!db) {
+      if (done) done()
+      return
+    }
 
     // log(db)
     fs.readdir(p, (err, dirs) => {
@@ -468,7 +471,7 @@ let core = {
         log(cl.h(`❗ ${unknown.length} folders not recgonized\n`))
 
       ads.save()
-      if (done) done()
+      if (done) done(unknown)
     })
   },
 
@@ -485,6 +488,8 @@ let core = {
     p = path.join(path.dirname(p), mode)
     fs.writeFileSync(pf, p, 'utf-8')
     log('\nMode switched to:', cl.i(mode), '\n')
+
+    ads.load()
   },
 
   checkUpdate(done) {
@@ -506,7 +511,9 @@ let core = {
       // fetch new data
       pi('wowa').then(res => {
         fs.writeFileSync(p, JSON.stringify(res), 'utf-8')
+        done(res)
       })
+      return
     } else if (e) i = JSON.parse(fs.readFileSync(p, 'utf-8'))
 
     if (i) {
@@ -521,7 +528,7 @@ let core = {
       }
     }
 
-    done()
+    done(i)
   }
 }
 
