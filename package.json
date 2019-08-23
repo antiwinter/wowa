@@ -18,7 +18,7 @@
     "yauzl": "^2.10.0"
   },
   "name": "wowa",
-  "version": "1.1.4",
+  "version": "1.2.0",
   "description": "Manage World of Warcraft addons, upload WCL, etc.",
   "main": "index.js",
   "devDependencies": {
