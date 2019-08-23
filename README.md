@@ -57,29 +57,29 @@ wowa search wowinterface:dbm                    # search for dbm only from wowin
 
 ### Installing an addon
 
-![](https://raw.githubusercontent.com/antiwinter/wowa/master/docs/ins1-min.gif)
+![](https://raw.githubusercontent.com/antiwinter/scrap/master/wowa/ins1-min.gif)
 
 ### Search for an addon
 
-![](https://raw.githubusercontent.com/antiwinter/wowa/master/docs/search-min.gif)
+![](https://raw.githubusercontent.com/antiwinter/scrap/master/wowa/search-min.gif)
 
 **Note:** that WoWA manages addons by keys (keys are provided by [curse](https://www.curseforge.com)) not by addon names, sometimes they are different. If you are not sure a key for an addon, you can search that addon by some fuzzy name, and the search result provides the correct key to use.
 
 ### Installing two or more addons
 
-![](https://raw.githubusercontent.com/antiwinter/wowa/master/docs/ins2-min.gif)
+![](https://raw.githubusercontent.com/antiwinter/scrap/master/wowa/ins2-min.gif)
 
 ### Removing an addon
 
-![](https://raw.githubusercontent.com/antiwinter/wowa/master/docs/rm-min.gif)
+![](https://raw.githubusercontent.com/antiwinter/scrap/master/wowa/rm-min.gif)
 
 ### Update all installed addons
 
-![](https://raw.githubusercontent.com/antiwinter/wowa/master/docs/update-min.gif)
+![](https://raw.githubusercontent.com/antiwinter/scrap/master/wowa/update-min.gif)
 
 ### List all installed addons
 
-![](https://raw.githubusercontent.com/antiwinter/wowa/master/docs/ls-min.gif)
+![](https://raw.githubusercontent.com/antiwinter/scrap/master/wowa/ls-min.gif)
 
 ## Related projects
 
