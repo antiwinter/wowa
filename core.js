@@ -152,7 +152,7 @@ function install(ad, update, hook) {
                 sub: []
               }
 
-              if (!update) ads.data[ad.key].anyway = cfg.anyway()
+              if (ad.anyway) ads.data[ad.key].anyway = ad.anyway
 
               _install(dec, cfg.getPath('addon'), ads.data[ad.key].sub, err => {
                 if (err) return notify('failed', 'failed to copy file')
@@ -287,8 +287,7 @@ let core = {
     for (let k in ads.data) {
       let v = ads.data[k]
 
-      t.cell(cl.x('Addon keys'), cl.h(k))
-
+      t.cell(cl.x('Addon keys'), cl.h(k) + (v.anyway ? cl.i2(' [anyway]') : ''))
       t.cell(cl.x('Version'), cl.i2(v.version))
       t.cell(cl.x('Source'), cl.i(v.source))
       t.cell(cl.x('Update'), cl.i(moment(v.update * 1000).format('YYYY-MM-DD')))
@@ -355,7 +354,7 @@ let core = {
       aa.push({
         key: k,
         source: ads.data[k].source,
-        anyway: ads.data[k].anyway
+        anyway: ads.data[k].anyway && cfg.anyway()
       })
     }
     if (!aa.length) {

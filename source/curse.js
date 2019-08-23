@@ -66,8 +66,6 @@ let api = {
       })
       d.download = d.download[2]
 
-      d.version = _.filter(d.version, v => cfg.isValidVersion(v.game))
-
       // log(d)
       done(err || !d.update || d.version.length === 0 ? null : d)
     })
