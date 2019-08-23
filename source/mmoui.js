@@ -7,8 +7,8 @@ let api = {
   $url: 'https://api.mmoui.com/v3/game/WOW',
   $web: 'https://wowinterface.com',
 
-  info(key, done) {
-    let id = key.split('-')[0]
+  info(ad, done) {
+    let id = ad.key.split('-')[0]
 
     // log('getting', `${api.$url}/filedetails/${id}.json`)
     g(`${api.$url}/filedetails/${id}.json`)
@@ -58,21 +58,21 @@ let api = {
       })
   },
 
-  search(text, done) {
+  search(ad, done) {
     let mo = cfg.getMode()
     let db = cfg.getDB()
 
     if (!db) return done()
 
-    db = _.filter(db, d => mo === d.mode)
+    if (!ad.anyway) db = _.filter(db, d => mo === d.mode)
 
     // log(mo)
 
     let res = _.filter(
       db,
       d =>
-        d.name.toLowerCase().search(text.toLowerCase()) >= 0 ||
-        d.dir[0].toLowerCase().search(text.toLowerCase()) >= 0
+        d.name.toLowerCase().search(ad.key.toLowerCase()) >= 0 ||
+        d.dir[0].toLowerCase().search(ad.key.toLowerCase()) >= 0
     )
 
     res.sort((a, b) => b.download - a.download)

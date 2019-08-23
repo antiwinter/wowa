@@ -1,5 +1,6 @@
 const log = console.log
 const async = require('async')
+const cfg = require('../lib/config')
 
 let src = {
   $api: {
@@ -36,6 +37,8 @@ let src = {
 
     if (d.source && d.source !== 'github' && d.source !== 'curse')
       d.source = 'mmoui'
+
+    d.anyway = cfg.anyway()
     return d
   },
 
@@ -51,8 +54,8 @@ let src = {
 
         let res = null
         // log('iter', source)
-        api.info(ad.key, info => {
-          if (info) {
+        api.info(ad, info => {
+          if (info && info.version.length) {
             res = info
             res.source = source
             // log('g info', info)
@@ -80,7 +83,7 @@ let src = {
         // log('searching', source)
         let res = null
         // log('searching', source)
-        api.search(ad.key, data => {
+        api.search(ad, data => {
           if (data && data.length) {
             res = { source, data }
             done(res)

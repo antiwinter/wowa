@@ -13,8 +13,8 @@ const log = console.log
 let api = {
   $url: 'https://github.com/',
 
-  info(key, done) {
-    x(api.$url + key + '/tags', {
+  info(ad, done) {
+    x(api.$url + ad.key + '/tags', {
       name: 'h1 strong a',
       owner: 'h1 .author a',
       author: 'h1 .author a',
@@ -27,14 +27,14 @@ let api = {
         }
       ])
     })((err, d) => {
-      // log('/???', key, err, d)
+      // log('/???', ad.key, err, d)
       if (err || !d || !d.version.length) {
         done()
         return
       }
 
       d.update = d.version[0].time
-      d.page = api.$url + key
+      d.page = api.$url + ad.key
       d.stars = d.stars[1]
 
       done(d)

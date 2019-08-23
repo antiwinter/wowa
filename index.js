@@ -2,15 +2,22 @@
 
 const cli = require('commander')
 const pkg = require('./package.json')
+const cfg = require('./lib/config')
 const core = require('./core')
 
-cli.version(pkg.version).usage('<command> [option] <addon ...>')
+cli
+  .version(pkg.version)
+  .usage('<command> [option] <addon ...>')
+  .option('--anyway', 'install latest addon release for _classic_ mode anyway')
 
 cli
   .command('add <addons...>')
   .description('install one or more addons locally')
   .alias('install')
-  .action(aa => core.add(aa))
+  .action((aa, cmd) => {
+    cfg.anyway(cmd.anyway)
+    core.add(aa)
+  })
 
 cli
   .command('rm <addon>')
@@ -21,7 +28,10 @@ cli
 cli
   .command('search <text>')
   .description('search addons whose name contain <text>')
-  .action(text => core.search(text))
+  .action((text, cmd) => {
+    cfg.anyway(cmd.anyway)
+    core.search(text)
+  })
 
 cli
   .command('ls')
@@ -34,12 +44,18 @@ cli
   .description(
     'show info of an addon, the addon does not have to be an installed locally'
   )
-  .action(ad => core.info(ad))
+  .action((ad, cmd) => {
+    cfg.anyway(cmd.anyway)
+    core.info(ad)
+  })
 
 cli
   .command('update')
   .description('update all installed addons')
-  .action(() => core.update())
+  .action(cmd => {
+    cfg.anyway(cmd.anyway)
+    core.update()
+  })
 
 cli
   .command('import')

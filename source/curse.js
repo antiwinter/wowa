@@ -26,32 +26,31 @@ let api = {
   $url: 'https://www.curseforge.com/wow/addons/',
   $srl: 'https://addons-ecs.forgesvc.net/api/v2/addon/search',
 
-  info(key, done) {
+  info(ad, done) {
     let mo = cfg.getMode()
+    let url = api.$url + ad.key + '/files/all'
 
-    x(
-      api.$url +
-        key +
-        `/files/all?filter-game-version=1738749986:${
-          mo === '_retail_' ? '517' : '67408'
-        }`,
-      {
-        name: 'header h2 | trim',
-        owner: '.text-sm span | trim',
-        create: ['div span abbr@data-epoch | num'],
+    if (!ad.anyway)
+      url += `?filter-game-version=1738749986:${
+        mo === '_retail_' ? '517' : '67408'
+      }`
 
-        download: ['.w-full span | num'],
-        version: x('tbody tr', [
-          {
-            name: 'a | trim',
-            size: ['td | trim'],
-            game: 'td div div | trim',
-            link: '.button--hollow@href'
-          }
-        ])
-      }
-    )((err, d) => {
-      // log('/???', key, err, d)
+    x(url, {
+      name: 'header h2 | trim',
+      owner: '.text-sm span | trim',
+      create: ['div span abbr@data-epoch | num'],
+
+      download: ['.w-full span | num'],
+      version: x('tbody tr', [
+        {
+          name: 'a | trim',
+          size: ['td | trim'],
+          game: 'td div div | trim',
+          link: '.button--hollow@href'
+        }
+      ])
+    })((err, d) => {
+      // log('/???', ad.key, err, d)
       if (!d) {
         done()
         return
@@ -74,12 +73,13 @@ let api = {
     })
   },
 
-  search(text, done) {
+  search(ad, done) {
     let mo = cfg.getMode()
 
-    let qs = `${api.$srl}?gameId=1&index=0&pageSize=15&searchFilter=${text}`
+    let qs = `${api.$srl}?gameId=1&index=0&pageSize=15&searchFilter=${ad.key}`
 
-    if (mo === '_classic_') qs += `&gameVersion=${cfg.getGameVersion()}`
+    if (mo === '_classic_' && !ad.anyway)
+      qs += `&gameVersion=${cfg.getGameVersion()}`
 
     // log('searching', qs)
     g.get(qs)

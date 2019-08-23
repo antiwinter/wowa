@@ -28,26 +28,14 @@ const cl = {
 }
 
 function getAd(ad, info, tmp, hook) {
-  let v
-  let mode = cfg.getPath('mode')
+  let v = info.version[0]
 
-  let i = 0
-  for (; i < info.version.length; i++) {
-    v = info.version[i]
-    if (!v.game) break
-    if (mode === '_classic_' && v.game.split('.')[0] === '1') break
-    if (mode !== '_classic_' && v.game.split('.')[0] !== '1') break
-  }
-
-  if (i === info.version.length) {
-    return hook(`${cl.i(mode)} version is not available`)
-  }
-
-  if (v && ad.version) v = _.find(info.version, d => d.name === ad.version)
   if (!v) {
     log('fatal: version not found')
     return hook()
   }
+
+  if (ad.version) v = _.find(info.version, d => d.name === ad.version)
 
   let src = path.join(tmp, '1.zip')
   let dst = path.join(tmp, 'dec')
@@ -163,6 +151,8 @@ function install(ad, update, hook) {
                 update: info.update,
                 sub: []
               }
+
+              if (!update) ads.data[ad.key].anyway = cfg.anyway()
 
               _install(dec, cfg.getPath('addon'), ads.data[ad.key].sub, err => {
                 if (err) return notify('failed', 'failed to copy file')
@@ -362,7 +352,11 @@ let core = {
   update(done) {
     let aa = []
     for (let k in ads.data) {
-      aa.push({ key: k, source: ads.data[k].source })
+      aa.push({
+        key: k,
+        source: ads.data[k].source,
+        anyway: ads.data[k].anyway
+      })
     }
     if (!aa.length) {
       log('\nnothing to update\n')
