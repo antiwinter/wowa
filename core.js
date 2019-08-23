@@ -11,11 +11,11 @@ const tb = require('easy-table')
 const Listr = require('listr')
 const _ = require('underscore')
 const g = require('got')
-const unzip = require('unzip')
 const pi = require('package-info')
 
 const api = require('./source')
 const cfg = require('./lib/config')
+const unzip = require('./lib/unzip')
 const ads = require('./lib/wowaads').load()
 const pkg = require('./package.json')
 const log = console.log
@@ -66,9 +66,11 @@ function getAd(ad, info, tmp, hook) {
       // log('stream error', typeof err, err)
       hook(err ? err.toString() : 'download error')
     })
-    .pipe(unzip.Extract({ path: dst }))
+    .pipe(fs.createWriteStream(src))
     .on('close', () => {
-      hook('done')
+      unzip(src, dst, () => {
+        hook('done')
+      })
     })
 }
 

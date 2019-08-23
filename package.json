@@ -15,8 +15,8 @@
     "rimraf": "^2.6.3",
     "ua-string": "^3.0.0",
     "underscore": "^1.9.1",
-    "unzip": "^0.1.11",
-    "x-ray": "^2.3.3"
+    "x-ray": "^2.3.3",
+    "yauzl": "^2.10.0"
   },
   "name": "wowa",
   "version": "1.1.2",
