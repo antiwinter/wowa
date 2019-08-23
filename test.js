@@ -156,10 +156,12 @@ function commonTests(aa) {
 
       // log('gg', info)
       t.assert(v.name.match(/Deadly Boss Mods/))
-      t.assert(v.key.match(/8814-DeadlyBossMods/))
+
+      if (cfg.getMode() === '_classic_') t.assert(v.key.match(/24921-/))
+      else t.assert(v.key.match(/8814-DeadlyBossMods/))
 
       t.assert(vau.isUri(v.page))
-      t.assert(v.download > 2339130)
+      t.assert(v.download > 100)
       t.assert(v.update > 1561424000)
 
       t.end()
@@ -203,9 +205,9 @@ function commonTests(aa) {
 }
 
 commonTests([
-  // ['deadlybossmods/deadlybossmods', /^DBM/],
+  ['deadlybossmods/deadlybossmods', /^DBM/],
   ['classicon', /^Class/],
-  // ['mmoui:11190-Bartender4', /^Bart/],
+  ['mmoui:11190-Bartender4', /^Bart/],
   ['sellableitemdrops', /^Sella/]
 ])
 
@@ -214,9 +216,9 @@ ava.serial.cb(nme('switch-to-classic'), t => {
   t.end()
 })
 
-// commonTests([
-//   // ['deadlybossmods/deadlybossmods', /^DBM/],
-//   ['classicon', /^Class/],
-//   // ['mmoui:11190-Bartender4', /^Bart/],
-//   ['sellableitemdrops', /^Sella/]
-// ])
+commonTests([
+  ['deadlybossmods/deadlybossmods', /^DBM/],
+  ['classicon', /^Class/],
+  ['mmoui:11190-Bartender4', /^Bart/],
+  ['sellableitemdrops', /^Sella/]
+])
