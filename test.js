@@ -70,46 +70,46 @@ function commonTests(aa) {
     })
   })
 
-  // ava.serial.cb(nme('update-none'), t => {
-  //   core.update(res => {
-  //     let p = cfg.getPath('addon')
-  //     t.assert(res.count === 0)
-  //     t.assert(res.update === 1)
-  //     t.assert(res.ud === 0)
+  ava.serial.cb(nme('update-none'), t => {
+    core.update(res => {
+      let p = cfg.getPath('addon')
+      t.assert(res.count === 0)
+      t.assert(res.update === 1)
+      t.assert(res.ud === 0)
 
-  //     aa.forEach(a => {
-  //       t.assert(_.find(fs.readdirSync(p), d => d.match(a[1])))
-  //     })
+      aa.forEach(a => {
+        t.assert(_.find(fs.readdirSync(p), d => d.match(a[1])))
+      })
 
-  //     ads.load()
+      ads.load()
 
-  //     t.assert(_.keys(ads.data).length === aa.length)
-  //     t.assert(!_.find(ads.data, d => !d.sub.length))
-  //     t.end()
-  //   })
-  // })
+      t.assert(_.keys(ads.data).length === aa.length)
+      t.assert(!_.find(ads.data, d => !d.sub.length))
+      t.end()
+    })
+  })
 
-  // ava.serial.cb(nme('update-1'), t => {
-  //   ads.data['classicon'].update = 0
+  ava.serial.cb(nme('update-1'), t => {
+    ads.data['classicon'].update = 0
 
-  //   core.update(res => {
-  //     let p = cfg.getPath('addon')
-  //     t.assert(res.count === 1)
-  //     t.assert(res.update === 1)
-  //     t.assert(res.ud === 1)
+    core.update(res => {
+      let p = cfg.getPath('addon')
+      t.assert(res.count === 1)
+      t.assert(res.update === 1)
+      t.assert(res.ud === 1)
 
-  //     aa.forEach(a => {
-  //       t.assert(_.find(fs.readdirSync(p), d => d.match(a[1])))
-  //     })
+      aa.forEach(a => {
+        t.assert(_.find(fs.readdirSync(p), d => d.match(a[1])))
+      })
 
-  //     ads.load()
+      ads.load()
 
-  //     t.assert(ads.data['classicon'].update > 0)
-  //     t.assert(_.keys(ads.data).length === aa.length)
-  //     t.assert(!_.find(ads.data, d => !d.sub.length))
-  //     t.end()
-  //   })
-  // })
+      t.assert(ads.data['classicon'].update > 0)
+      t.assert(_.keys(ads.data).length === aa.length)
+      t.assert(!_.find(ads.data, d => !d.sub.length))
+      t.end()
+    })
+  })
 
   ava.serial.cb(nme('rm-1'), t => {
     core.rm('classicon', res => {
@@ -121,7 +121,10 @@ function commonTests(aa) {
 
       t.assert(!ads.data['classicon'])
       t.assert(_.keys(ads.data).length === aa.length - 1)
-      t.end()
+
+      core.add(['classicon'], () => {
+        t.end()
+      })
     })
   })
 
@@ -173,7 +176,7 @@ function commonTests(aa) {
 
     // t.assert(ls.search(cfg.getMode()) > 0)
     t.assert(ls.search('sellableitemdrops') > 0)
-    t.assert(ls.search('classicon') < 0)
+    t.assert(ls.search('classicon') > 0)
 
     t.end()
   })
@@ -202,12 +205,29 @@ function commonTests(aa) {
       t.end()
     })
   })
+
+  ava.serial.cb(nme('import'), t => {
+    ads.data = {}
+    ads.save()
+
+    core.pickup(res => {
+      ads.load()
+
+      t.assert(_.keys(ads.data).length === _.filter(aa, a => a[2]).length)
+      aa.forEach(a => {
+        if (a[2])
+          t.assert(_.find(_.keys(ads.data), k => k.split('-')[0] === a[2]))
+      })
+
+      t.end()
+    })
+  })
 }
 
 commonTests([
-  ['deadlybossmods/deadlybossmods', /^DBM/],
-  ['classicon', /^Class/],
-  ['mmoui:11190-Bartender4', /^Bart/],
+  ['deadlybossmods/deadlybossmods', /^DBM/, '8814'],
+  ['classicon', /^Class/, '18267'],
+  ['mmoui:11190-Bartender4', /^Bart/, '11190'],
   ['sellableitemdrops', /^Sella/]
 ])
 
@@ -217,8 +237,20 @@ ava.serial.cb(nme('switch-to-classic'), t => {
 })
 
 commonTests([
-  ['deadlybossmods/deadlybossmods', /^DBM/],
+  ['deadlybossmods/deadlybossmods', /^DBM/, '24921'],
   ['classicon', /^Class/],
   ['mmoui:11190-Bartender4', /^Bart/],
   ['sellableitemdrops', /^Sella/]
 ])
+
+ava.serial.cb(nme('wowa update'), t => {
+  core.checkUpdate(res => {
+    t.assert(res.name === 'wowa')
+
+    core.checkUpdate(res => {
+      t.assert(res.name === 'wowa')
+
+      t.end()
+    })
+  })
+})
