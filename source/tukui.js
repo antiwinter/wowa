@@ -5,11 +5,42 @@ const log = console.log
 
 let api = {
   $url: 'https://www.tukui.org/api.php',
-  $web: 'https://www.tukui.org/download.php?ui=tukui',
+  $web: 'https://www.tukui.org/download.php',
 
   info(ad, done) {
     let id = ad.key.split('-')[0]
     let mo = cfg.getMode()
+
+    if (mo === '_retail_' && ad.key.match(/0-tukui|0-elvui/i)) {
+      g(`${api.$web}?ui=${ad.key.match(/0-tukui/i) ? 'tukui' : 'elvui'}`)
+        .then(res => {
+          let i = {
+            name: ad.key,
+            author: 'tukui.org',
+            download: 1000000,
+            version: [{}]
+          }
+
+          res.body
+            .replace(/\r/g, '')
+            .split('\n')
+            .forEach(line => {
+              if (line.match(/current version/i)) {
+                let d = line.replace(/</g, '>').split('>')
+                i.update = new Date(d[6]) / 1000
+                i.version[0].name = d[2]
+              }
+
+              if (line.match(/btn-mod/i)) {
+                i.version[0].link = 'https://www.tukui.org' + line.split('"')[1]
+              }
+            })
+
+          done(i)
+        })
+        .catch(x => done())
+      return
+    }
 
     // log('getting', `${api.$url}/filedetails/${id}.json`)
     g(`${api.$url}?${mo === '_retail_' ? 'addon' : 'classic-addon'}=${id}`)
@@ -41,6 +72,28 @@ let api = {
     ).then(res => {
       res = JSON.parse(res.body)
 
+      log(res)
+      // retail version will not show in api results
+      if (mo === '_retail_')
+        res = res.concat([
+          {
+            id: 0,
+            name: 'TukUI',
+            small_desc: 'TukUI',
+            downloads: 1000000,
+            lastupdate: new Date().valueOf(),
+            web_url: api.$web + '?ui=tukui'
+          },
+          {
+            id: 0,
+            name: 'ElvUI',
+            small_desc: 'ElvUI',
+            downloads: 1000000,
+            lastupdate: new Date().valueOf(),
+            web_url: api.$web + '?ui=elvui'
+          }
+        ])
+
       res = _.filter(
         res,
         d =>
@@ -50,8 +103,6 @@ let api = {
 
       res.sort((a, b) => b.downloads - a.downloads)
 
-      res.unshift({})
-
       res = res.slice(0, 15)
 
       // log(res)
@@ -60,9 +111,9 @@ let api = {
           return {
             name: x.name,
             key: x.id + '-' + x.name.replace(/[^a-zA-Z0-9]/g, ''),
-            download: parseInt(x.download),
-            update: x.update,
-            page: `${api.$web}/downloads/info${x.key}.html`
+            download: parseInt(x.downloads),
+            update: new Date(x.lastupdate).valueOf() / 1000,
+            page: x.web_url
           }
         })
       )

@@ -1,17 +1,19 @@
 const log = console.log
 const async = require('async')
 const cfg = require('../lib/config')
+const _ = require('underscore')
 
 let src = {
   $api: {
     curse: require('./curse'),
     mmoui: require('./mmoui'),
+    tukui: require('./tukui'),
     github: require('./github')
   },
 
   $valid(ad) {
     if (ad.source && !src.$api[ad.source]) {
-      log(ad.source, 'is not a valid source, use one of below instead:')
+      log(`\nInvalid source: ${ad.source}, use one of below instead:`)
       log(
         _.keys(src.$api)
           .map(x => `  ${x}`)
@@ -35,8 +37,7 @@ let src = {
       key: name.split('@')[0]
     }
 
-    if (d.source && d.source !== 'github' && d.source !== 'curse')
-      d.source = 'mmoui'
+    if (d.source in { wowi: 1, wowinterface: 1 }) d.source = 'mmoui'
 
     d.anyway = cfg.anyway()
     return d
