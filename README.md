@@ -6,10 +6,12 @@
 [![npm](https://img.shields.io/npm/l/wowa.svg)](https://github.com/antiwinter/wowa/blob/master/LICENSE)
 [![install size](https://packagephobia.now.sh/badge?p=wowa)](https://packagephobia.now.sh/result?p=wowa)
 
-**Updates on Aug 9 2019**
+**Updates on Aug 23 2019**
 
+- [@dkrustko](https://github.com/dkrutsko) has made a nice collection of [classic addons](https://dave.krutsko.net/classic-addons/) - with wowa links.
+- Add support for [TukUI](https://tukui.org). `wowa add 0-tukui`, `wowa search tukui:elvui`
 - Add support for WoW Classic, use `wowa switch` to switch mode between `_classic_` and `_retail_`, use `wowa ls` to check which mode you are in. When switched to `_classic_` mode, **wowa** will download the correct addon version that matches **1.13.x**
-- [curse](https://www.curseforge.com/wow/addons), [wowinterface](https://www.wowinterface.com/addons.php), [github](https://github.com) are supported
+- [curse](https://www.curseforge.com/wow/addons), [wowinterface](https://www.wowinterface.com/addons.php), [github](https://github.com), [tukui](https://tukui.org) are supported
 - node version supported: **node 10**, **node 12**
 - node version NOT supported: **node 8**
 
@@ -42,7 +44,7 @@ npm install -g wowa
 ```
 wowa add deadly-boss-mods                       # install dbm from curse
 wowa add curse:deadly-boss-mods                 # install dbm from curse
-wowa add wowinterface:8814-DeadlyBossMods       # install dbm from wowinterface
+wowa add mmoui:8814-DeadlyBossMods              # install dbm from wowinterface
 wowa add 8814-DeadlyBossMods                    # install dbm from wowinterface
 wowa add deadlybossmods/deadlybossmods          # install dbm from github
 wowa add antiwinter/dlt                         # install dlt from github
@@ -52,7 +54,7 @@ wowa add antiwinter/dlt                         # install dlt from github
 
 ```
 wowa search dbm                                 # search for dbm automatically
-wowa search wowinterface:dbm                    # search for dbm only from wowinterface
+wowa search mmoui:dbm                           # search for dbm only from wowinterface
 ```
 
 ### Installing an addon
@@ -100,7 +102,7 @@ wowa search wowinterface:dbm                    # search for dbm only from wowin
 - [x] Support projects on github.com
 - [ ] Game version detection
 - [x] Add test cases
-- [ ] Support projects on tukui.org
+- [x] Support projects on tukui.org
 - [x] **Support WoW Classic !**
 - [x] Import existing addons
 - [x] Check **wowa** updates
