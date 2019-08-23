@@ -171,6 +171,25 @@ function commonTests(aa) {
     })
   })
 
+  ava.serial.cb(nme('search-tukui'), t => {
+    core.search('tukui:elv', info => {
+      t.assert(info.data.length > 0)
+      let v = info.data[0]
+
+      // log('gg', info)
+      t.assert(v.name.match(/ElvUI/))
+
+      if (cfg.getMode() === '_classic_') t.assert(v.key.match(/2-/))
+      else t.assert(v.key.match(/0-/))
+
+      t.assert(vau.isUri(v.page))
+      t.assert(v.download > 100)
+      t.assert(v.update > 1561424000)
+
+      t.end()
+    })
+  })
+
   ava.serial.cb(nme('ls'), t => {
     let ls = core.ls()
 
@@ -228,8 +247,18 @@ commonTests([
   ['deadlybossmods/deadlybossmods', /^DBM/, '8814'],
   ['classicon', /^Class/, '18267'],
   ['mmoui:11190-Bartender4', /^Bart/, '11190'],
+  ['tukui:46-ElvUIDatatextBars2', /^ElvUI/],
   ['sellableitemdrops', /^Sella/]
 ])
+
+ava.serial.cb(nme('info-tukui-retail'), t => {
+  core.info('0-elvui', res => {
+    t.assert(res.match(/[0-9]+\/[0-9]+\/[0-9]+/))
+    t.assert(res.match(/[0-9]+\.[0-9]+/g).length === 3)
+    t.assert(res.match(/\.zip/))
+    t.end()
+  })
+})
 
 ava.serial.cb(nme('switch-to-classic'), t => {
   core.switch()
@@ -240,6 +269,7 @@ commonTests([
   ['deadlybossmods/deadlybossmods', /^DBM/, '24921'],
   ['classicon', /^Class/],
   ['mmoui:11190-Bartender4', /^Bart/],
+  ['tukui:6-RedtuzkUIClassic', /^ElvUI/],
   ['sellableitemdrops', /^Sella/]
 ])
 

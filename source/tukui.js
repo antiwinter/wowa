@@ -72,7 +72,7 @@ let api = {
     ).then(res => {
       res = JSON.parse(res.body)
 
-      log(res)
+      // log(res)
       // retail version will not show in api results
       if (mo === '_retail_')
         res = res.concat([

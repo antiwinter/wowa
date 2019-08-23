@@ -37,6 +37,7 @@ let src = {
       key: name.split('@')[0]
     }
 
+    if (!d.source && name.match(/tukui|elvui/)) d.source = 'tukui'
     if (d.source in { wowi: 1, wowinterface: 1 }) d.source = 'mmoui'
 
     d.anyway = cfg.anyway()
