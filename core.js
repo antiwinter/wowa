@@ -237,10 +237,10 @@ let core = {
   },
 
   rm(key, done) {
-    ads.clearUp(key, () => {
+    ads.clearUp(key, err => {
       ads.save()
+      log(`✨  ${err ? 0 : cl.h(key)} removed.`)
       if (done) done()
-      log(`✨  ${cl.h(key)} removed.`)
     })
   },
 
@@ -460,8 +460,10 @@ let core = {
 
       log(`\n✨ imported ${imported} addons (${importedDirs} folders)\n`)
 
-      if (unknown.length)
+      if (unknown.length) {
         log(cl.h(`❗ ${unknown.length} folders not recgonized\n`))
+        log(unknown)
+      }
 
       ads.save()
       if (done) done(unknown)
