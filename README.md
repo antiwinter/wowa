@@ -27,8 +27,6 @@ As comparing to these projects, **WoWA** offers serveral advantages:
 - Concurrency: when installing or updating, WoWA can take advantage of multi-processing
 - **wowaads.json** file: this is the file where WoWA stores addon information. Unlike other projects, WoWA stores this file in the **WTF** folder. This design benifits people when they want to backup their WoW setting. Backing up one **WTF** folder is enough
 
-**Note 1:** WoWA does not support managing the addons you've already installed (manually or by twitch client), you have to install those addons one more time via WoWA.
-
 ## Install
 
 ```
@@ -83,18 +81,43 @@ wowa search mmoui:dbm                           # search for dbm only from wowin
 
 ![](https://raw.githubusercontent.com/antiwinter/scrap/master/wowa/ls-min.gif)
 
+### Import local addons
+
+If use **wowa** for the first time, you need to import your local addon. Then **wowa** can manage them for you.
+
+```
+wowa import
+```
+
 ## Related projects
 
-**Commandline implementations**
+### Actively maintained
 
-- [wow-cli](https://github.com/zekesonxx/wow-cli)
-- [wowam](https://github.com/acdtrx/wowam)
-- [wam](https://github.com/Sumolari/WAM)
-- [wow-better-cli](https://github.com/DayBr3ak/wow-better-cli)
+- [erikabp123/ClassicAddonManager](https://github.com/erikabp123/ClassicAddonManager) - `GUI`, `2 days ago`, `7 stars`
+- [AcidWeb/CurseBreaker](https://github.com/AcidWeb/CurseBreaker) - `CLI`, `2 days ago`, `8 stars`
+- [layday/instawow](https://github.com/layday/instawow) - `CLI`, `2 days ago`, `19 stars`
+- [kuhnertdm/wow-addon-updater](https://github.com/kuhnertdm/wow-addon-updater) - `CLI`, `2 days ago`, `117 stars`
+- [ogri-la/wowman](https://github.com/ogri-la/wowman) - `GUI`, `4 days ago`, `9 stars`
+- [ephraim/lcurse](https://github.com/ephraim/lcurse) - `GUI`, `6 days ago`, `47 stars`
+- [Lund259/WoW-Addon-Manager](https://github.com/Lund259/WoW-Addon-Manager) - `GUI`, `7 days ago`, `3 stars`
+- [Saionaro/wow-addons-updater](https://github.com/Saionaro/wow-addons-updater) - `GUI`, `11 days ago`, `1 stars`
+- [nazarov-tech/wowa](https://github.com/nazarov-tech/wowa) - `CLI`, `25 days ago`, `13 stars`
+- [WorldofAddons/worldofaddons](https://github.com/WorldofAddons/worldofaddons) - `GUI`, `a month ago`, `2 stars`
+- [vargen2/Addon](https://github.com/vargen2/Addon) - `GUI`, `a month ago`, `1 stars`
 
-**GUI implementations**
+### Not Actively maintained
 
-- [wowman](https://github.com/ogri-la/wowman)
+- [wttw/wowaddon](https://github.com/wttw/wowaddon) - `CLI`, `2 months ago`, `5 stars`
+- [OpenAddOnManager/OpenAddOnManager](https://github.com/OpenAddOnManager/OpenAddOnManager) - `GUI`, `3 months ago`, `1 stars`
+- [vargen2/addonmanager](https://github.com/vargen2/addonmanager) - `GUI`, `3 months ago`, `0 stars`
+- [DayBr3ak/wow-better-cli](https://github.com/DayBr3ak/wow-better-cli) - `CLI`, `4 months ago`, `7 stars`
+- [zekesonxx/wow-cli](https://github.com/zekesonxx/wow-cli) - `CLI`, `5 months ago`, `12 stars`
+- [acdtrx/wowam](https://github.com/acdtrx/wowam) - `CLI`, `5 months ago`, `1 stars`
+- [Sumolari/WAM](https://github.com/Sumolari/WAM) - `CLI`, `5 months ago`, `2 stars`
+- [qwezarty/wow-addon-manager](https://github.com/qwezarty/wow-addon-manager) - `CLI`, `6 months ago`, `0 stars`
+- [sysworx/wowam](https://github.com/sysworx/wowam) - `GUI`, `a year ago`, `1 stars`
+- [JonasKnarbakk/GWAM](https://github.com/JonasKnarbakk/GWAM) - `GUI`, `a year ago`, `0 stars`
+- [SeriousBug/WoWutils](https://github.com/SeriousBug/WoWutils) - `CLI`, `4 years ago`, `0 stars`
 
 ## Roadmap
 
