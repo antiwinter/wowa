@@ -516,7 +516,7 @@ let core = {
           cl.i('\nNew wowa version'),
           cl.i2(i.version),
           cl.i('is available, use the command below to update\n'),
-          '  npm update -g wowa'
+          '  npm install -g wowa\n'
         )
       }
     }
