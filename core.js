@@ -300,6 +300,22 @@ let core = {
     else log(t.toString())
 
     ads.checkDuplicate()
+
+    let ukn = ads.unknownDirs()
+
+    if (ukn.length) {
+      log('---')
+      log(
+        cl.h(
+          `❗ ${ukn.length} folder${
+            ukn.length > 1 ? 's' : ''
+          } not managing by wowa\n`
+        )
+      )
+      log(ukn)
+      log()
+    }
+
     return t.toString()
   },
 
@@ -424,52 +440,54 @@ let core = {
       return
     }
 
-    // log(db)
-    fs.readdir(p, (err, dirs) => {
-      let unknown = []
-      dirs.forEach(dir => {
-        if (ads.dirStatus(dir)) return
+    ads.unknownDirs().forEach(dir => {
+      if (ads.dirStatus(dir)) return
 
-        // log('picking up', dir)
-        let l = _.find(
-          db,
-          a => a.dir.indexOf(dir) >= 0 && a.mode === cfg.getMode()
-        )
+      // log('picking up', dir)
+      let l = _.find(
+        db,
+        a => a.dir.indexOf(dir) >= 0 && a.mode === cfg.getMode()
+      )
 
-        if (!l) {
-          unknown.push(dir)
-        } else {
-          // log('found', l)
-          importedDirs++
-          let update = Math.floor(fs.statSync(path.join(p, dir)).mtimeMs / 1000)
-          let k =
-            l.id +
-            '-' +
-            _.filter(l.name.split(''), s => s.match(/^[a-z0-9]+$/i)).join('')
-          if (ads.data[k]) ads.data[k].sub.push(dir)
-          else {
-            ads.data[k] = {
-              name: l.name,
-              version: 'unknown',
-              source: l.source,
-              update,
-              sub: [dir]
-            }
-            imported++
-          }
+      if (!l) return
+
+      // log('found', l)
+      importedDirs++
+      let update = Math.floor(fs.statSync(path.join(p, dir)).mtimeMs / 1000)
+      let k =
+        l.id +
+        '-' +
+        _.filter(l.name.split(''), s => s.match(/^[a-z0-9]+$/i)).join('')
+      if (ads.data[k]) ads.data[k].sub.push(dir)
+      else {
+        ads.data[k] = {
+          name: l.name,
+          version: 'unknown',
+          source: l.source,
+          update,
+          sub: [dir]
         }
-      })
-
-      log(`\n✨ imported ${imported} addons (${importedDirs} folders)\n`)
-
-      if (unknown.length) {
-        log(cl.h(`❗ ${unknown.length} folders not recgonized\n`))
-        log(unknown)
+        imported++
       }
-
-      ads.save()
-      if (done) done(unknown)
     })
+
+    log(`\n✨ imported ${imported} addons (${importedDirs} folders)\n`)
+
+    let ukn = ads.unknownDirs()
+    if (ukn.length) {
+      log(
+        cl.h(
+          `❗ ${ukn.length} folder${
+            ukn.length > 1 ? 's are' : ' is'
+          } not recgonized\n`
+        )
+      )
+      log(ukn)
+      log()
+    }
+
+    ads.save()
+    if (done) done(unknown)
   },
 
   switch() {
