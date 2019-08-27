@@ -487,7 +487,7 @@ let core = {
     }
 
     ads.save()
-    if (done) done(unknown)
+    if (done) done(ukn)
   },
 
   switch() {
