@@ -153,6 +153,7 @@ function install(ad, update, hook) {
               }
 
               if (ad.anyway) ads.data[ad.key].anyway = ad.anyway
+              if (ad.branch) ads.data[ad.key].branch = ad.branch
 
               _install(dec, cfg.getPath('addon'), ads.data[ad.key].sub, err => {
                 if (err) return notify('failed', 'failed to copy file')
@@ -354,7 +355,8 @@ let core = {
       aa.push({
         key: k,
         source: ads.data[k].source,
-        anyway: ads.data[k].anyway && cfg.anyway()
+        anyway: ads.data[k].anyway && cfg.anyway(),
+        branch: ads.data[k].branch
       })
     }
     if (!aa.length) {

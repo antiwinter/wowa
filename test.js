@@ -267,6 +267,7 @@ ava.serial.cb(nme('switch-to-classic'), t => {
 
 commonTests([
   ['deadlybossmods/deadlybossmods', /^DBM/, '24921'],
+  ['bigwigsmods/bigwigs/classic', /^BigWigs/],
   ['classicon', /^Class/],
   ['mmoui:11190-Bartender4', /^Bart/],
   ['tukui:6-RedtuzkUIClassic', /^ElvUI/],

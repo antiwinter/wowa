@@ -40,6 +40,14 @@ let src = {
     if (!d.source && name.match(/tukui|elvui/)) d.source = 'tukui'
     if (d.source in { wowi: 1, wowinterface: 1 }) d.source = 'mmoui'
 
+    if (d.source === 'github') {
+      let sp = d.key.split('/')
+      if (sp.length > 2) {
+        d.branch = sp.pop()
+        d.key = sp.join('/')
+      }
+    }
+
     d.anyway = cfg.anyway()
     return d
   },
