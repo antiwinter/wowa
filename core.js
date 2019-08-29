@@ -158,6 +158,7 @@ function install(ad, update, hook) {
               _install(dec, cfg.getPath('addon'), ads.data[ad.key].sub, err => {
                 if (err) return notify('failed', 'failed to copy file')
 
+                ads.save()
                 notify('done', update ? 'updated' : 'installed')
               })
             })
