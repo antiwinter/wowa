@@ -9,7 +9,7 @@ let api = {
 
   $lcl: /\?id=(.*)$/,
   $fcl: 'tukui',
-  $ids: 'tukui.com',
+  $scl: 'tukui.com',
 
   info(ad, done) {
     let id = ad.key.split('-')[0]
