@@ -26,25 +26,41 @@ let src = {
   },
 
   parseName(name) {
-    let t
-    let d = {
-      source: name.match(/:/)
-        ? ((t = name.split(':')), (name = t[1]), t[0])
-        : name.match(/\//)
-        ? 'github'
-        : undefined,
-      version: name.split('@')[1],
-      key: name.split('@')[0]
+    let t = name
+    let d = {}
+
+    if (name.match(/@/)) {
+      t = name.split('@')
+      d.version = t[1]
+      t = t[0]
     }
 
-    if (!d.source && name.match(/tukui|elvui/)) d.source = 'tukui'
-    if (d.source in { wowi: 1, wowinterface: 1 }) d.source = 'mmoui'
+    for (let k in src.$api) {
+      if (t.match(/:\/\//)) {
+        // looks like an long uri
+        let r = src.$api[k].$lcl.exec(t)
+        // log('long clue exec:', r)
 
-    if (d.source === 'github') {
-      let sp = d.key.split('/')
-      if (sp.length > 2) {
-        d.branch = sp.pop()
-        d.key = sp.join('/')
+        if (r) {
+          d.source = k
+          d.key = r[r.length - 1]
+          break
+        }
+      } else {
+        // treat as short uri
+        let s = null
+        let z = t.split(':')
+        if (z.length > 1) s = z.shift()
+        d.key = z[0]
+
+        let f = src.$api[k].$fcl
+        if (!s && f && d.key.search(f) >= 0) {
+          d.source = k
+          break
+        } else if (s && src.$api[k].$scl.search(s) >= 0) {
+          d.source = k
+          break
+        }
       }
     }
 

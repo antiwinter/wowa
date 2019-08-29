@@ -7,6 +7,9 @@ let api = {
   $url: 'https://api.mmoui.com/v3/game/WOW',
   $web: 'https://wowinterface.com',
 
+  $lcl: /\/info(.*)\.html/,
+  $scl: 'wowinterface.com##mmoui.com',
+
   info(ad, done) {
     let id = ad.key.split('-')[0]
 
@@ -14,6 +17,8 @@ let api = {
     g(`${api.$url}/filedetails/${id}.json`)
       .then(res => {
         let x = JSON.parse(res.body)[0]
+
+        ad.key = id + '-' + x.UIName.replace(/[^a-zA-Z0-9]/g, '')
 
         done({
           name: x.UIName,

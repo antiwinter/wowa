@@ -26,6 +26,9 @@ let api = {
   $url: 'https://www.curseforge.com/wow/addons/',
   $srl: 'https://addons-ecs.forgesvc.net/api/v2/addon/search',
 
+  $lcl: /(addons|projects)\/(.*)$/,
+  $scl: 'curseforge.com',
+
   info(ad, done) {
     let mo = cfg.getMode()
     let url = api.$url + ad.key + '/files/all'

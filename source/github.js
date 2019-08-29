@@ -12,6 +12,9 @@ const log = console.log
 
 let api = {
   $url: 'https://github.com/',
+  $lcl: /github\.com\/(.*)$/,
+  $fcl: '/',
+  $scl: 'github.com',
 
   $tip(ad, done) {
     let page = api.$url + ad.key + `/tree/${!ad.branch ? 'master' : ad.branch}`
@@ -47,6 +50,15 @@ let api = {
 
   info(ad, done) {
     // install branch tip if branch provided
+
+    let seg = ad.key.split('/')
+
+    if (seg.length > 2) {
+      ad.branch = seg.pop()
+      for (; seg.length > 2; seg.pop());
+      ad.key = seg.join('/')
+    }
+
     if (ad.branch) {
       api.$tip(ad, done)
       return

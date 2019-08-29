@@ -9,6 +9,7 @@ import _ from 'underscore'
 import cfg from './lib/config'
 import core from './core'
 import ads from './lib/wowaads'
+import api from './source'
 
 const log = console.log
 
@@ -284,4 +285,68 @@ ava.serial.cb(nme('wowa update'), t => {
       t.end()
     })
   })
+})
+
+ava.serial.cb(nme('name parser'), t => {
+  let names = {
+    'curse:molinari': { key: 'molinari', source: 'curse' },
+    'https://www.curseforge.com/wow/addons/molinari': {
+      key: 'molinari',
+      source: 'curse'
+    },
+    'https://wow.curseforge.com/projects/molinari': {
+      key: 'molinari',
+      source: 'curse'
+    },
+    'wowi:13188': { key: '13188', source: 'mmoui' },
+    'https://www.wowinterface.com/downloads/info13188-Molinari.html': {
+      key: '13188-Molinari',
+      source: 'mmoui'
+    },
+    'deadly-boss-mods': { key: 'deadly-boss-mods', source: null },
+    'curse:deadly-boss-mods': { key: 'deadly-boss-mods', source: 'curse' },
+    'mmoui:8814-DeadlyBossMods': {
+      key: '8814-DeadlyBossMods',
+      source: 'mmoui'
+    },
+    '8814-DeadlyBossMods': { key: '8814-DeadlyBossMods', source: null },
+    'deadlybossmods/deadlybossmods': {
+      key: 'deadlybossmods/deadlybossmods',
+      source: 'github'
+    },
+    'bigwigsmods/bigwigs/classic': {
+      key: 'bigwigsmods/bigwigs/classic',
+      source: 'github'
+    },
+    'antiwinter/dlt': { key: 'antiwinter/dlt', source: 'github' },
+    'https://github.com/BigWigsMods/BigWigs/tree/master': {
+      source: 'github',
+      key: 'BigWigsMods/BigWigs/tree/master'
+    },
+    'https://github.com/BigWigsMods/BigWigs/tree': {
+      source: 'github',
+      key: 'BigWigsMods/BigWigs/tree'
+    },
+    'https://github.com/BigWigsMods/BigWigs': {
+      source: 'github',
+      key: 'BigWigsMods/BigWigs'
+    },
+    'https://www.tukui.org/classic-addons.php?id=6': {
+      source: 'tukui',
+      key: '6'
+    }
+  }
+
+  for (let k in names) {
+    let d = api.parseName(k)
+
+    let r = names[k]
+
+    for (let k2 in r) {
+      if (r[k2]) t.assert(r[k2] === d[k2])
+      t.assert(!r[k2] === !d[k2])
+    }
+  }
+
+  t.end()
 })

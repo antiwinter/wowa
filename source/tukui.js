@@ -7,6 +7,10 @@ let api = {
   $url: 'https://www.tukui.org/api.php',
   $web: 'https://www.tukui.org/download.php',
 
+  $lcl: /\?id=(.*)$/,
+  $fcl: 'tukui',
+  $ids: 'tukui.com',
+
   info(ad, done) {
     let id = ad.key.split('-')[0]
     let mo = cfg.getMode()
@@ -47,6 +51,7 @@ let api = {
       .then(res => {
         let x = JSON.parse(res.body)
 
+        ad.key = id + '-' + x.name.replace(/[^a-zA-Z0-9]/g, '')
         done({
           name: x.name,
           author: x.author,
