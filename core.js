@@ -56,7 +56,8 @@ function getAd(ad, info, tmp, hook) {
     })
     .pipe(fs.createWriteStream(src))
     .on('close', () => {
-      unzip(src, dst, () => {
+      unzip(src, dst, err => {
+        if (err) return hook('unzip failed')
         hook('done')
       })
     })
