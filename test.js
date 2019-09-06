@@ -68,7 +68,7 @@ function commonTests(aa) {
   })
 
   ava.serial.cb(nme('update-none'), t => {
-    core.update(res => {
+    core.update(null, res => {
       let p = cfg.getPath('addon')
       t.assert(res.count === 0)
       t.assert(res.update === 1)
@@ -89,7 +89,7 @@ function commonTests(aa) {
   ava.serial.cb(nme('update-1'), t => {
     ads.data['classicon'].update = 0
 
-    core.update(res => {
+    core.update(null, res => {
       let p = cfg.getPath('addon')
       t.assert(res.count === 1)
       t.assert(res.update === 1)
@@ -109,7 +109,7 @@ function commonTests(aa) {
   })
 
   ava.serial.cb(nme('rm-1'), t => {
-    core.rm('classicon', res => {
+    core.rm(['classicon'], res => {
       let p = cfg.getPath('addon')
 
       t.assert(!_.find(fs.readdirSync(p), d => d.match(/^Class/)))

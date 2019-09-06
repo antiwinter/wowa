@@ -18,8 +18,8 @@ cli
   })
 
 cli
-  .command('rm <addon>')
-  .description('remove an addon from local installation')
+  .command('rm <addon...>')
+  .description('remove addons from local installation')
   .alias('delete')
   .action(key => core.rm(key))
 
@@ -61,7 +61,7 @@ cli
   .option('--anyway', 'update latest addon release for _classic_ mode anyway')
   .action(cmd => {
     cfg.anyway(cmd.anyway)
-    core.update()
+    core.update(cli.args.length > 1 ? cli.args.slice(0, -1) : null)
   })
 
 cli

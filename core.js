@@ -15,11 +15,10 @@ const pi = require('package-info')
 const api = require('./source')
 const cfg = require('./lib/config')
 const unzip = require('./lib/unzip')
-const cl = require("./lib/color")
+const cl = require('./lib/color')
 const ads = require('./lib/wowaads').load()
 const pkg = require('./package.json')
 const log = console.log
-
 
 function getAd(ad, info, tmp, hook) {
   let v = info.version[0]
@@ -233,12 +232,23 @@ let core = {
     batchInstall(aa.map(x => api.parseName(x)), 0, done)
   },
 
-  rm(key, done) {
-    ads.clearUp(key, err => {
-      ads.save()
-      log(`✨  ${err ? 0 : cl.h(key)} removed.`)
-      if (done) done()
-    })
+  rm(keys, done) {
+    let n = 0
+    async.eachLimit(
+      keys,
+      1,
+      (key, cb) => {
+        ads.clearUp(key, err => {
+          if (!err) n++
+          ads.save()
+          cb()
+        })
+      },
+      () => {
+        log(`✨  ${n} addon${n > 1 ? 's' : ''} removed.`)
+        if (done) done()
+      }
+    )
   },
 
   search(text, done) {
@@ -361,16 +371,20 @@ let core = {
     })
   },
 
-  update(done) {
+  update(keys, done) {
     let aa = []
-    for (let k in ads.data) {
-      aa.push({
-        key: k,
-        source: ads.data[k].source,
-        anyway: ads.data[k].anyway && cfg.anyway(),
-        branch: ads.data[k].branch
-      })
-    }
+    if (!keys) keys = _.keys(ads.data)
+
+    keys.forEach(k => {
+      if (k in ads.data)
+        aa.push({
+          key: k,
+          source: ads.data[k].source,
+          anyway: ads.data[k].anyway && cfg.anyway(),
+          branch: ads.data[k].branch
+        })
+    })
+
     if (!aa.length) {
       log('\nnothing to update\n')
       return
