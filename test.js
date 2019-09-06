@@ -44,10 +44,6 @@ ava.serial.before.cb('path', t => {
   })
 })
 
-ava.serial.before.cb('prepare', t => {
-  core.updateSummary(() => t.end())
-})
-
 ava.serial.cb(nme('appetizer'), t => {
   t.end()
 })
