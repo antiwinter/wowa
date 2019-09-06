@@ -94,7 +94,5 @@ if (process.argv.length < 3) return cli.help()
 
 // do the job
 core.checkUpdate(() => {
-  core.updateSummary(() => {
-    cli.parse(process.argv)
-  })
+  cli.parse(process.argv)
 })

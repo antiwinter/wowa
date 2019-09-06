@@ -1,7 +1,11 @@
-const log = console.log
+const fs = require('fs')
+const path = require('path')
 const async = require('async')
-const cfg = require('../lib/config')
 const _ = require('underscore')
+const mk = require('mkdirp')
+const cfg = require('../lib/config')
+const cl = require('../lib/color')
+const log = console.log
 
 let src = {
   $api: {
@@ -125,6 +129,29 @@ let src = {
 
   summary(done) {
     src.$api.mmoui.summary(done)
+  },
+
+  getDB(done) {
+    let p = cfg.getPath('db')
+
+    if (
+      !fs.existsSync(p) ||
+      new Date() - fs.statSync(p).mtime > 24 * 3600 * 1000
+    ) {
+      mk(path.dirname(p), err => {
+        process.stdout.write(cl.i('\nUpdating database...'))
+        src.summary(s => {
+          fs.writeFileSync(p, JSON.stringify(s), 'utf-8')
+          log(cl.i('done'))
+          done(s)
+        })
+      })
+
+      return
+    }
+
+    done(fs.existsSync(p) ? JSON.parse(fs.readFileSync(p, 'utf-8')) : null)
+    return
   }
 }
 

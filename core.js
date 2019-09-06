@@ -2,7 +2,6 @@ const fs = require('fs')
 const path = require('path')
 const rm = require('rimraf')
 const mk = require('mkdirp')
-const ck = require('chalk')
 const numeral = require('numeral')
 const moment = require('moment')
 const async = require('async')
@@ -16,16 +15,11 @@ const pi = require('package-info')
 const api = require('./source')
 const cfg = require('./lib/config')
 const unzip = require('./lib/unzip')
+const cl = require("./lib/color")
 const ads = require('./lib/wowaads').load()
 const pkg = require('./package.json')
 const log = console.log
 
-const cl = {
-  i: ck.yellow,
-  h: ck.red,
-  x: ck.dim,
-  i2: ck.blue
-}
 
 function getAd(ad, info, tmp, hook) {
   let v = info.version[0]
@@ -408,88 +402,66 @@ let core = {
     batchInstall(aa, 0, done)
   },
 
-  updateSummary(done) {
-    let p = cfg.getPath('db')
+  pickup(done) {
+    api.getDB(db => {
+      let p = cfg.getPath('addon')
+      let imported = 0
+      let importedDirs = 0
 
-    if (
-      !fs.existsSync(p) ||
-      new Date() - fs.statSync(p).mtime > 24 * 3600 * 1000
-    ) {
-      mk(path.dirname(p), err => {
-        process.stdout.write(cl.i('\nUpdating database...'))
-        api.summary(s => {
-          fs.writeFileSync(p, JSON.stringify(s, null, 2), 'utf-8')
-          log(cl.i('done'))
-          done()
-        })
+      if (!db) {
+        if (done) done()
+        return
+      }
+
+      ads.unknownDirs().forEach(dir => {
+        if (ads.dirStatus(dir)) return
+
+        // log('picking up', dir)
+        let l = _.find(
+          db,
+          a => a.dir.indexOf(dir) >= 0 && a.mode === cfg.getMode()
+        )
+
+        if (!l) return
+
+        // log('found', l)
+        importedDirs++
+        let update = Math.floor(fs.statSync(path.join(p, dir)).mtimeMs / 1000)
+        let k =
+          l.id +
+          '-' +
+          _.filter(l.name.split(''), s => s.match(/^[a-z0-9]+$/i)).join('')
+        if (ads.data[k]) ads.data[k].sub.push(dir)
+        else {
+          ads.data[k] = {
+            name: l.name,
+            version: 'unknown',
+            source: l.source,
+            update,
+            sub: [dir]
+          }
+          imported++
+        }
       })
 
-      return
-    }
+      log(`\n✨ imported ${imported} addons (${importedDirs} folders)\n`)
 
-    done()
-    return
-  },
-
-  pickup(done) {
-    let db = cfg.getDB()
-    let p = cfg.getPath('addon')
-    let imported = 0
-    let importedDirs = 0
-
-    if (!db) {
-      if (done) done()
-      return
-    }
-
-    ads.unknownDirs().forEach(dir => {
-      if (ads.dirStatus(dir)) return
-
-      // log('picking up', dir)
-      let l = _.find(
-        db,
-        a => a.dir.indexOf(dir) >= 0 && a.mode === cfg.getMode()
-      )
-
-      if (!l) return
-
-      // log('found', l)
-      importedDirs++
-      let update = Math.floor(fs.statSync(path.join(p, dir)).mtimeMs / 1000)
-      let k =
-        l.id +
-        '-' +
-        _.filter(l.name.split(''), s => s.match(/^[a-z0-9]+$/i)).join('')
-      if (ads.data[k]) ads.data[k].sub.push(dir)
-      else {
-        ads.data[k] = {
-          name: l.name,
-          version: 'unknown',
-          source: l.source,
-          update,
-          sub: [dir]
-        }
-        imported++
-      }
-    })
-
-    log(`\n✨ imported ${imported} addons (${importedDirs} folders)\n`)
-
-    let ukn = ads.unknownDirs()
-    if (ukn.length) {
-      log(
-        cl.h(
-          `❗ ${ukn.length} folder${
-            ukn.length > 1 ? 's are' : ' is'
-          } not recgonized\n`
+      let ukn = ads.unknownDirs()
+      if (ukn.length) {
+        log(
+          cl.h(
+            `❗ ${ukn.length} folder${
+              ukn.length > 1 ? 's are' : ' is'
+            } not recgonized\n`
+          )
         )
-      )
-      log(ukn)
-      log()
-    }
+        log(ukn)
+        log()
+      }
 
-    ads.save()
-    if (done) done(ukn)
+      ads.save()
+      if (done) done(ukn)
+    })
   },
 
   switch() {
