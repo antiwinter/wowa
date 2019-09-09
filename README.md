@@ -6,9 +6,9 @@
 [![npm](https://img.shields.io/npm/l/wowa.svg)](https://github.com/antiwinter/wowa/blob/master/LICENSE)
 [![install size](https://packagephobia.now.sh/badge?p=wowa)](https://packagephobia.now.sh/result?p=wowa)
 
-**Updates on Aug 23 2019**
+**Recent important updates**
 
-- [@dkrustko](https://github.com/dkrutsko) has made a nice collection of [classic addons](https://dave.krutsko.net/classic-addons/) - with wowa links.
+- Now `ls` only prints short message, if you want detailed message, use `wowa ls -l` 
 - Add support for [TukUI](https://tukui.org). `wowa add 0-tukui`, `wowa search tukui:elvui`
 - Add support for WoW Classic, use `wowa switch` to switch mode between `_classic_` and `_retail_`, use `wowa ls` to check which mode you are in. When switched to `_classic_` mode, **wowa** will download the correct addon version that matches **1.13.x**
 - [curse](https://www.curseforge.com/wow/addons), [wowinterface](https://www.wowinterface.com/addons.php), [github](https://github.com), [tukui](https://tukui.org) are supported
