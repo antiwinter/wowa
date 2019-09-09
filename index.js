@@ -38,6 +38,10 @@ cli
 cli
   .command('ls')
   .description('list all installed addons')
+  .option(
+    '-l, --long',
+    'show detailed addon information'
+  )
   .alias('list')
   .action(core.ls)
 

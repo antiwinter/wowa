@@ -289,7 +289,7 @@ let core = {
     })
   },
 
-  ls() {
+  ls(opt) {
     let t = new tb()
     for (let k in ads.data) {
       let v = ads.data[k]
@@ -301,25 +301,26 @@ let core = {
       t.newRow()
     }
 
-    log(`\nMode: ${cl.i(cfg.getPath('mode'))}\n`)
+    log()
     if (!Object.keys(ads.data).length) log('no addons\n')
-    else log(t.toString())
+    else log(opt.long ? t.toString() : cl.h(cl.ls(_.keys(ads.data))))
 
     ads.checkDuplicate()
+
+    log(cl.x('You are in: '), cl.i(cfg.getPath('mode')), '\n')
 
     let ukn = ads.unknownDirs()
 
     if (ukn.length) {
-      log('---')
       log(
-        cl.h(
+        cl.x(
           `❗ ${ukn.length} folder${
             ukn.length > 1 ? 's' : ''
-          } not managing by wowa\n`
+          } not managing by wowa`
         )
       )
-      log(ukn)
-      log()
+      log(cl.x('---------------------------------'))
+      log(cl.x(cl.ls(ukn)))
     }
 
     return t.toString()
@@ -469,8 +470,7 @@ let core = {
             } not recgonized\n`
           )
         )
-        log(ukn)
-        log()
+        log(cl.x(cl.ls(ukn)))
       }
 
       ads.save()

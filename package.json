@@ -12,6 +12,7 @@
     "numeral": "^2.0.6",
     "package-info": "^3.0.2",
     "rimraf": "^2.6.3",
+    "sprintf-js": "^1.1.2",
     "ua-string": "^3.0.0",
     "underscore": "^1.9.1",
     "x-ray": "^2.3.3",
