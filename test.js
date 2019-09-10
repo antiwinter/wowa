@@ -188,7 +188,13 @@ function commonTests(aa) {
   })
 
   ava.serial.cb(nme('ls'), t => {
-    let ls = core.ls()
+    let ls = core.ls({ long: 1 })
+
+    // t.assert(ls.search(cfg.getMode()) > 0)
+    t.assert(ls.search('sellableitemdrops') > 0)
+    t.assert(ls.search('classicon') > 0)
+
+    ls = core.ls({})
 
     // t.assert(ls.search(cfg.getMode()) > 0)
     t.assert(ls.search('sellableitemdrops') > 0)
