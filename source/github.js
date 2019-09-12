@@ -2,7 +2,6 @@ const Octokit = require('@octokit/rest')
 const ok = new Octokit({
   // auth: process.env.GITHUB_TOKEN
 })
-const g = require('got')
 const log = console.log
 
 let api = {
@@ -32,7 +31,7 @@ let api = {
         ? ok.repos.getBranch({ owner, repo, branch: ad.branch })
         : ok.repos.listTags({ owner, repo })
       h.then(({ data }) => {
-        // log('got dat', data)
+        // log('got dat', JSON.stringify(data, null, 2))
         let d = {
           name: repo,
           owner,
@@ -63,13 +62,18 @@ let api = {
         }
 
         let c = ad.branch ? data.commit : data[0].commit
-        g(c.url).then(res => {
-          res = JSON.parse(res.body)
-          // log('inner', res)
-          d.update = new Date(res.commit.committer.date).valueOf() / 1000
 
-          done(d)
-        })
+        ok.git
+          .getCommit({
+            owner,
+            repo,
+            commit_sha: c.sha
+          })
+          .then(({ data }) => {
+            // log('inner', data)
+            d.update = new Date(data.committer.date).valueOf() / 1000
+            done(d)
+          })
       }).catch(err => {
         done()
       })
