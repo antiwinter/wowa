@@ -173,8 +173,6 @@ function install(ad, update, hook) {
 function batchInstall(aa, update, done) {
   let t0 = moment().unix()
 
-  if (!cfg.checkPath()) return
-
   let list = new Listr([], { concurrent: 10 })
   let ud = 0
   let id = 0

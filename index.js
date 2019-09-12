@@ -38,10 +38,7 @@ cli
 cli
   .command('ls')
   .description('list all installed addons')
-  .option(
-    '-l, --long',
-    'show detailed addon information'
-  )
+  .option('-l, --long', 'show detailed addon information')
   .alias('list')
   .action(core.ls)
 
@@ -97,6 +94,9 @@ cli.on('command:*', () => {
 if (process.argv.length < 3) return cli.help()
 
 // do the job
+
+if (!cfg.checkPath()) return
+
 core.checkUpdate(() => {
   cli.parse(process.argv)
 })
