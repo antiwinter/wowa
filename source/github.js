@@ -76,6 +76,7 @@ let api = {
             done(d)
           })
       }).catch(err => {
+        log('err happened', err)
         done()
       })
     }
