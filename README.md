@@ -6,7 +6,7 @@
 [![npm](https://img.shields.io/npm/l/wowa.svg)](https://github.com/antiwinter/wowa/blob/master/LICENSE)
 [![install size](https://packagephobia.now.sh/badge?p=wowa)](https://packagephobia.now.sh/result?p=wowa)
 
-**Recent important updates**
+**Recent Notice**
 
 - Now `ls` only prints short message, if you want detailed message, use `wowa ls -l` 
 - Add support for [TukUI](https://tukui.org). `wowa add 0-tukui`, `wowa search tukui:elvui`

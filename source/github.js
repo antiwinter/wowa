@@ -30,8 +30,9 @@ let api = {
       let h = ad.branch
         ? ok.repos.getBranch({ owner, repo, branch: ad.branch })
         : ok.repos.listTags({ owner, repo })
-      h.then(({ data }) => {
-        // log('got dat', JSON.stringify(data, null, 2))
+      h.then(err => {
+        log('got dat', JSON.stringify(err, null, 2))
+        let data = err.data
         let d = {
           name: repo,
           owner,
