@@ -1,6 +1,6 @@
 const Octokit = require('@octokit/rest')
 const ok = new Octokit({
-  // auth: process.env.GITHUB_TOKEN
+  auth: process.env.GITHUB_TOKEN
 })
 const log = console.log
 
@@ -31,7 +31,7 @@ let api = {
         ? ok.repos.getBranch({ owner, repo, branch: ad.branch })
         : ok.repos.listTags({ owner, repo })
       h.then(err => {
-        log('got dat', JSON.stringify(err, null, 2))
+        // log('got dat', JSON.stringify(err, null, 2))
         let data = err.data
         let d = {
           name: repo,
@@ -76,7 +76,17 @@ let api = {
             done(d)
           })
       }).catch(err => {
-        log('err happened', err)
+        if (err) {
+          let msg = err.toString()
+          if (typeof msg === 'string' && msg.match(/rate limit/)) {
+            log(
+              '\nThe [github] API has reached its rate limits. You can either create a GITHUB_TOKEN env, or try another time after an hour.'
+            )
+            log(
+              'To aquire a GITHUB_TOKEN, goto https://github.com/settings/tokens, and click "Generate new token"\n'
+            )
+          }
+        }
         done()
       })
     }
