@@ -60,9 +60,13 @@ cli
   .command('update')
   .description('update all installed addons')
   .option('--anyway', 'update latest addon release for _classic_ mode anyway')
+  .option(
+    '--db',
+    'for update addon database, no addon will be updated if this option is specified'
+  )
   .action(cmd => {
     cfg.anyway(cmd.anyway)
-    core.update(cli.args.length > 1 ? cli.args.slice(0, -1) : null)
+    core.update(cli.args.length > 1 ? cli.args.slice(0, -1) : null, cmd)
   })
 
 cli

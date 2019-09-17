@@ -128,29 +128,46 @@ let src = {
   },
 
   summary(done) {
-    src.$api.mmoui.summary(done)
+    let db = []
+    src.$api.curse.summary(d => {
+      db = db.concat(d)
+      src.$api.mmoui.summary(d => {
+        db = db.concat(d)
+        done(db)
+      })
+    })
   },
 
-  getDB(done) {
+  getDB(filter, done) {
     let p = cfg.getPath('db')
+
+    if (!done) {
+      done = filter
+      filter = null
+    }
+
+    let _done = db => {
+      done(filter ? _.filter(db, d => d.source === filter) : db)
+    }
 
     if (
       !fs.existsSync(p) ||
-      new Date() - fs.statSync(p).mtime > 24 * 3600 * 1000
+      new Date() - fs.statSync(p).mtime > 24 * 3600 * 1000 ||
+      !done // force update
     ) {
       mk(path.dirname(p), err => {
         process.stdout.write(cl.i('\nUpdating database...'))
         src.summary(s => {
           fs.writeFileSync(p, JSON.stringify(s), 'utf-8')
           log(cl.i('done'))
-          done(s)
+          if (done) _done(s)
         })
       })
 
       return
     }
 
-    done(fs.existsSync(p) ? JSON.parse(fs.readFileSync(p, 'utf-8')) : null)
+    _done(fs.existsSync(p) ? JSON.parse(fs.readFileSync(p, 'utf-8')) : null)
     return
   }
 }

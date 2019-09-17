@@ -370,7 +370,9 @@ let core = {
     })
   },
 
-  update(keys, done) {
+  update(keys, opt, done) {
+    if (opt.db) return api.getDB()
+
     let aa = []
     if (!keys) keys = _.keys(ads.data)
 

@@ -67,7 +67,7 @@ let api = {
     let mo = cfg.getMode()
 
     let top = require('./index')
-    top.getDB(db => {
+    top.getDB('mmoui', db => {
       if (!db) return done()
 
       if (!ad.anyway) db = _.filter(db, d => mo === d.mode)

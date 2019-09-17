@@ -1,22 +1,3 @@
-const x = require('x-ray')({
-  filters: {
-    trim(v) {
-      return typeof v === 'string' ? v.trim() : v
-    },
-    num(v) {
-      let unit = v.split(' ')[0]
-      if (unit) {
-        unit = unit[unit.length - 1].toLowerCase()
-        unit = unit === 'm' ? 1000000 : unit === 'k' ? 1000 : 1
-      } else unit = 1
-      return parseInt(v.split(',').join('')) * unit
-    },
-    tail(v) {
-      let d = v.split('/')
-      return d[d.length - 1]
-    }
-  }
-})
 const g = require('got')
 const _ = require('underscore')
 const cfg = require('../lib/config')
@@ -24,70 +5,98 @@ const log = console.log
 
 let api = {
   $url: 'https://www.curseforge.com/wow/addons/',
-  $srl: 'https://addons-ecs.forgesvc.net/api/v2/addon/search',
+  $srl: 'https://addons-ecs.forgesvc.net/api/v2/addon',
 
   $lcl: /(addons|projects)\/(.*)$/,
   $scl: 'curseforge.com',
 
   info(ad, done) {
-    let mo = cfg.getMode()
-    let url = api.$url + ad.key + '/files/all'
+    let flavor = cfg.getMode() === '_classic_' ? 'wow_classic' : 'wow_retail'
+    let top = require('./')
 
-    if (!ad.anyway)
-      url += `?filter-game-version=1738749986:${
-        mo === '_retail_' ? '517' : '67408'
-      }`
+    top.getDB('curse', db => {
+      // log('curse info')
+      if (!db) return done()
 
-    x(url, {
-      name: 'header h2 | trim',
-      owner: '.text-sm span | trim',
-      create: ['div span abbr@data-epoch | num'],
+      // log('got db', db)
 
-      download: ['.w-full span | num'],
-      version: x('tbody tr', [
-        {
-          name: 'a | trim',
-          size: ['td | trim'],
-          game: 'td div div | trim',
-          link: '.button--hollow@href'
-        }
-      ])
-    })((err, d) => {
-      // log('/???', ad.key, err, d)
-      if (!d) {
-        done()
-        return
-      }
+      let x = _.find(db, d => ad.key === d.key)
 
-      let tmp = d.create
-      d.create = tmp[1]
-      d.update = tmp[2]
+      // log('got x', x)
 
-      d.version.forEach(x => {
-        x.link += '/file'
-        x.size = x.size[2]
-      })
-      d.download = d.download[2]
+      if (!x) return done()
 
-      // log(d)
-      done(err || !d.update || d.version.length === 0 ? null : d)
+      let id = x.id
+
+      let qs = `${api.$srl}/${id}`
+
+      // log('getting', qs)
+      g.get(qs)
+        .then(res => {
+          res = JSON.parse(res.body)
+          // log('got', res)
+
+          let data = {
+            name: res.name,
+            owner: res.authors ? res.authors[0].name : 'unknown',
+            create: new Date(res.dateCreated).valueOf() / 1000,
+            update: new Date(res.dateReleased).valueOf() / 1000,
+            download: res.downloadCount,
+            version: res.latestFiles.map(x => {
+              return {
+                name: x.displayName,
+                size: x.fileLength,
+                link: x.downloadUrl,
+                flavor: x.gameVersionFlavor,
+                date: new Date(x.fileDate)
+              }
+            })
+          }
+
+          if (!ad.anyway)
+            data.version = _.filter(data.version, x => x.flavor === flavor)
+
+          data.version.sort((a, b) => b.date - a.date)
+
+          // log('final data', data)
+          done(!data.version.length ? null : data)
+        })
+        .catch(err => {
+          done()
+        })
     })
   },
 
+  summary(done) {
+    g.get('https://github.com/antiwinter/scrap/raw/master/wowa/db-curse.json')
+      .then(res => {
+        done(JSON.parse(res.body))
+      })
+      .catch(err => {
+        done()
+      })
+  },
+
   search(ad, done) {
-    let mo = cfg.getMode()
+    let flavor = cfg.getMode() === '_classic_' ? 'wow_classic' : 'wow_retail'
 
-    let qs = `${api.$srl}?gameId=1&index=0&pageSize=15&searchFilter=${ad.key}`
-
-    if (mo === '_classic_' && !ad.anyway)
-      qs += `&gameVersion=${cfg.getGameVersion()}`
-
+    let qs = `${api.$srl}/search?gameId=1&index=0&pageSize=30&searchFilter=${ad.key}`
     // log('searching', qs)
     g.get(qs)
       .then(res => {
         // log(res.body)
+        let data = JSON.parse(res.body)
+
+        if (!ad.anyway)
+          data = _.filter(data, d =>
+            _.find(
+              d.gameVersionLatestFiles,
+              _d => _d.gameVersionFlavor === flavor
+            )
+          )
+
         done(
-          JSON.parse(res.body).map(x => {
+          data.map(x => {
             return {
               name: x.name,
               key: x.websiteUrl.split('/').pop(),
