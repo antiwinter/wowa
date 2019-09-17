@@ -16,7 +16,6 @@
     "sprintf-js": "^1.1.2",
     "ua-string": "^3.0.0",
     "underscore": "^1.9.1",
-    "x-ray": "^2.3.3",
     "yauzl": "^2.10.0"
   },
   "name": "wowa",
