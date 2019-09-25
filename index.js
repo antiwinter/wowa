@@ -39,6 +39,7 @@ cli
   .command('ls')
   .description('list all installed addons')
   .option('-l, --long', 'show detailed addon information')
+  .option('-t, --time', 'sort by updated time')
   .alias('list')
   .action(core.ls)
 

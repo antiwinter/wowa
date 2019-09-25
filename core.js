@@ -289,19 +289,30 @@ let core = {
 
   ls(opt) {
     let t = new tb()
-    for (let k in ads.data) {
-      let v = ads.data[k]
+    let _d = ads.data
+
+    let ks = _.keys(_d)
+
+    ks.sort((a, b) => {
+      return opt.time
+        ? _d[b].update - _d[a].update
+        : 1 - (a.replace(/[^a-zA-Z]/g, '') < b.replace(/[^a-zA-Z]/g, '')) * 2
+    })
+
+    ks.forEach(k => {
+      let v = _d[k]
 
       t.cell(cl.x('Addon keys'), cl.h(k) + (v.anyway ? cl.i2(' [anyway]') : ''))
       t.cell(cl.x('Version'), cl.i2(v.version))
       t.cell(cl.x('Source'), cl.i(v.source))
       t.cell(cl.x('Update'), cl.i(moment(v.update * 1000).format('YYYY-MM-DD')))
       t.newRow()
-    }
+    })
 
     log()
-    if (!Object.keys(ads.data).length) log('no addons\n')
-    else log(opt.long ? t.toString() : cl.h(cl.ls(_.keys(ads.data))))
+
+    if (!ks.length) log('no addons\n')
+    else log(opt.long ? t.toString() : cl.h(cl.ls(ks)))
 
     ads.checkDuplicate()
 
