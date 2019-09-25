@@ -115,31 +115,31 @@ wowa sw --classic-beta  switch mode to: classic BETA
 
 ### Actively maintained
 
-- [AcidWeb/CurseBreaker](https://github.com/AcidWeb/CurseBreaker) - `CLI` ![star this repo](https://githubbadges.com/star.svg?user=AcidWeb&repo=CurseBreaker&style=flat)
-- [erikabp123/ClassicAddonManager](https://github.com/erikabp123/ClassicAddonManager) - `GUI` ![star this repo](https://githubbadges.com/star.svg?user=erikabp123&repo=ClassicAddonManager&style=flat)
-- [ogri-la/wowman](https://github.com/ogri-la/wowman) - `GUI` ![star this repo](https://githubbadges.com/star.svg?user=ogri-la&repo=wowman&style=flat)
-- [layday/instawow](https://github.com/layday/instawow) - `CLI` ![star this repo](https://githubbadges.com/star.svg?user=layday&repo=instawow&style=flat)
-- [nazarov-tech/wowa](https://github.com/nazarov-tech/wowa) - `CLI` ![star this repo](https://githubbadges.com/star.svg?user=nazarov-tech&repo=wowa&style=flat)
-- [kuhnertdm/wow-addon-updater](https://github.com/kuhnertdm/wow-addon-updater) - `CLI` ![star this repo](https://githubbadges.com/star.svg?user=kuhnertdm&repo=wow-addon-updater&style=flat)
-- [Saionaro/wow-addons-updater](https://github.com/Saionaro/wow-addons-updater) - `GUI` ![star this repo](https://githubbadges.com/star.svg?user=Saionaro&repo=wow-addons-updater&style=flat)
-- [DayBr3ak/wow-better-cli](https://github.com/DayBr3ak/wow-better-cli) - `CLI` ![star this repo](https://githubbadges.com/star.svg?user=DayBr3ak&repo=wow-better-cli&style=flat)
-- [vargen2/Addon](https://github.com/vargen2/Addon) - `GUI` ![star this repo](https://githubbadges.com/star.svg?user=vargen2&repo=Addon&style=flat)
-- [Lund259/WoW-Addon-Manager](https://github.com/Lund259/WoW-Addon-Manager) - `GUI` ![star this repo](https://githubbadges.com/star.svg?user=Lund259&repo=WoW-Addon-Manager&style=flat)
-- [ephraim/lcurse](https://github.com/ephraim/lcurse) - `GUI` ![star this repo](https://githubbadges.com/star.svg?user=ephraim&repo=lcurse&style=flat)
+- ![stars](https://img.shields.io/github/stars/Saionaro/wow-addons-updater?style=social) [Saionaro/wow-addons-updater](https://github.com/Saionaro/wow-addons-updater) - `GUI`
+- ![stars](https://img.shields.io/github/stars/AcidWeb/CurseBreaker?style=social) [AcidWeb/CurseBreaker](https://github.com/AcidWeb/CurseBreaker) - `CLI`
+- ![stars](https://img.shields.io/github/stars/erikabp123/ClassicAddonManager?style=social) [erikabp123/ClassicAddonManager](https://github.com/erikabp123/ClassicAddonManager) - `GUI`
+- ![stars](https://img.shields.io/github/stars/ogri-la/wowman?style=social) [ogri-la/wowman](https://github.com/ogri-la/wowman) - `GUI`
+- ![stars](https://img.shields.io/github/stars/layday/instawow?style=social) [layday/instawow](https://github.com/layday/instawow) - `CLI`
+- ![stars](https://img.shields.io/github/stars/nazarov-tech/wowa?style=social) [nazarov-tech/wowa](https://github.com/nazarov-tech/wowa) - `CLI`
+- ![stars](https://img.shields.io/github/stars/kuhnertdm/wow-addon-updater?style=social) [kuhnertdm/wow-addon-updater](https://github.com/kuhnertdm/wow-addon-updater) - `CLI`
+- ![stars](https://img.shields.io/github/stars/DayBr3ak/wow-better-cli?style=social) [DayBr3ak/wow-better-cli](https://github.com/DayBr3ak/wow-better-cli) - `CLI`
+- ![stars](https://img.shields.io/github/stars/vargen2/Addon?style=social) [vargen2/Addon](https://github.com/vargen2/Addon) - `GUI`
+- ![stars](https://img.shields.io/github/stars/Lund259/WoW-Addon-Manager?style=social) [Lund259/WoW-Addon-Manager](https://github.com/Lund259/WoW-Addon-Manager) - `GUI`
+- ![stars](https://img.shields.io/github/stars/ephraim/lcurse?style=social) [ephraim/lcurse](https://github.com/ephraim/lcurse) - `GUI`
 
 ### Not Actively maintained
 
-- [WorldofAddons/worldofaddons](https://github.com/WorldofAddons/worldofaddons) - `GUI` ![star this repo](https://githubbadges.com/star.svg?user=WorldofAddons&repo=worldofaddons&style=flat)
-- [wttw/wowaddon](https://github.com/wttw/wowaddon) - `CLI` ![star this repo](https://githubbadges.com/star.svg?user=wttw&repo=wowaddon&style=flat)
-- [OpenAddOnManager/OpenAddOnManager](https://github.com/OpenAddOnManager/OpenAddOnManager) - `GUI` ![star this repo](https://githubbadges.com/star.svg?user=OpenAddOnManager&repo=OpenAddOnManager&style=flat)
-- [vargen2/addonmanager](https://github.com/vargen2/addonmanager) - `GUI` ![star this repo](https://githubbadges.com/star.svg?user=vargen2&repo=addonmanager&style=flat)
-- [zekesonxx/wow-cli](https://github.com/zekesonxx/wow-cli) - `CLI` ![star this repo](https://githubbadges.com/star.svg?user=zekesonxx&repo=wow-cli&style=flat)
-- [acdtrx/wowam](https://github.com/acdtrx/wowam) - `CLI` ![star this repo](https://githubbadges.com/star.svg?user=acdtrx&repo=wowam&style=flat)
-- [Sumolari/WAM](https://github.com/Sumolari/WAM) - `CLI` ![star this repo](https://githubbadges.com/star.svg?user=Sumolari&repo=WAM&style=flat)
-- [qwezarty/wow-addon-manager](https://github.com/qwezarty/wow-addon-manager) - `CLI` ![star this repo](https://githubbadges.com/star.svg?user=qwezarty&repo=wow-addon-manager&style=flat)
-- [sysworx/wowam](https://github.com/sysworx/wowam) - `GUI` ![star this repo](https://githubbadges.com/star.svg?user=sysworx&repo=wowam&style=flat)
-- [JonasKnarbakk/GWAM](https://github.com/JonasKnarbakk/GWAM) - `GUI` ![star this repo](https://githubbadges.com/star.svg?user=JonasKnarbakk&repo=GWAM&style=flat)
-- [SeriousBug/WoWutils](https://github.com/SeriousBug/WoWutils) - `CLI` ![star this repo](https://githubbadges.com/star.svg?user=SeriousBug&repo=WoWutils&style=flat)
+- ![stars](https://img.shields.io/github/stars/WorldofAddons/worldofaddons?style=social) [WorldofAddons/worldofaddons](https://github.com/WorldofAddons/worldofaddons) - `GUI`
+- ![stars](https://img.shields.io/github/stars/wttw/wowaddon?style=social) [wttw/wowaddon](https://github.com/wttw/wowaddon) - `CLI`
+- ![stars](https://img.shields.io/github/stars/OpenAddOnManager/OpenAddOnManager?style=social) [OpenAddOnManager/OpenAddOnManager](https://github.com/OpenAddOnManager/OpenAddOnManager) - `GUI`
+- ![stars](https://img.shields.io/github/stars/vargen2/addonmanager?style=social) [vargen2/addonmanager](https://github.com/vargen2/addonmanager) - `GUI`
+- ![stars](https://img.shields.io/github/stars/zekesonxx/wow-cli?style=social) [zekesonxx/wow-cli](https://github.com/zekesonxx/wow-cli) - `CLI`
+- ![stars](https://img.shields.io/github/stars/acdtrx/wowam?style=social) [acdtrx/wowam](https://github.com/acdtrx/wowam) - `CLI`
+- ![stars](https://img.shields.io/github/stars/Sumolari/WAM?style=social) [Sumolari/WAM](https://github.com/Sumolari/WAM) - `CLI`
+- ![stars](https://img.shields.io/github/stars/qwezarty/wow-addon-manager?style=social) [qwezarty/wow-addon-manager](https://github.com/qwezarty/wow-addon-manager) - `CLI`
+- ![stars](https://img.shields.io/github/stars/sysworx/wowam?style=social) [sysworx/wowam](https://github.com/sysworx/wowam) - `GUI`
+- ![stars](https://img.shields.io/github/stars/JonasKnarbakk/GWAM?style=social) [JonasKnarbakk/GWAM](https://github.com/JonasKnarbakk/GWAM) - `GUI`
+- ![stars](https://img.shields.io/github/stars/SeriousBug/WoWutils?style=social) [SeriousBug/WoWutils](https://github.com/SeriousBug/WoWutils) - `CLI`
 
 ## Roadmap
 
