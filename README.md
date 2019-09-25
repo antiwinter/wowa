@@ -8,6 +8,7 @@
 
 **Recent Notice**
 
+- Add support for `PTR` and `BETA` mode, see [switch modes](#switch-modes)
 - Now `ls` only prints short message, if you want detailed message, use `wowa ls -l`
 - Add support for [TukUI](https://tukui.org). `wowa add 0-tukui`, `wowa search tukui:elvui`
 - Add support for WoW Classic, use `wowa switch` to switch mode between `_classic_` and `_retail_`, use `wowa ls` to check which mode you are in. When switched to `_classic_` mode, **wowa** will download the correct addon version that matches **1.13.x**
@@ -94,6 +95,20 @@ If use **wowa** for the first time, you need to import your local addon. Then **
 
 ```
 wowa import
+```
+
+### Switch modes
+
+```
+wowa sw                 switch between _retail_ and _classic_
+wowa sw --ptr           switch mode to: retail PTR
+wowa sw --beta          switch mode to: retail BETA
+wowa sw --retail        switch mode to: retail formal
+wowa sw --retail-ptr    switch mode to: retail PTR
+wowa sw --retail-beta   switch mode to: retail BETA
+wowa sw --classic       switch mode to: classic formal
+wowa sw --classic-ptr   switch mode to: classic PTR
+wowa sw --classic-beta  switch mode to: classic BETA
 ```
 
 ## Related projects
