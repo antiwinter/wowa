@@ -33,7 +33,7 @@ As comparing to these projects, **WoWA** offers serveral advantages:
 npm install -g wowa
 ```
 
-## Settup WoW path
+## Setup WoW path
 
 The WoW path configuration file is located at `%APPDATA%/wowa/wow_path.txt` on Windows, and `~/.wowa/wow_path.txt` on macOS or Linux.
 
