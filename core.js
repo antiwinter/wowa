@@ -316,7 +316,11 @@ let core = {
 
     ads.checkDuplicate()
 
-    log(cl.x('You are in: '), cl.i(cfg.getPath('mode')), '\n')
+    log(
+      `${cl.x('You are in: ')} ${cl.i(cfg.getMode())} ${cl.i2(
+        cfg.getMode('ver')
+      )}\n`
+    )
 
     let ukn = ads.unknownDirs()
 
@@ -443,10 +447,7 @@ let core = {
         if (ads.dirStatus(dir)) return
 
         // log('picking up', dir)
-        let l = _.find(
-          db,
-          a => a.dir.indexOf(dir) >= 0 && a.mode === cfg.getMode()
-        )
+        let l = _.find(db, a => a.dir.indexOf(dir) >= 0 && cfg.testMode(a.mode))
 
         if (!l) return
 
@@ -454,9 +455,12 @@ let core = {
         importedDirs++
         let update = Math.floor(fs.statSync(path.join(p, dir)).mtimeMs / 1000)
         let k =
-          l.id +
-          '-' +
-          _.filter(l.name.split(''), s => s.match(/^[a-z0-9]+$/i)).join('')
+          l.source === 'curse'
+            ? l.key
+            : l.id +
+              '-' +
+              _.filter(l.name.split(''), s => s.match(/^[a-z0-9]+$/i)).join('')
+
         if (ads.data[k]) ads.data[k].sub.push(dir)
         else {
           ads.data[k] = {
@@ -489,20 +493,31 @@ let core = {
     })
   },
 
-  switch() {
-    let pf = cfg.getPath('pathfile')
-    let p = fs.readFileSync(pf, 'utf-8').trim()
-    let mode = path.basename(p)
+  switch(opt) {
+    let mo =
+      opt.ptr || opt.retailPtr
+        ? '_ptr_'
+        : opt.beta || opt.retailBeta
+        ? '_beta_'
+        : opt.classicPtr
+        ? '_classic_ptr_'
+        : opt.classicBeta
+        ? '_classic_beta_'
+        : opt.retail
+        ? '_retail_'
+        : opt.classic
+        ? '_classic_'
+        : cfg.testMode('_retail_')
+        ? '_classic_'
+        : '_retail_'
 
-    // log('pf', pf, 'p', p, 'mode', mode)
+    cfg.setModePath(mo)
 
-    if (mode === '_retail_') mode = '_classic_'
-    else mode = '_retail_'
-
-    p = path.join(path.dirname(p), mode)
-    fs.writeFileSync(pf, p, 'utf-8')
-    log('\nMode switched to:', cl.i(mode), '\n')
-
+    log(
+      `\n${cl.x('Mode switched to: ')} ${cl.i(cfg.getMode())} ${cl.i2(
+        cfg.getMode('ver')
+      )}\n`
+    )
     ads.load()
   },
 

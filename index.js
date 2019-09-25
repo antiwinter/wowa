@@ -79,6 +79,14 @@ cli
   .command('switch')
   .alias('sw')
   .description('switch mode between retail and classic')
+  .option('--ptr', 'switch mode to: retail PTR')
+  .option('--beta', 'switch mode to: retail BETA')
+  .option('--retail', 'switch mode to: retail formal')
+  .option('--retail-ptr', 'switch mode to: retail PTR')
+  .option('--retail-beta', 'switch mode to: retail BETA')
+  .option('--classic', 'switch mode to: classic formal')
+  .option('--classic-ptr', 'switch mode to: classic PTR')
+  .option('--classic-beta', 'switch mode to: classic BETA')
   .action(core.switch)
 
 cli
