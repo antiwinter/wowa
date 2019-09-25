@@ -48,13 +48,17 @@ let api = {
                 size: x.fileLength,
                 link: x.downloadUrl,
                 flavor: x.gameVersionFlavor,
-                date: new Date(x.fileDate)
+                date: new Date(x.fileDate),
+                stage: x.releaseType // stage: 1 formal, 2 beta, 3 alpha (0, 4 not found)
               }
             })
           }
 
           if (!ad.anyway)
             data.version = _.filter(data.version, x => x.flavor === flavor)
+
+          let beta = _.filter(data.version, x => x.stage < 3)
+          if (beta) data.version = beta
 
           data.version.sort((a, b) => b.date - a.date)
 
