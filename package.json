@@ -57,5 +57,8 @@
     "github": {
       "release": true
     }
+  },
+  "engines": {
+    "node": ">=10.16"
   }
 }
