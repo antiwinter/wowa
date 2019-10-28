@@ -114,7 +114,7 @@ let src = {
                     .join(', '),
                   '\n'
                 )
-                done()
+                return done()
               } else {
                 res.hash = target.hash
               }
