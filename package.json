@@ -13,6 +13,7 @@
     "numeral": "^2.0.6",
     "package-info": "^3.0.2",
     "rimraf": "^2.6.3",
+    "simple-git": "^1.126.0",
     "sprintf-js": "^1.1.2",
     "ua-string": "^3.0.0",
     "underscore": "^1.9.1",
