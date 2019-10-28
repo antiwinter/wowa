@@ -11,9 +11,6 @@
 
 - Add support for `PTR` and `BETA` mode, see [switch modes](#switch-modes)
 - Now `ls` only prints short message, if you want detailed message, use `wowa ls -l`
-- Add support for [TukUI](https://tukui.org). `wowa add 0-tukui`, `wowa search tukui:elvui`
-- Add support for WoW Classic, use `wowa switch` to switch mode between `_classic_` and `_retail_`, use `wowa ls` to check which mode you are in. When switched to `_classic_` mode, **wowa** will download the correct addon version that matches **1.13.x**
-- [curse](https://www.curseforge.com/wow/addons), [wowinterface](https://www.wowinterface.com/addons.php), [github](https://github.com), [tukui](https://tukui.org) are supported
 - node version: ![node](https://img.shields.io/node/v/wowa)
 
 ---
@@ -66,6 +63,14 @@ wowa search mmoui:dbm                           # search for dbm only from wowin
 ### Installing an addon
 
 ![](https://raw.githubusercontent.com/antiwinter/scrap/master/wowa/ins1-min.gif)
+
+### Installing an addon from arbitrary repo
+
+```
+wowa add https://git.tukui.org/Azilroka/AddOnSkins.git            # install master branch
+wowa add https://git.tukui.org/Azilroka/AddOnSkins.git@master     # install master branch
+wowa add https://git.tukui.org/Azilroka/AddOnSkins.git@v1.88      # install tag v1.88
+```
 
 ### Search for an addon
 
