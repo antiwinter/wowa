@@ -12,7 +12,8 @@ let src = {
     curse: require('./curse'),
     mmoui: require('./mmoui'),
     tukui: require('./tukui'),
-    github: require('./github')
+    github: require('./github'),
+    git: require('./git')
   },
 
   $valid(ad) {
@@ -45,6 +46,9 @@ let src = {
         let r = src.$api[k].$lcl.exec(t)
         // log('long clue exec:', r)
 
+        d.uri = t
+        d.key = t
+
         if (r) {
           d.source = k
           d.key = r[r.length - 1]
@@ -73,6 +77,7 @@ let src = {
   },
 
   info(ad, done) {
+    // log('\n\ngetting info', ad, '\n\n')
     if (!src.$valid(ad)) return done()
 
     async.eachOfLimit(
@@ -89,6 +94,31 @@ let src = {
             res = info
             res.source = source
             // log('g info', info)
+
+            if (source === 'git') {
+              if (!ad.version) ad.version = 'master'
+              ad.branch = ad.version
+
+              let target = _.find(info.version, x => x.name === ad.branch)
+              if (!target) {
+                log(
+                  `\n${cl.i2(ad.branch)} is not a valid entry for ${cl.h(
+                    ad.uri
+                  )}`
+                )
+                log(
+                  'Valid entries:',
+                  res.version
+                    .map(x => cl.i2(x.name))
+                    .slice(0, 10)
+                    .join(', '),
+                  '\n'
+                )
+                done()
+              } else {
+                res.hash = target.hash
+              }
+            }
             done(res)
             cb(false)
           } else cb()

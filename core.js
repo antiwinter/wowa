@@ -21,17 +21,20 @@ const pkg = require('./package.json')
 const log = console.log
 
 function getAd(ad, info, tmp, hook) {
-  let v = info.version[0]
+  let src = path.join(tmp, '1.zip')
+  let dst = path.join(tmp, 'dec')
 
+  // download git
+  if (info.source === 'git')
+    return api.$api.git.clone(ad.uri, ad.branch, dst, hook)
+
+  let v = info.version[0]
   if (!v) {
     log('fatal: version not found')
     return hook()
   }
 
   if (ad.version) v = _.find(info.version, d => d.name === ad.version)
-
-  let src = path.join(tmp, '1.zip')
-  let dst = path.join(tmp, 'dec')
 
   // log('streaming', v.link)
 
@@ -100,6 +103,7 @@ function _install(from, to, sub, done) {
 }
 
 function install(ad, update, hook) {
+  // log('installing', ad)
   let tmp = path.join(cfg.getPath('tmp'), ad.key.replace(/\//g, '-'))
   let notify = (status, msg) => {
     hook({
@@ -116,7 +120,12 @@ function install(ad, update, hook) {
     // fix source
     ad.source = info.source
 
-    if (update && ads.data[ad.key] && ads.data[ad.key].update >= info.update)
+    let _d = ads.data[ad.key]
+    if (
+      update &&
+      _d &&
+      (_d.update >= info.update || (_d.hash && _d.hash === info.hash))
+    )
       return notify('skip', 'is already up to date')
 
     notify('ongoing', 'preparing download...')
@@ -137,19 +146,23 @@ function install(ad, update, hook) {
             notify('ongoing', 'clearing previous install...')
 
             ads.clearUp(ad.key, () => {
-              ads.data[ad.key] = {
+              let d = (ads.data[ad.key] = {
                 name: info.name,
                 version: ad.version,
                 size,
                 source: info.source,
                 update: info.update,
                 sub: []
+              })
+
+              if (ad.anyway) d.anyway = ad.anyway
+              if (ad.branch) d.branch = ad.branch
+              if (ad.source === 'git') {
+                d.uri = ad.uri
+                d.hash = info.hash
               }
 
-              if (ad.anyway) ads.data[ad.key].anyway = ad.anyway
-              if (ad.branch) ads.data[ad.key].branch = ad.branch
-
-              _install(dec, cfg.getPath('addon'), ads.data[ad.key].sub, err => {
+              _install(dec, cfg.getPath('addon'), d.sub, err => {
                 if (err) return notify('failed', 'failed to copy file')
 
                 ads.save()
@@ -188,8 +201,6 @@ function batchInstall(aa, update, done) {
               task.title += cl.h(ad.key)
               if (ad.version) task.title += cl.i2(' @' + cl.i2(ad.version))
               if (ad.source) task.title += cl.i(` [${ad.source}]`)
-
-              // log('ad is', ad)
 
               task.title += ' ' + cl.x(evt.msg)
             }
@@ -372,12 +383,12 @@ let core = {
       }
 
       let v = info.version[0]
-      if (v) {
+      if (v && info.source !== 'git') {
         kv('version', v.name)
         if (v.size) kv('size', v.size)
         if (v.game)
           kv('game version', _.uniq(info.version.map(x => x.game)).join(', '))
-        kv('link', v.link)
+        if (v.link) kv('link', v.link)
       }
 
       log(t.toString())
@@ -397,7 +408,9 @@ let core = {
           key: k,
           source: ads.data[k].source,
           anyway: ads.data[k].anyway && cfg.anyway(),
-          branch: ads.data[k].branch
+          branch: ads.data[k].branch,
+          uri: ads.data[k].uri,
+          hash: ads.data[k].hash
         })
     })
 
@@ -420,7 +433,14 @@ let core = {
 
     let aa = []
     for (let k in ads.data) {
-      aa.push({ key: k, source: ads.data[k].source })
+      aa.push({
+        key: k,
+        source: ads.data[k].source,
+        anyway: ads.data[k].anyway && cfg.anyway(),
+        branch: ads.data[k].branch,
+        uri: ads.data[k].uri,
+        hash: ads.data[k].hash
+      })
     }
 
     if (!aa.length) {
