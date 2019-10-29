@@ -104,7 +104,7 @@ function _install(from, to, sub, done) {
 
 function install(ad, update, hook) {
   // log('installing', ad)
-  let tmp = path.join(cfg.getPath('tmp'), ad.key.replace(/\//g, '-'))
+  let tmp = path.join(cfg.getPath('tmp'), ad.key.replace(/\/|:/g, '.'))
   let notify = (status, msg) => {
     hook({
       status,
