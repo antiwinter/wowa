@@ -86,6 +86,7 @@ let src = {
       (api, source, cb) => {
         if (ad.source && source !== ad.source) return cb()
         if (!ad.source && source === 'github') return cb()
+        if (!ad.uri && source === 'git') return cb()
 
         let res = null
         // log('iter', source)
@@ -177,7 +178,7 @@ let src = {
     }
 
     let _done = db => {
-      done(filter ? _.filter(db, d => d.source === filter) : db)
+      done(filter ? _.filter(db, d => d && d.source === filter) : db)
     }
 
     if (
