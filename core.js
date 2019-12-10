@@ -112,6 +112,8 @@ function install(ad, update, hook) {
     })
   }
 
+  if (update && ad.pin) return notify('skip', 'is pinned')
+
   notify('ongoing', update ? 'checking for updates...' : 'waiting...')
 
   api.info(ad, info => {
@@ -260,6 +262,21 @@ let core = {
     )
   },
 
+  pin(keys, pup) {
+    let d = ads.data
+
+    let n = 0
+    keys.forEach(k => {
+      if (d[k]) {
+        d[k].pin = pup
+        n++
+      }
+    })
+    ads.save()
+
+    log(`✨  ${n} addon${n > 1 ? 's' : ''} ${pup ? '' : 'un'}pinned.`)
+  },
+
   search(text, done) {
     // log(text)
 
@@ -314,7 +331,7 @@ let core = {
       let v = _d[k]
 
       t.cell(cl.x('Addon keys'), cl.h(k) + (v.anyway ? cl.i2(' [anyway]') : ''))
-      t.cell(cl.x('Version'), cl.i2(v.version))
+      t.cell(cl.x('Version'), (v.pin ? cl.i('! ') : '') + cl.i2(v.version))
       t.cell(cl.x('Source'), cl.i(v.source))
       t.cell(cl.x('Update'), cl.i(moment(v.update * 1000).format('YYYY-MM-DD')))
       t.newRow()
@@ -339,7 +356,7 @@ let core = {
       log(
         cl.x(
           `❗ ${ukn.length} folder${
-            ukn.length > 1 ? 's' : ''
+          ukn.length > 1 ? 's' : ''
           } not managing by wowa`
         )
       )
@@ -377,8 +394,8 @@ let core = {
           k === 'create' || k === 'update'
             ? moment(info[k] * 1000).format('MM/DD/YYYY')
             : k === 'download'
-            ? numeral(info[k]).format('0.0a')
-            : info[k]
+              ? numeral(info[k]).format('0.0a')
+              : info[k]
         )
       }
 
@@ -410,7 +427,8 @@ let core = {
           anyway: ads.data[k].anyway && cfg.anyway(),
           branch: ads.data[k].branch,
           uri: ads.data[k].uri,
-          hash: ads.data[k].hash
+          hash: ads.data[k].hash,
+          pin: ads.data[k].pin
         })
     })
 
@@ -478,8 +496,8 @@ let core = {
           l.source === 'curse'
             ? l.key
             : l.id +
-              '-' +
-              _.filter(l.name.split(''), s => s.match(/^[a-z0-9]+$/i)).join('')
+            '-' +
+            _.filter(l.name.split(''), s => s.match(/^[a-z0-9]+$/i)).join('')
 
         if (ads.data[k]) ads.data[k].sub.push(dir)
         else {
@@ -501,7 +519,7 @@ let core = {
         log(
           cl.h(
             `❗ ${ukn.length} folder${
-              ukn.length > 1 ? 's are' : ' is'
+            ukn.length > 1 ? 's are' : ' is'
             } not recgonized\n`
           )
         )
@@ -518,18 +536,18 @@ let core = {
       opt.ptr || opt.retailPtr
         ? '_ptr_'
         : opt.beta || opt.retailBeta
-        ? '_beta_'
-        : opt.classicPtr
-        ? '_classic_ptr_'
-        : opt.classicBeta
-        ? '_classic_beta_'
-        : opt.retail
-        ? '_retail_'
-        : opt.classic
-        ? '_classic_'
-        : cfg.testMode('_retail_')
-        ? '_classic_'
-        : '_retail_'
+          ? '_beta_'
+          : opt.classicPtr
+            ? '_classic_ptr_'
+            : opt.classicBeta
+              ? '_classic_beta_'
+              : opt.retail
+                ? '_retail_'
+                : opt.classic
+                  ? '_classic_'
+                  : cfg.testMode('_retail_')
+                    ? '_classic_'
+                    : '_retail_'
 
     cfg.setModePath(mo)
 

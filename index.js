@@ -76,6 +76,16 @@ cli
   .action(() => core.pickup())
 
 cli
+  .command('pin <addon...>')
+  .description("pin an addon to it's current version, prevent it from updating")
+  .action(key => core.pin(key, 1))
+
+cli
+  .command('unpin <addon...>')
+  .description("unpin an addon, allow it to be updated")
+  .action(key => core.pin(key, 0))
+
+cli
   .command('switch')
   .alias('sw')
   .description('switch mode between retail and classic')
