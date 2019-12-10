@@ -90,6 +90,15 @@ wowa add https://git.tukui.org/Azilroka/AddOnSkins.git@v1.88      # install tag 
 
 ![](https://raw.githubusercontent.com/antiwinter/scrap/master/wowa/update-min.gif)
 
+### Pin an addon, prevent it from updating
+
+```
+wowa pin deadly-boss-mods       # addon is pinned to it's current version
+wowa unpin deadly-boss-mods     # addon is unpinned
+```
+
+`wowa ls -l` displays an exclaimation mark before version, incicating that addon is pinned.
+
 ### List all installed addons
 
 ![](https://raw.githubusercontent.com/antiwinter/scrap/master/wowa/ls-min.gif)
