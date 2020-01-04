@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "@octokit/rest": "^16.28.9",
+    "agentkeepalive": "^4.1.0",
     "async": "^3.0.1",
     "chalk": "^2.4.2",
     "commander": "^2.20.0",

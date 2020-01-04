@@ -1,6 +1,7 @@
 const g = require('got')
 const _ = require('underscore')
 const cfg = require('../lib/config')
+const { HttpsAgent } = require('agentkeepalive')
 const log = console.log
 
 let api = {
@@ -72,11 +73,14 @@ let api = {
   },
 
   summary(done) {
-    g.get('https://github.com/antiwinter/scrap/raw/master/wowa/db-curse.json')
+    g.get('https://github.com/antiwinter/scrap/raw/master/wowa/db-curse.json', {
+      agent: new HttpsAgent({ keepAlive: true })
+    })
       .then(res => {
         done(JSON.parse(res.body))
       })
       .catch(err => {
+        log('githubcontent error', err)
         done()
       })
   },
