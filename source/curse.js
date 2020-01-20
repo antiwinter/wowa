@@ -57,6 +57,9 @@ let api = {
           if (!ad.anyway)
             data.version = _.filter(data.version, x => x.flavor === flavor)
 
+          if (!ad.nolib)
+            data.version = _.filter(data.version, x => !x.name.match(/-nolib$/))
+
           let beta = _.filter(data.version, x => x.stage < 3)
           if (beta) data.version = beta
 
