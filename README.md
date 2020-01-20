@@ -60,6 +60,14 @@ wowa search dbm                                 # search for dbm automatically
 wowa search mmoui:dbm                           # search for dbm only from wowinterface
 ```
 
+**If an addon does not provide a classic version, but the author declares that the addon supports classic. You can:**
+
+```
+wowa add some-addon --anyway
+```
+
+*Note: you will need to check the __Load out of date addons__ option in game*
+
 ### Installing an addon
 
 ![](https://raw.githubusercontent.com/antiwinter/scrap/master/wowa/ins1-min.gif)
