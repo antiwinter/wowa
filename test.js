@@ -275,7 +275,7 @@ commonTests([
   ['bigwigsmods/bigwigs/classic', /^BigWigs/, 1],
   ['classicon', /^Class/, 1],
   ['mmoui:11190-Bartender4', /^Bart/, 1],
-  ['tukui:6-RedtuzkUIClassic', /^ElvUI/, 1],
+  ['tukui:6-RedtuzkUIClassic', /^ElvUI/, 0],
   ['sellableitemdrops', /^Sella/, 1]
 ])
 
