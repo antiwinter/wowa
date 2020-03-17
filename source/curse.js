@@ -83,7 +83,8 @@ let api = {
         done(JSON.parse(res.body))
       })
       .catch(err => {
-        log('githubcontent error', err)
+        log('require curse db failed', err.toString())
+        process.exit(1)
         done()
       })
   },

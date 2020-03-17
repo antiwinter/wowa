@@ -239,8 +239,10 @@ function batchInstall(aa, update, done) {
 
 let core = {
   add(aa, done) {
-    log('\nInstalling addon' + (aa.length > 1 ? 's...' : '...') + '\n')
-    batchInstall(aa.map(x => api.parseName(x)), 0, done)
+    api.getDB(db => {
+      log('\nInstalling addon' + (aa.length > 1 ? 's...' : '...') + '\n')
+      batchInstall(aa.map(x => api.parseName(x)), 0, done)
+    })
   },
 
   rm(keys, done) {
@@ -414,33 +416,34 @@ let core = {
   },
 
   update(keys, opt, done) {
-    if (opt.db) return api.getDB()
+    api.getDB(db => {
+      if (opt.db) return
 
-    let aa = []
-    if (!keys) keys = _.keys(ads.data)
+      let aa = []
+      if (!keys) keys = _.keys(ads.data)
 
-    keys.forEach(k => {
-      if (k in ads.data)
-        aa.push({
-          key: k,
-          source: ads.data[k].source,
-          anyway: ads.data[k].anyway && cfg.anyway(),
-          branch: ads.data[k].branch,
-          uri: ads.data[k].uri,
-          hash: ads.data[k].hash,
-          pin: ads.data[k].pin
-        })
+      keys.forEach(k => {
+        if (k in ads.data)
+          aa.push({
+            key: k,
+            source: ads.data[k].source,
+            anyway: ads.data[k].anyway && cfg.anyway(),
+            branch: ads.data[k].branch,
+            uri: ads.data[k].uri,
+            hash: ads.data[k].hash,
+            pin: ads.data[k].pin
+          })
+      })
+
+      if (!aa.length) {
+        log('\nnothing to update\n')
+        return
+      }
+
+      if (ads.checkDuplicate()) return
+      log('\nUpdating addons:\n')
+      batchInstall(aa, 1, done)
     })
-
-    if (!aa.length) {
-      log('\nnothing to update\n')
-      return
-    }
-
-    if (ads.checkDuplicate()) return
-
-    log('\nUpdating addons:\n')
-    batchInstall(aa, 1, done)
   },
 
   restore(repo, done) {
