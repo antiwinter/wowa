@@ -452,25 +452,27 @@ let core = {
       return
     }
 
-    let aa = []
-    for (let k in ads.data) {
-      aa.push({
-        key: k,
-        source: ads.data[k].source,
-        anyway: ads.data[k].anyway && cfg.anyway(),
-        branch: ads.data[k].branch,
-        uri: ads.data[k].uri,
-        hash: ads.data[k].hash
-      })
-    }
+    api.getDB(db => {
+      let aa = []
+      for (let k in ads.data) {
+        aa.push({
+          key: k,
+          source: ads.data[k].source,
+          anyway: ads.data[k].anyway && cfg.anyway(),
+          branch: ads.data[k].branch,
+          uri: ads.data[k].uri,
+          hash: ads.data[k].hash
+        })
+      }
 
-    if (!aa.length) {
-      log('\nnothing to restore\n')
-      return
-    }
+      if (!aa.length) {
+        log('\nnothing to restore\n')
+        return
+      }
 
-    log('\nRestoring addons:')
-    batchInstall(aa, 0, done)
+      log('\nRestoring addons:')
+      batchInstall(aa, 0, done)
+    })
   },
 
   pickup(done) {
