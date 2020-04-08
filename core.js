@@ -117,7 +117,7 @@ function install(ad, update, hook) {
   notify('ongoing', update ? 'checking for updates...' : 'waiting...')
 
   api.info(ad, info => {
-    if (!info) return notify('failed', 'not availabe')
+    if (!info) return notify('failed', 'not available')
 
     // fix source
     ad.source = info.source
