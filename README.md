@@ -9,6 +9,7 @@
 
 **Recent Notice**
 
+- [GFW treatment](#gfw-treatment) 解决国内经常更新失败的问题
 - Add support for `PTR` and `BETA` mode, see [switch modes](#switch-modes)
 - Now `ls` only prints short message, if you want detailed message, use `wowa ls -l`
 - node version: ![node](https://img.shields.io/node/v/wowa)
@@ -179,3 +180,18 @@ wowa sw --classic-beta  switch mode to: classic BETA
 - [ ] Support backing up to github.com
 - [ ] Support restoring from github.com
 - [ ] Support uploading to warcraftlogs.com
+
+## GFW treatment
+
+如果你身在国内并经常更新 database 缓慢或出现以下错误，可以按下文的方法解决。
+
+```
+Updating database...require curse db failed RequestError: read ECONNRESET
+```
+
+**解决方法**
+
+1. 按快捷键 **Win**+**x**，**a**，打开管理员权限的 **powershell**
+2. 输入以下命令编辑 *hosts* 文件，`notepad c:\windows\system32\drivers\etc\hosts`
+3. 在 *hosts* 文件中增加一行 `199.232.68.133 raw.githubusercontent.com` 保存退出
+4. 在 **powershell** 中输入 `ipconfig /flushdns`
