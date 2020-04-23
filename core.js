@@ -416,9 +416,7 @@ let core = {
   },
 
   update(keys, opt, done) {
-    api.getDB(db => {
-      if (opt.db) return
-
+    api.getDB(opt.db ? null : db => {
       let aa = []
       if (!keys) keys = _.keys(ads.data)
 
