@@ -193,5 +193,9 @@ Updating database...require curse db failed RequestError: read ECONNRESET
 
 1. 按快捷键 **Win**+**x**，**a**，打开管理员权限的 **powershell**
 2. 输入以下命令编辑 *hosts* 文件，`notepad c:\windows\system32\drivers\etc\hosts`
-3. 在 *hosts* 文件中增加一行 `199.232.68.133 raw.githubusercontent.com` 保存退出
+3. 在 *hosts* 文件中增加以下两行，保存退出
+```
+199.232.68.133 raw.githubusercontent.com
+140.82.112.5 api.github.com
+```
 4. 在 **powershell** 中输入 `ipconfig /flushdns`
