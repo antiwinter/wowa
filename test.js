@@ -176,8 +176,8 @@ function commonTests(aa) {
       // log('gg', info)
       // t.assert(v.name.match(/ElvUI/))
 
-      if (cfg.getMode() === '_classic_') t.assert(v.key.match(/2-/))
-      else t.assert(v.key.match(/0-/))
+      // if (cfg.getMode() === '_classic_') t.assert(v.key.match(/2-/))
+      // else t.assert(v.key.match(/0-/))
 
       t.assert(vau.isUri(v.page))
       t.assert(v.download > 100)
