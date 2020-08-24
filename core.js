@@ -488,9 +488,12 @@ let core = {
         if (ads.dirStatus(dir)) return
 
         // log('picking up', dir)
-        let l = _.find(db, a => a.dir.indexOf(dir) >= 0 && cfg.testMode(a.mode))
+        let l = _.filter(db, a => a.dir.indexOf(dir) >= 0 && cfg.testMode(a.mode))
 
-        if (!l) return
+        if (!l.length) return
+        l.sort((a, b) => a.id - b.id)
+        // log(l)
+        l = l[0]
 
         // log('found', l)
         importedDirs++
