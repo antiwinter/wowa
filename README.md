@@ -9,7 +9,7 @@
 
 **Recent Notice**
 
-- [GFW treatment](#gfw-treatment) 解决国内经常更新失败的问题
+- [GFW treatment](#gfw-treatment) è§£å†³å›½å†…ç»�å¸¸æ›´æ–°å¤±è´¥çš„é—®é¢˜
 - Add support for `PTR` and `BETA` mode, see [switch modes](#switch-modes)
 - Now `ls` only prints short message, if you want detailed message, use `wowa ls -l`
 - node version: ![node](https://img.shields.io/node/v/wowa)
@@ -18,13 +18,13 @@
 
 **WoWA** stands for World of Warcraft Assistant, it is designed to help managing WoW addons, uploading WCL logs, etc.
 
-There used to be some command line manager for WoW addons in the past, but are mostly out of maintaince at this time. A list of these projects can be found in the [related prjects](#related-projects) section.
+There used to be some command line manager for WoW addons in the past, but are mostly out of maintenance at this time. A list of these projects can be found in the [related projects](#related-projects) section.
 
-As comparing to these projects, **WoWA** offers serveral advantages:
+As comparing to these projects, **WoWA** offers several advantages:
 
 - Better CLI interface: colorful and meaningful
 - Concurrency: when installing or updating, WoWA can take advantage of multi-processing
-- **wowaads.json** file: this is the file where WoWA stores addon information. Unlike other projects, WoWA stores this file in the **WTF** folder. This design benifits people when they want to backup their WoW setting. Backing up one **WTF** folder is enough
+- **wowaads.json** file: this is the file where WoWA stores addon information. Unlike other projects, WoWA stores this file in the **WTF** folder. This design benefits people when they want to backup their WoW setting. Backing up one **WTF** folder is enough
 
 ## Install
 
@@ -106,7 +106,7 @@ wowa pin deadly-boss-mods       # addon is pinned to it's current version
 wowa unpin deadly-boss-mods     # addon is unpinned
 ```
 
-`wowa ls -l` displays an exclaimation mark before version, incicating that addon is pinned.
+`wowa ls -l` displays an exclamation mark before version, indicating that addon is pinned.
 
 ### List all installed addons
 
@@ -183,19 +183,19 @@ wowa sw --classic-beta  switch mode to: classic BETA
 
 ## GFW treatment
 
-如果你身在国内并经常更新 database 缓慢或出现以下错误，可以按下文的方法解决。
+å¦‚æžœä½ èº«åœ¨å›½å†…å¹¶ç»�å¸¸æ›´æ–° database ç¼“æ…¢æˆ–å‡ºçŽ°ä»¥ä¸‹é”™è¯¯ï¼Œå�¯ä»¥æŒ‰ä¸‹æ–‡çš„æ–¹æ³•è§£å†³ã€‚
 
 ```
 Updating database...require curse db failed RequestError: read ECONNRESET
 ```
 
-**解决方法**
+**è§£å†³æ–¹æ³•**
 
-1. 按快捷键 **Win**+**x**，**a**，打开管理员权限的 **powershell**
-2. 输入以下命令编辑 *hosts* 文件，`notepad c:\windows\system32\drivers\etc\hosts`
-3. 在 *hosts* 文件中增加以下两行，保存退出
+1. æŒ‰å¿«æ�·é”® **Win**+**x**ï¼Œ**a**ï¼Œæ‰“å¼€ç®¡ç�†å‘˜æ�ƒé™�çš„ **powershell**
+2. è¾“å…¥ä»¥ä¸‹å‘½ä»¤ç¼–è¾‘ *hosts* æ–‡ä»¶ï¼Œ`notepad c:\windows\system32\drivers\etc\hosts`
+3. åœ¨ *hosts* æ–‡ä»¶ä¸­å¢žåŠ ä»¥ä¸‹ä¸¤è¡Œï¼Œä¿�å­˜é€€å‡º
 ```
 199.232.68.133 raw.githubusercontent.com
 140.82.112.5 api.github.com
 ```
-4. 在 **powershell** 中输入 `ipconfig /flushdns`
+4. åœ¨ **powershell** ä¸­è¾“å…¥ `ipconfig /flushdns`
