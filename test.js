@@ -18,6 +18,10 @@ function nme(x) {
   return ccc++ + '-' + x
 }
 
+let find = _.find
+let keys = _.keys
+let filter = _.filter
+
 ava.serial.before.cb('path', t => {
   let tmpdir = cfg.getPath('tmp')
 
@@ -56,13 +60,13 @@ function commonTests(aa) {
       t.assert(res.update === 0)
 
       aa.forEach(a => {
-        t.assert(_.find(fs.readdirSync(p), d => d.match(a[1])))
+        t.assert(find(fs.readdirSync(p), d => d.match(a[1])))
       })
 
       ads.load()
 
-      t.assert(_.keys(ads.data).length === aa.length)
-      t.assert(!_.find(ads.data, d => !d.sub.length))
+      t.assert(keys(ads.data).length === aa.length)
+      t.assert(!find(ads.data, d => !d.sub.length))
       t.end()
     })
   })
@@ -75,13 +79,13 @@ function commonTests(aa) {
       t.assert(res.ud === 0)
 
       aa.forEach(a => {
-        t.assert(_.find(fs.readdirSync(p), d => d.match(a[1])))
+        t.assert(find(fs.readdirSync(p), d => d.match(a[1])))
       })
 
       ads.load()
 
-      t.assert(_.keys(ads.data).length === aa.length)
-      t.assert(!_.find(ads.data, d => !d.sub.length))
+      t.assert(keys(ads.data).length === aa.length)
+      t.assert(!find(ads.data, d => !d.sub.length))
       t.end()
     })
   })
@@ -96,14 +100,14 @@ function commonTests(aa) {
       t.assert(res.ud === 1)
 
       aa.forEach(a => {
-        t.assert(_.find(fs.readdirSync(p), d => d.match(a[1])))
+        t.assert(find(fs.readdirSync(p), d => d.match(a[1])))
       })
 
       ads.load()
 
       t.assert(ads.data['classicon'].update > 0)
-      t.assert(_.keys(ads.data).length === aa.length)
-      t.assert(!_.find(ads.data, d => !d.sub.length))
+      t.assert(keys(ads.data).length === aa.length)
+      t.assert(!find(ads.data, d => !d.sub.length))
       t.end()
     })
   })
@@ -112,12 +116,12 @@ function commonTests(aa) {
     core.rm(['classicon'], res => {
       let p = cfg.getPath('addon')
 
-      t.assert(!_.find(fs.readdirSync(p), d => d.match(/^Class/)))
+      t.assert(!find(fs.readdirSync(p), d => d.match(/^Class/)))
 
       ads.load()
 
       t.assert(!ads.data['classicon'])
-      t.assert(_.keys(ads.data).length === aa.length - 1)
+      t.assert(keys(ads.data).length === aa.length - 1)
 
       core.add(['classicon'], () => {
         t.end()
@@ -237,9 +241,9 @@ function commonTests(aa) {
 
       log(ads.data)
 
-      t.assert(_.keys(ads.data).length === _.filter(aa, a => a[2]).length)
+      t.assert(keys(ads.data).length === filter(aa, a => a[2]).length)
       // aa.forEach(a => {
-      //   if (a[2]) t.assert(_.find(_.keys(ads.data), k => k.search(a[2]) >= 0))
+      //   if (a[2]) t.assert(find(keys(ads.data), k => k.search(a[2]) >= 0))
       // })
 
       t.end()
@@ -251,7 +255,7 @@ commonTests([
   ['deadlybossmods/deadlybossmods', /^DBM/, 1],
   ['classicon', /^Class/, 1],
   ['mmoui:11190-Bartender4', /^Bart/, 1],
-  ['tukui:46-ElvUIDatatextBars2', /^ElvUI/, 1],
+  ['tukui:66-ElvUIExtraDataTexts', /^ElvUI/, 1],
   ['sellableitemdrops', /^Sella/, 1],
   ['https://git.tukui.org/Azilroka/AddOnSkins.git', 'AddOnSkins', 1]
 ])
