@@ -22,6 +22,7 @@ let git = {
         let info = {
           name: ad.uri,
           page: ad.uri,
+          update: new Date() / 1000,
           version: []
         }
 
