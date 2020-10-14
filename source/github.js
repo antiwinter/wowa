@@ -1,4 +1,5 @@
 const { Octokit } = require('@octokit/rest')
+const async = require('async')
 const ok = new Octokit({
   auth: process.env.GITHUB_TOKEN
 })
@@ -42,19 +43,20 @@ let api = {
 
         d.version = ad.branch
           ? [
-              {
-                name: data.commit.sha.slice(0, 7),
-                link: `${api.$url}${ad.key}/archive/${
-                  !ad.branch ? 'master' : ad.branch
-                }.zip`
-              }
-            ]
-          : data.map(x => {
-              return {
-                name: x.name,
-                link: `${api.$url}${ad.key}/archive/${x.name}.zip`
-              }
-            })
+            {
+              name: data.commit.sha.slice(0, 7),
+              link: `${api.$url}${ad.key}/archive/${!ad.branch ? 'master' : ad.branch
+                }.zip`,
+              commit: data.commit
+            }
+          ]
+          : data.slice(0, 5).map(x => {
+            return {
+              name: x.name,
+              link: `${api.$url}${ad.key}/archive/${x.name}.zip`,
+              commit: x.commit
+            }
+          })
 
         if (!d.version || !d.version.length) {
           ad.branch = 'master'
@@ -62,19 +64,23 @@ let api = {
           return
         }
 
-        let c = ad.branch ? data.commit : data[0].commit
+        async.forEachLimit(d.version, 1, (x, cb) => {
+          ok.git
+            .getCommit({
+              owner,
+              repo,
+              commit_sha: x.commit.sha
+            })
+            .then(({ data }) => {
+              x.update = new Date(data.committer.date).valueOf() / 1000
+              cb()
+            })
+        }, () => {
+          d.version.sort((a, b) => b.update - a.update)
+          d.update = d.version[0].update
+          done(d)
+        })
 
-        ok.git
-          .getCommit({
-            owner,
-            repo,
-            commit_sha: c.sha
-          })
-          .then(({ data }) => {
-            // log('inner', data)
-            d.update = new Date(data.committer.date).valueOf() / 1000
-            done(d)
-          })
       }).catch(err => {
         if (err) {
           let msg = err.toString()
