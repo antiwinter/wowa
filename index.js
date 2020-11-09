@@ -11,6 +11,7 @@ cli
   .command('add <addons...>')
   .description('install one or more addons locally')
   .alias('install')
+  .alias('get')
   .option('--anyway', 'install latest addon release for _classic_ mode anyway')
   .action((aa, cmd) => {
     cfg.anyway(cmd.anyway)
@@ -21,6 +22,9 @@ cli
   .command('rm <addon...>')
   .description('remove addons from local installation')
   .alias('delete')
+  .alias('uninstall')
+  .alias('remove')
+  .alias('del')
   .action(key => core.rm(key))
 
 cli

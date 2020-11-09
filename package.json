@@ -4,7 +4,7 @@
     "agentkeepalive": "^4.1.0",
     "async": "^3.0.1",
     "chalk": "^2.4.2",
-    "commander": "^2.20.0",
+    "commander": "^6.2.0",
     "easy-table": "^1.1.1",
     "got": "^9.6.0",
     "listr": "^0.14.3",
