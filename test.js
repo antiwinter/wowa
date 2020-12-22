@@ -255,7 +255,7 @@ commonTests([
   ['deadlybossmods/deadlybossmods', /^DBM/, 1],
   ['classicon', /^Class/, 1],
   ['mmoui:11190-Bartender4', /^Bart/, 1],
-  ['tukui:66-ElvUIExtraDataTexts', /^ElvUI/, 1],
+  ['tukui:66-1ElvUIExtraDataTexts', /^ElvUI/, 1],
   ['sellableitemdrops', /^Sella/, 1],
   ['https://git.tukui.org/Azilroka/AddOnSkins.git', 'AddOnSkins', 1]
 ])
@@ -279,7 +279,7 @@ commonTests([
   ['bigwigsmods/bigwigs/classic', /^BigWigs/, 1],
   ['classicon', /^Class/, 1],
   ['mmoui:11190-Bartender4', /^Bart/, 1],
-  ['tukui:6-RedtuzkUIClassic', /^ElvUI/, 0],
+  ['tukui:6-2RedtuzkUIClassic', /^ElvUI/, 0],
   ['sellableitemdrops', /^Sella/, 1]
 ])
 

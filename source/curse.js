@@ -84,8 +84,7 @@ let api = {
       })
       .catch(err => {
         log('require curse db failed', err.toString())
-        process.exit(1)
-        done()
+        done([])
       })
   },
 

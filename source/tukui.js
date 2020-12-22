@@ -4,8 +4,8 @@ const g = require('got')
 const log = console.log
 
 let api = {
-  $url: 'https://www.tukui.org/api.php',
-  $web: 'https://www.tukui.org/download.php',
+  $url: 'https://www.tukui.org',
+  $base: 'https://www.tukui.org/download.php',
 
   $lcl: /\?id=(.*)$/,
   $fcl: 'tukui',
@@ -14,9 +14,10 @@ let api = {
   info(ad, done) {
     let id = ad.key.split('-')[0]
     let mo = cfg.getMode()
+    let top = require('./')
 
     if (mo === '_retail_' && ad.key.match(/0-tukui|0-elvui/i)) {
-      g(`${api.$web}?ui=${ad.key.match(/0-tukui/i) ? 'tukui' : 'elvui'}`)
+      g(`${api.$base}?ui=${ad.key.match(/0-tukui/i) ? 'tukui' : 'elvui'}`)
         .then(res => {
           let i = {
             name: ad.key,
@@ -36,7 +37,7 @@ let api = {
               }
 
               if (line.match(/btn-mod/i)) {
-                i.version[0].link = 'https://www.tukui.org' + line.split('"')[1]
+                i.version[0].link = api.$url + line.split('"')[1]
               }
             })
 
@@ -46,80 +47,97 @@ let api = {
       return
     }
 
-    // log('getting', `${api.$url}/filedetails/${id}.json`)
-    g(`${api.$url}?${mo === '_retail_' ? 'addon' : 'classic-addon'}=${id}`)
-      .then(res => {
-        let x = JSON.parse(res.body)
+    top.getDB('tukui', db => {
+      if (!db) return done()
 
-        ad.key = id + '-' + x.name.replace(/[^a-zA-Z0-9]/g, '')
-        done({
-          name: x.name,
-          author: x.author,
-          update: new Date(x.lastupdate).valueOf() / 1000,
-          download: x.downloads,
-          version: [
-            {
-              name: x.version,
-              game: x.patch,
-              link: x.url
-            }
-          ]
-        })
+      let x = _.find(db, d => ad.key === d.key)
+      if (!x) return done()
+
+      done({
+        name: x.name,
+        author: x.author,
+        update: x.update,
+        download: x.download,
+        version: [{
+          name: x.version,
+          game: x.game,
+          link: `${api.$url}/${mo === '_retail_'
+            ? 'addons' : 'classic-addons'}.php?download=${x.id}`
+        }]
       })
-      .catch(x => done())
+    })
+  },
+
+  summary(done) {
+    // inject the base UI
+    let r = [
+      {
+        id: 0,
+        name: 'TukUI',
+        downloads: 1000000,
+        lastupdate: new Date().toTimeString(),
+        small_desc: 'TukUI',
+      },
+      {
+        id: 0,
+        name: 'ElvUI',
+        downloads: 1000000,
+        lastupdate: new Date().toTimeString(),
+        small_desc: 'ElvUI',
+      }
+    ]
+
+    // get retail addon list
+    g(`${api.$url}/api.php?addons`).then(res => {
+      r = r.concat(JSON.parse(res.body))
+      r.forEach(x => x.mode = 1)
+
+      // get classic addon list
+      g(`${api.$url}/api.php?classic-addons`).then(res => {
+        r = r.concat(JSON.parse(res.body).map(x => {
+          x.mode = 2
+          return x
+        }))
+
+        done(r.map(x => {
+          return {
+            id: x.id,
+            name: x.name,
+            key: x.id + '-' + x.mode + x.name.replace(/[^a-zA-Z0-9]/g, ''),
+            mode: x.mode,
+            version: x.version,
+            update: new Date(x.lastupdate).valueOf() / 1000,
+            author: x.author,
+            download: x.downloads,
+            small_desc: x.small_desc,
+            source: 'tukui'
+          }
+        }))
+      })
+    }).catch(err => {
+      log('tukui summary failed', err)
+      done([])
+    })
   },
 
   search(ad, done) {
-    let mo = cfg.getMode()
+    let mo = cfg.getMode() === '_retail_' ? 1 : 2
+    let top = require('./')
 
-    g(
-      `${api.$url}?${mo === '_retail_' ? 'addons' : 'classic-addons'}=all`
-    ).then(res => {
-      res = JSON.parse(res.body)
-
-      // log(res)
-      // retail version will not show in api results
-      if (mo === '_retail_')
-        res = res.concat([
-          {
-            id: 0,
-            name: 'TukUI',
-            small_desc: 'TukUI',
-            downloads: 1000000,
-            lastupdate: new Date().valueOf(),
-            web_url: api.$web + '?ui=tukui'
-          },
-          {
-            id: 0,
-            name: 'ElvUI',
-            small_desc: 'ElvUI',
-            downloads: 1000000,
-            lastupdate: new Date().valueOf(),
-            web_url: api.$web + '?ui=elvui'
-          }
-        ])
-
-      res = _.filter(
-        res,
-        d =>
-          d.name.toLowerCase().search(ad.key.toLowerCase()) >= 0 ||
-          d.small_desc.toLowerCase().search(ad.key.toLowerCase()) >= 0
-      )
+    top.getDB('tukui', db => {
+      let res = _.filter(db, x => x.mode === mo && (
+        x.name.toLowerCase().search(ad.key.toLowerCase()) >= 0 ||
+        x.small_desc.toLowerCase().search(ad.key.toLowerCase()) >= 0
+      ))
 
       res.sort((a, b) => b.downloads - a.downloads)
-
       res = res.slice(0, 15)
 
-      // log(res)
       done(
         res.map(x => {
-          return {
-            name: x.name,
-            key: x.id + '-' + x.name.replace(/[^a-zA-Z0-9]/g, ''),
-            download: parseInt(x.downloads),
-            update: new Date(x.lastupdate).valueOf() / 1000,
-            page: x.web_url
-          }
+          x.page = `${api.$url}/${mo === 1
+            ? 'addons' : 'classic-addons'}.php?id=${x.id}`
+          return x
         })
       )
     })

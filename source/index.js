@@ -164,7 +164,10 @@ let src = {
       db = db.concat(d)
       src.$api.mmoui.summary(d => {
         db = db.concat(d)
-        done(db)
+        src.$api.tukui.summary(d => {
+          db = db.concat(d)
+          done(db)
+        })
       })
     })
   },

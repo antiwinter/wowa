@@ -60,6 +60,7 @@ let api = {
       })
       .catch(err => {
         log('mmoui summary failed', err)
+        done([])
       })
   },
 
