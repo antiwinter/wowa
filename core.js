@@ -357,8 +357,7 @@ let core = {
     if (ukn.length) {
       log(
         cl.x(
-          `❗ ${ukn.length} folder${
-          ukn.length > 1 ? 's' : ''
+          `❗ ${ukn.length} folder${ukn.length > 1 ? 's' : ''
           } not managing by wowa`
         )
       )
@@ -488,7 +487,7 @@ let core = {
         if (ads.dirStatus(dir)) return
 
         // log('picking up', dir)
-        let l = _.filter(db, a => a.dir.indexOf(dir) >= 0 && cfg.testMode(a.mode))
+        let l = _.filter(db, a => a.dir && a.dir.indexOf(dir) >= 0 && cfg.testMode(a.mode))
 
         if (!l.length) return
         l.sort((a, b) => a.id - b.id)
@@ -524,8 +523,7 @@ let core = {
       if (ukn.length) {
         log(
           cl.h(
-            `❗ ${ukn.length} folder${
-            ukn.length > 1 ? 's are' : ' is'
+            `❗ ${ukn.length} folder${ukn.length > 1 ? 's are' : ' is'
             } not recgonized\n`
           )
         )

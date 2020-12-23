@@ -75,14 +75,14 @@ let api = {
         id: 0,
         name: 'TukUI',
         downloads: 1000000,
-        lastupdate: new Date().toTimeString(),
+        lastupdate: new Date().toDateString(),
         small_desc: 'TukUI',
       },
       {
         id: 0,
         name: 'ElvUI',
         downloads: 1000000,
-        lastupdate: new Date().toTimeString(),
+        lastupdate: new Date().toDateString(),
         small_desc: 'ElvUI',
       }
     ]
