@@ -261,7 +261,7 @@ commonTests([
 ])
 
 ava.serial.cb(nme('info-tukui-retail'), t => {
-  core.info('0-elvui', res => {
+  core.info('0-1ElvUI', res => {
     t.assert(res.match(/[0-9]+\/[0-9]+\/[0-9]+/))
     t.assert(res.match(/[0-9]+\.[0-9]+/g).length === 3)
     t.assert(res.match(/\.zip/))
