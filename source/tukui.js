@@ -16,8 +16,8 @@ let api = {
     let mo = cfg.getMode()
     let top = require('./')
 
-    if (mo === '_retail_' && ad.key.match(/0-tukui|0-elvui/i)) {
-      g(`${api.$base}?ui=${ad.key.match(/0-tukui/i) ? 'tukui' : 'elvui'}`)
+    if (mo === '_retail_' && ad.key.match(/0-.tukui|0-.elvui/i)) {
+      g(`${api.$base}?ui=${ad.key.match(/0-.tukui/i) ? 'tukui' : 'elvui'}`)
         .then(res => {
           let i = {
             name: ad.key,

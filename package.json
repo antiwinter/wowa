@@ -35,7 +35,7 @@
     "valid-url": "^1.0.9"
   },
   "scripts": {
-    "test": "cross-env TEST_WOWA=1 nyc ava --verbose",
+    "test": "cross-env TEST_WOWA=1 nyc ava",
     "release": "release-it"
   },
   "author": "antiwinter",
