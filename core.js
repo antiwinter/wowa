@@ -546,15 +546,17 @@ let core = {
           ? '_beta_'
           : opt.classicPtr
             ? '_classic_ptr_'
-            : opt.classicBeta
-              ? '_classic_beta_'
-              : opt.retail
-                ? '_retail_'
-                : opt.classic
-                  ? '_classic_'
-                  : cfg.testMode('_retail_')
+            : opt.classicTbc
+              ? '_tbc_'
+              : opt.classicBeta
+                ? '_classic_beta_'
+                : opt.retail
+                  ? '_retail_'
+                  : opt.classic
                     ? '_classic_'
-                    : '_retail_'
+                    : cfg.testMode('_retail_')
+                      ? '_tbc_'
+                      : '_retail_'
 
     cfg.setModePath(mo)
 

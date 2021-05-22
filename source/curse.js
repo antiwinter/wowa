@@ -12,7 +12,9 @@ let api = {
   $scl: 'curseforge.com',
 
   info(ad, done) {
-    let flavor = cfg.getMode() === '_classic_' ? 'wow_classic' : 'wow_retail'
+    let flavor = cfg.getMode() === '_classic_' ?
+      (cfg.getClassicExp() === '[TBC]' ? 'wow_burning_crusade' : 'wow_classic')
+      : 'wow_retail'
     let top = require('./')
 
     top.getDB('curse', db => {
