@@ -9,10 +9,7 @@
 
 **Recent Notice**
 
-- [GFW treatment](#gfw-treatment) 解决国内经常更新失败的问题
-- Add support for `PTR` and `BETA` mode, see [switch modes](#switch-modes)
-- Now `ls` only prints short message, if you want detailed message, use `wowa ls -l`
-- node version: ![node](https://img.shields.io/node/v/wowa)
+- Set **Burning Crusade** as the default **_classic_** expansion, if you'd like to switch to vanilla, use `wowa sw --classic`. See [switch modes](#switch-modes)
 
 ---
 
@@ -123,15 +120,16 @@ wowa import
 ### Switch modes
 
 ```
-wowa sw                 switch between _retail_ and _classic_
+wowa sw                 switch between _retail_ and _classic_ [TBC]
 wowa sw --ptr           switch mode to: retail PTR
 wowa sw --beta          switch mode to: retail BETA
 wowa sw --retail        switch mode to: retail formal
 wowa sw --retail-ptr    switch mode to: retail PTR
 wowa sw --retail-beta   switch mode to: retail BETA
-wowa sw --classic       switch mode to: classic formal
+wowa sw --classic       switch mode to: classic formal [Vanilla]
 wowa sw --classic-ptr   switch mode to: classic PTR
 wowa sw --classic-beta  switch mode to: classic BETA
+wowa sw --classic-tbc   switch mode to: classic [TBC]
 ```
 
 ## Related projects
