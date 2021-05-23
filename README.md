@@ -197,3 +197,14 @@ Updating database...require curse db failed RequestError: read ECONNRESET
 140.82.112.5 api.github.com
 ```
 4. 在 **powershell** 中输入 `ipconfig /flushdns`
+
+### A more convenient method
+
+1. Use [proxychains-windows](https://github.com/shunf4/proxychains-windows)
+2. Add bellow code to *C:\Windows\System32\WindowsPowerShell\v1.0\profile.ps1*
+```
+function wowa{
+  echo 'v.p.'
+  proxychains.exe -q wowa $args
+}
+```
