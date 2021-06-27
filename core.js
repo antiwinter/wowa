@@ -11,7 +11,7 @@ const Listr = require('listr')
 const _ = require('underscore')
 const g = require('got')
 const pi = require('package-info')
-
+const readline = require('readline')
 const api = require('./source')
 const cfg = require('./lib/config')
 const unzip = require('./lib/unzip')
@@ -285,6 +285,11 @@ let core = {
   search(text, done) {
     // log(text)
 
+    const rl = readline.createInterface({
+      input: process.stdin,
+      output: process.stdout
+    });
+
     api.search(api.parseName(text), info => {
       if (!info) {
         log('\nNothing is found\n')
@@ -305,7 +310,7 @@ let core = {
 
       data.forEach((v, i) => {
         log()
-        log(cl.h(v.name) + ' ' + cl.x('(' + v.page + ')'))
+        log(i+1 + ' ' + cl.h(v.name) + ' ' + cl.x('(' + v.page + ')'))
         log(
           `  ${kv('key', v.key)} ${kv(
             'download',
@@ -314,7 +319,20 @@ let core = {
         )
         // log('\n  ' + v.desc)
       })
-
+      log()
+      rl.question('Install one or more of these?\nEnter result #\'s separated by spaces or \'N\' to exit', res => {
+        if (res.toUpperCase() === 'N') {
+          rl.close()
+          return
+        }
+        const indices = res.split(' ')
+        const keys = []
+        indices.forEach(e => {
+          keys.push(data[e-1].key)
+        })
+        rl.close()
+        core.add(keys)
+      })
       log()
       if (done) done(info)
     })
