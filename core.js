@@ -284,12 +284,7 @@ let core = {
 
   search(text, done) {
     // log(text)
-
-    const rl = readline.createInterface({
-      input: process.stdin,
-      output: process.stdout
-    });
-
+    
     api.search(api.parseName(text), info => {
       if (!info) {
         log('\nNothing is found\n')
@@ -320,6 +315,12 @@ let core = {
         // log('\n  ' + v.desc)
       })
       log()
+      
+      const rl = readline.createInterface({
+        input: process.stdin,
+        output: process.stdout
+      });
+      
       rl.question('Install one or more of these?\nEnter result #\'s separated by spaces or \'N\' to exit', res => {
         if (res.toUpperCase() === 'N') {
           rl.close()
