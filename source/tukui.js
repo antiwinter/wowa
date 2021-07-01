@@ -63,7 +63,7 @@ let api = {
           name: x.version,
           game: x.game,
           link: `${api.$url}/${mo === '_retail_'
-            ? 'addons' : cfv}.php?download=${x.id}`
+            ? 'addons' : api.cfv}.php?download=${x.id}`
         }]
       })
     })
@@ -94,7 +94,7 @@ let api = {
       r.forEach(x => x.mode = 1)
 
       // get classic addon list
-      g(`${api.$url}/api.php?${cfv}`).then(res => {
+      g(`${api.$url}/api.php?${api.cfv}`).then(res => {
         r = r.concat(JSON.parse(res.body).map(x => {
           x.mode = 2
           return x
@@ -137,7 +137,7 @@ let api = {
       done(
         res.map(x => {
           x.page = `${api.$url}/${mo === 1
-            ? 'addons' : cfv}.php?id=${x.id}`
+            ? 'addons' : api.cfv}.php?id=${x.id}`
           return x
         })
       )

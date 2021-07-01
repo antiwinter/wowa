@@ -257,7 +257,7 @@ commonTests([
   ['mmoui:11190-Bartender4', /^Bart/, 1],
   ['tukui:66-1ElvUIExtraDataTexts', /^ElvUI/, 1],
   ['sellableitemdrops', /^Sella/, 1],
-  ['https://git.tukui.org/Azilroka/AddOnSkins.git', 'AddOnSkins', 1]
+  ['https://git.tukui.org/Azilroka/AddOnSkins.git@main', 'AddOnSkins', 1]
 ])
 
 ava.serial.cb(nme('info-tukui-retail'), t => {
