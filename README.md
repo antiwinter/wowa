@@ -1,7 +1,7 @@
 # WoWA
 
 [![cover](https://coveralls.io/repos/github/antiwinter/wowa/badge.svg?branch=master)](https://coveralls.io/github/antiwinter/wowa?branch=master)
-[![status](https://travis-ci.org/antiwinter/wowa.svg?branch=master)](https://travis-ci.org/antiwinter/wowa)
+[![status](https://travis-ci.com/antiwinter/wowa.svg?branch=master)](https://travis-ci.com/antiwinter/wowa)
 [![npm](https://img.shields.io/npm/v/wowa.svg)](https://www.npmjs.com/package/wowa)
 [![npm](https://img.shields.io/npm/l/wowa.svg)](https://github.com/antiwinter/wowa/blob/master/LICENSE)
 [![install size](https://packagephobia.now.sh/badge?p=wowa)](https://packagephobia.now.sh/result?p=wowa)
