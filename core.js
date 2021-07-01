@@ -282,9 +282,9 @@ let core = {
     log(`✨  ${n} addon${n > 1 ? 's' : ''} ${pup ? '' : 'un'}pinned.`)
   },
 
-  search(text, done) {
+  search(text, i, done) {
     // log(text)
-    
+
     api.search(api.parseName(text), info => {
       if (!info) {
         log('\nNothing is found\n')
@@ -315,26 +315,24 @@ let core = {
         // log('\n  ' + v.desc)
       })
       log()
-      
-      const rl = readline.createInterface({
-        input: process.stdin,
-        output: process.stdout
-      });
-      
-      rl.question('Install one or more of these?\nEnter result #\'s separated by spaces or \'N\' to exit', res => {
-        if (res.toUpperCase() === 'N') {
+
+      if(i) {
+        const rl = readline.createInterface({
+          input: process.stdin,
+          output: process.stdout
+        });
+  
+        rl.question('Quick install by inputting indexes (separate by \',\' or space): \n', res => {
+          const indices = res.split(/[\s,]+/)
+          const keys = []
+          indices.forEach(e => {
+            keys.push(data[e-1].key)
+          })
           rl.close()
-          return
-        }
-        const indices = res.split(' ')
-        const keys = []
-        indices.forEach(e => {
-          keys.push(data[e-1].key)
+          core.add(keys)
         })
-        rl.close()
-        core.add(keys)
-      })
-      log()
+      }
+
       if (done) done(info)
     })
   },
