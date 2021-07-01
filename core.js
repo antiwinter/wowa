@@ -585,7 +585,7 @@ let core = {
 
     if (!e || new Date() - fs.statSync(p).mtime > 24 * 3600 * 1000) {
       // fetch new data
-      pi('wowa').then(res => {
+      pi('/wowa').then(res => {
         fs.writeFileSync(p, JSON.stringify(res), 'utf-8')
         done(res)
       })

@@ -11,6 +11,7 @@ let api = {
   $fcl: 'tukui',
   $scl: 'tukui.com',
 
+  cfv: cfg.getClassicExp() === '[TBC]' ? 'classic-tbc-addons' : 'classic-addons',
   info(ad, done) {
     let id = ad.key.split('-')[0]
     let mo = cfg.getMode()
@@ -62,7 +63,7 @@ let api = {
           name: x.version,
           game: x.game,
           link: `${api.$url}/${mo === '_retail_'
-            ? 'addons' : 'classic-addons'}.php?download=${x.id}`
+            ? 'addons' : cfv}.php?download=${x.id}`
         }]
       })
     })
@@ -93,7 +94,7 @@ let api = {
       r.forEach(x => x.mode = 1)
 
       // get classic addon list
-      g(`${api.$url}/api.php?classic-addons`).then(res => {
+      g(`${api.$url}/api.php?${cfv}`).then(res => {
         r = r.concat(JSON.parse(res.body).map(x => {
           x.mode = 2
           return x
@@ -136,7 +137,7 @@ let api = {
       done(
         res.map(x => {
           x.page = `${api.$url}/${mo === 1
-            ? 'addons' : 'classic-addons'}.php?id=${x.id}`
+            ? 'addons' : cfv}.php?id=${x.id}`
           return x
         })
       )
