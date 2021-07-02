@@ -34,9 +34,13 @@ cli
     '--anyway',
     'search for latest addon release for _classic_ mode anyway'
   )
+  .option(
+    '-i',
+    'Install from search result indexes'
+  )
   .action((text, cmd) => {
     cfg.anyway(cmd.anyway)
-    core.search(text)
+    core.search(text, cmd.i)
   })
 
 cli
