@@ -316,7 +316,7 @@ let core = {
       })
       log()
 
-      if(i) {
+      if(i === true) {
         const rl = readline.createInterface({
           input: process.stdin,
           output: process.stdout
