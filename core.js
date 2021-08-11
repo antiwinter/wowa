@@ -66,26 +66,33 @@ function _install(from, to, sub, done) {
     : null
 
   let _toc = _.filter(ls, x => x.match(/\.toc$/))
-  let toc
+  let toc   // toc to use
+  let itoc  // no -bcc/-classic
 
   if (_toc.length >= 1) {
     if (_toc.length > 1)
       if (c_ver) toc = _.find(_toc, x => x.match(c_ver))
-      else _toc = _.filter(_toc, x => !x.match(/bcc|classic/i))
-    if (!toc) toc = _toc[0];
+    itoc = _.filter(_toc, x => !x.match(/bcc|classic/i))[0]
+    if (!toc) toc = itoc
   }
 
   // log('\n\n searching', from, toc, to)
-  if (toc) {
-    toc = toc.replace(/\.toc$/, '')
-    let target = path.join(to, toc)
+  if (itoc) {
+    let dir = itoc.replace(/\.toc$/, '')
+    let target = path.join(to, dir)
 
     // log('\n\ntoc found, copy', from, '>>', target, '\n\n')
     rm(target, err => {
       // log('\n\n', 'rm err', err)
       mk(target, err => {
-        ncp(from, target, done)
-        sub.push(toc)
+        ncp(from, target, err => {
+          if (itoc != toc) {
+            fs.renameSync(path.join(target, itoc), path.join(target, itoc + '.bak'))
+            fs.renameSync(path.join(target, toc), path.join(target, itoc))
+          }
+          done(err)
+        })
+        sub.push(dir)
       })
     })
   } else {
