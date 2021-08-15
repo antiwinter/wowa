@@ -73,10 +73,11 @@ function _install(from, to, sub, done) {
     if (_toc.length > 1)
       if (c_ver) toc = _.find(_toc, x => x.match(c_ver))
     itoc = _.filter(_toc, x => !x.match(/bcc|classic/i))[0]
+    if (!itoc) itoc = _toc[0]
     if (!toc) toc = itoc
   }
 
-  // log('\n\n searching', from, toc, to)
+  // log('\n\n searching', from, toc, to, 'itoc', itoc)
   if (itoc) {
     let dir = itoc.replace(/\.toc$/, '')
     let target = path.join(to, dir)
