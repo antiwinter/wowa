@@ -62,7 +62,7 @@ function getAd(ad, info, tmp, hook) {
 function _install(from, to, sub, done) {
   let ls = fs.readdirSync(from)
   let c_ver = cfg.getMode() === '_classic_' ?
-    (cfg.getClassicExp() === '[TBC]' ? /bcc/i : /classic/i)
+    (cfg.getClassicExp() === '[TBC]' ? /bcc|tbc/i : /classic/i)
     : null
 
   let _toc = _.filter(ls, x => x.match(/\.toc$/))
@@ -72,7 +72,7 @@ function _install(from, to, sub, done) {
   if (_toc.length >= 1) {
     if (_toc.length > 1)
       if (c_ver) toc = _.find(_toc, x => x.match(c_ver))
-    itoc = _.filter(_toc, x => !x.match(/bcc|classic/i))[0]
+    itoc = _.filter(_toc, x => !x.match(/bcc|tbc|classic/i))[0]
     if (!itoc) itoc = _toc[0]
     if (!toc) toc = itoc
   }
