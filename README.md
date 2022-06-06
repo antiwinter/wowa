@@ -9,7 +9,9 @@
 
 **Recent Notice**
 
-- Set **Burning Crusade** as the default **_classic_** expansion, if you'd like to switch to vanilla, use `wowa sw --classic`. See [switch modes](#switch-modes)
+**WoWA** dev is discontinued for several reasons. The most important one of them is that curseforge/overwolf has already developed very good [clients](https://download.curseforge.com/#download-options) for there addons for each platform (win/mac/even linux). Not like the moment that I decided to develop wowa, back when they only had a twitch client for only Windows.
+
+Thank you for using **WoWA**. Thank you for those who have liked **WoWA**
 
 ---
 
