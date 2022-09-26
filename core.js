@@ -11,7 +11,7 @@ const Listr = require('listr')
 const _ = require('underscore')
 const g = require('got')
 const pi = require('package-info')
-
+const readline = require('readline')
 const api = require('./source')
 const cfg = require('./lib/config')
 const unzip = require('./lib/unzip')
@@ -301,7 +301,7 @@ let core = {
     log(`✨  ${n} addon${n > 1 ? 's' : ''} ${pup ? '' : 'un'}pinned.`)
   },
 
-  search(text, done) {
+  search(text, i, done) {
     // log(text)
 
     api.search(api.parseName(text), info => {
@@ -324,7 +324,7 @@ let core = {
 
       data.forEach((v, i) => {
         log()
-        log(cl.h(v.name) + ' ' + cl.x('(' + v.page + ')'))
+        log(i+1 + ' ' + cl.h(v.name) + ' ' + cl.x('(' + v.page + ')'))
         log(
           `  ${kv('key', v.key)} ${kv(
             'download',
@@ -333,8 +333,25 @@ let core = {
         )
         // log('\n  ' + v.desc)
       })
-
       log()
+
+      if(i === true) {
+        const rl = readline.createInterface({
+          input: process.stdin,
+          output: process.stdout
+        });
+  
+        rl.question('Quick install by inputting indexes (separate by \',\' or space): \n', res => {
+          const indices = res.split(/[\s,]+/)
+          const keys = []
+          indices.forEach(e => {
+            keys.push(data[e-1].key)
+          })
+          rl.close()
+          core.add(keys)
+        })
+      }
+
       if (done) done(info)
     })
   },
